@@ -3,8 +3,9 @@ import React, { useState } from 'react';
 import { View, Button } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
 
-const ActivityLevelScreen = () => {
+const ActivityLevelScreen = ({route}) => {
   const navigation = useNavigation();
+  const { email, password, name, birthdate, personheight, personweight, gender } = route.params;
   const [levelIndex, setLevelIndex] = useState(-1);
   const levels = [
     '1레벨 - 주 2회 미만, 움직임 거의 없는 사무직',
@@ -26,8 +27,8 @@ const ActivityLevelScreen = () => {
           </Button>
         </View>
       ))}
-      <Button onPress={() => navigation.navigate('RegisterInfo')} >이전</Button>
-      <Button onPress={() => navigation.navigate('DietGoal')} >다음</Button>
+      <Button onPress={() => navigation.navigate('RegisterInfo', { email, password, name, birthdate, personheight, personweight, gender })} >이전</Button>
+      <Button onPress={() => navigation.navigate('DietGoal', { email, password, name, birthdate, personheight, personweight, gender,levelIndex })} >다음</Button>
     </View>
   );
 };

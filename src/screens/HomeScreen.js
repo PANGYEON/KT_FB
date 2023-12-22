@@ -1,6 +1,8 @@
+
 import React from 'react';
 import { View, Text, Button, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+
 const HomeScreen = () => {
   const navigation = useNavigation();
 
@@ -14,7 +16,7 @@ const HomeScreen = () => {
       <TouchableOpacity
         style={styles.profileButton}
         onPress={() => navigation.navigate('Profile')}>
-        <Text>프로필</Text>
+        <Text style={{color:'black', fontSize:20}}>프로필</Text>
       </TouchableOpacity>
 
       {/* 인사말과 식단 안내 메시지 */}
@@ -30,7 +32,9 @@ const HomeScreen = () => {
       />
 
       {/* 사진 촬영 버튼 */}
-      <Button title="사진 촬영" onPress={() => {/* 사진 촬영 로직 */}} />
+      {/* <Button title="사진 촬영" onPress={() => navigation.navigate('ImageIn')} /> */}
+      <Button title="사진 촬영" onPress={() => navigation.navigate('CameraScreen')} />
+
     </View>
     
   );
@@ -41,13 +45,14 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    
   },
   profileButton: {
     position: 'absolute',
-    top: 40,
+    top: 20,
     right: 20,
     padding: 10,
-    backgroundColor: '#ddd',
+    // backgroundColor: '#ddd',
     borderRadius: 5,
   },
   greetingContainer: {

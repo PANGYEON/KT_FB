@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { Button, View, Text, Divider, HStack, Box, Modal } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
-// import {Pressable}  from 'react-native';
-// import {Modal}  from 'react-native-modal';
+
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
@@ -38,7 +37,7 @@ const ProfileScreen = () => {
   return (
     <View>
       {/* 이전 버튼 */}
-      <Button onPress={() => navigation.navigate("Home")} position="absolute" top={4} left={4}>
+      <Button onPress={() => navigation.navigate("BottomTabNavigator")} position="absolute" top={4} left={4}>
         이전
       </Button>
 

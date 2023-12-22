@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { View, Text } from 'react-native';
 import Swiper from 'react-native-swiper';
 import { Calendar } from 'react-native-calendars';
-import { useFocusEffect } from '@react-navigation/native';
+
 const MonthScreen = () => {
   const [monthsToRender, setMonthsToRender] = useState([
     '2023-11-01',
@@ -11,23 +11,29 @@ const MonthScreen = () => {
     '2024-02-01',
   ]);
   const [currentMonth, setCurrentMonth] = useState('');
-  const [initialIndex, setInitialIndex] = useState(0);
   const swiperRef = useRef(null);
 
-  useEffect(() => {
-    // 현재 날짜를 얻어옵니다.
+  const initializeCurrentMonth = () => {
     const today = new Date();
     const currentDateString = today.toISOString().split('T')[0];
     const currentYearMonth = currentDateString.substring(0, 7);
 
-    // 현재 날짜가 있는 월의 인덱스를 찾습니다.
     const foundIndex = monthsToRender.findIndex(month => month.startsWith(currentYearMonth));
     if (foundIndex !== -1) {
-      setInitialIndex(foundIndex);
       setCurrentMonth(monthsToRender[foundIndex]);
+      if (swiperRef.current) {
+        setTimeout(() => swiperRef.current.scrollTo(foundIndex, false), 0);
+      }
     } else {
-      setCurrentMonth(monthsToRender[0]);
+      // 현재 달을 배열에 추가하는 로직
+      const newMonths = [...monthsToRender, currentYearMonth];
+      setMonthsToRender(newMonths);
+      setCurrentMonth(currentYearMonth);
     }
+  };
+
+  useEffect(() => {
+    initializeCurrentMonth();
   }, []);
 
   const handleIndexChanged = (index) => {
@@ -36,7 +42,8 @@ const MonthScreen = () => {
       const lastMonth = monthsToRender[monthsToRender.length - 1];
       const nextMonth = new Date(lastMonth);
       nextMonth.setMonth(nextMonth.getMonth() + 1);
-      const newMonths = [...monthsToRender, nextMonth.toISOString().split('T')[0]];
+      const nextMonthString = nextMonth.toISOString().split('T')[0].substring(0, 7);
+      const newMonths = [...monthsToRender, nextMonthString];
       setMonthsToRender(newMonths);
     }
   };
@@ -50,39 +57,11 @@ const MonthScreen = () => {
       </View>
     );
   };
-  
 
-  const initializeCurrentMonth = () => {
-    const today = new Date();
-    const currentDateString = today.toISOString().split('T')[0];
-    const currentYearMonth = currentDateString.substring(0, 7);
-
-    const foundIndex = monthsToRender.findIndex(month => month.startsWith(currentYearMonth));
-    if (foundIndex !== -1) {
-      setCurrentMonth(monthsToRender[foundIndex]);
-      // Swiper 컴포넌트의 현재 인덱스를 업데이트합니다.
-      if (swiperRef.current) {
-        // 타이머를 사용하여 스와이퍼가 올바르게 로드된 후에 스크롤합니다.
-        setTimeout(() => swiperRef.current.scrollTo(foundIndex, false), 0);
-      }
-    } else {
-      setCurrentMonth(monthsToRender[0]);
-    }
-  };
-
-  useEffect(() => {
-    initializeCurrentMonth();
-  }, []);
-
-  useFocusEffect(
-    React.useCallback(() => {
-      initializeCurrentMonth();
-    }, [monthsToRender])
-  );
   return (
     <Swiper
       ref={swiperRef}
-      index={initialIndex}
+      index={monthsToRender.indexOf(currentMonth)}
       loop={false}
       showsPagination={false}
       onIndexChanged={handleIndexChanged}
