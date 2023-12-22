@@ -3,13 +3,15 @@ import { View, Button } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 
-const DietGoalScreen = ({route}) => {
-  const { email, password, name, birthdate, personheight, personweight, gender,levelIndex } = route.params;
+const DietGoalScreen = ({ route }) => {
+  const { email, password, name, birthdate, personheight, personweight, gender, levelIndex } = route.params;
   const navigation = useNavigation();
   const [goalIndex, setGoalIndex] = useState(-1); // -1 for no selection
 
   const goals = ['체중 감량', '체중 유지', '체중 증량'];
-
+  const handleLevelSelect = (index) => {
+    setGoalIndex(index + 1); // 인덱스에 1을 더함
+  };
   const handleRegister = () => {
     const data = {
       "email": email,
@@ -17,7 +19,7 @@ const DietGoalScreen = ({route}) => {
       "birthdate": birthdate,
       "active_level": levelIndex.toString(),
       "height": parseInt(personheight, 10),
-    "weight": parseInt(personweight, 10),
+      "weight": parseInt(personweight, 10),
       "diet_purpose": goalIndex >= 0 ? goals[goalIndex] : null,
       "password": password,
       "gender": gender
@@ -37,31 +39,31 @@ const DietGoalScreen = ({route}) => {
     };
 
     axios.request(config)
-  .then((response) => {
-    console.log(JSON.stringify(response.data));
-    navigation.navigate('Login');
-  })
-  .catch((error) => {
-    // 에러 메시지 자세히 출력
-    console.log('Error object:', error);
+      .then((response) => {
+        console.log(JSON.stringify(response.data));
+        navigation.navigate('Login');
+      })
+      .catch((error) => {
+        // 에러 메시지 자세히 출력
+        console.log('Error object:', error);
 
-    if (error.response) {
-      console.log('Error response:', error.response);
-      if (error.response.data) {
-        console.log('Error response data:', error.response.data);
-        if (error.response.data.display_message) {
-          console.log('Display message:', error.response.data.display_message);
-          Alert.alert('회원가입 오류', error.response.data.display_message);
+        if (error.response) {
+          console.log('Error response:', error.response);
+          if (error.response.data) {
+            console.log('Error response data:', error.response.data);
+            if (error.response.data.display_message) {
+              console.log('Display message:', error.response.data.display_message);
+              Alert.alert('회원가입 오류', error.response.data.display_message);
+            }
+          }
+        } else if (error.request) {
+          console.log('Error request:', error.request);
+        } else {
+          console.log('Error message:', error.message);
         }
-      }
-    } else if (error.request) {
-      console.log('Error request:', error.request);
-    } else {
-      console.log('Error message:', error.message);
-    }
 
-    Alert.alert('회원가입 실패', '회원가입 중 오류가 발생했습니다.');
-  });
+        Alert.alert('회원가입 실패', '회원가입 중 오류가 발생했습니다.');
+      });
 
   }
 
@@ -71,13 +73,13 @@ const DietGoalScreen = ({route}) => {
         <View key={index} style={{ marginVertical: 5 }}>
           <Button
             onPress={() => setGoalIndex(index)}
-            variant={index === goalIndex ? 'solid' : 'outline'}
-            colorScheme={index === goalIndex ? 'blue' : 'gray'}>
+            variant={goalIndex === index+1? 'solid' : 'outline'}
+            colorScheme={goalIndex === index+1? 'blue' : 'gray'}>
             {goal}
           </Button>
         </View>
       ))}
-      <Button onPress={() => navigation.navigate('ActivityLevel', { email, password, name, birthdate, personheight, personweight, gender,levelIndex })}>이전</Button>
+      <Button onPress={() => navigation.navigate('ActivityLevel', { email, password, name, birthdate, personheight, personweight, gender, levelIndex })}>이전</Button>
       <Button onPress={(handleRegister)}>완료</Button>
     </View>
   );

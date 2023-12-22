@@ -7,6 +7,9 @@ const ActivityLevelScreen = ({route}) => {
   const navigation = useNavigation();
   const { email, password, name, birthdate, personheight, personweight, gender } = route.params;
   const [levelIndex, setLevelIndex] = useState(-1);
+  const handleLevelSelect = (index) => {
+    setLevelIndex(index + 1); // 인덱스에 1을 더함
+  };
   const levels = [
     '1레벨 - 주 2회 미만, 움직임 거의 없는 사무직',
     '2레벨 - 주 3~4회 이하, 움직임 조금 있는 직종',
@@ -20,15 +23,15 @@ const ActivityLevelScreen = ({route}) => {
       {levels.map((level, index) => (
         <View key={index} style={{ marginVertical: 5 }}>
           <Button
-            onPress={() => setLevelIndex(index)}
-            variant={index === levelIndex ? 'solid' : 'outline'}
-            colorScheme={index === levelIndex ? 'blue' : 'gray'}>
+            onPress={() => handleLevelSelect(index)}
+            variant={levelIndex === index + 1 ? 'solid' : 'outline'} // 인덱스 비교 시 1을 더함
+            colorScheme={levelIndex === index + 1 ? 'blue' : 'gray'}>
             {level}
           </Button>
         </View>
       ))}
-      <Button onPress={() => navigation.navigate('RegisterInfo', { email, password, name, birthdate, personheight, personweight, gender })} >이전</Button>
-      <Button onPress={() => navigation.navigate('DietGoal', { email, password, name, birthdate, personheight, personweight, gender,levelIndex })} >다음</Button>
+      <Button onPress={() => navigation.navigate('RegisterInfo', { email, password, name, birthdate, personheight, personweight, gender, levelIndex })} >이전</Button>
+      <Button onPress={() => navigation.navigate('DietGoal', { email, password, name, birthdate, personheight, personweight, gender, levelIndex })} >다음</Button>
     </View>
   );
 };
