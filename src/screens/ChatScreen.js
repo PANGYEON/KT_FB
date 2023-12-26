@@ -7,35 +7,38 @@ import { ChatIcon } from '../icons/ChatIcon.png';
 // import SQLite from 'react-native-sqlite-storage';
 
 const openaiApiKey = 'OPENAI_API_KEY'; 
+const tuningModel = 'TUNING_MODEL';
 
-// function fetchDietDB(date) {
-//   return new Promise((resolve, reject) => {
-//     const db = SQLite.openDatabase({name: 'user_diet.sqlite3', location: 'default'});
-//     db.transaction(tx => {
-//       tx.executeSql(
-//         "SELECT * FROM user_result WHERE date=?",
-//         [date],
-//         (tx, results) => {
-//           if (results.rows.length > 0) {
-//             resolve(results.rows.item(0));
-//           } else {
-//             resolve(null);
-//           }
-//         },
-//         error => reject(error)
-//       );
-//     });
-//   });
-// }
+function fetchDietDB(date) {
+  return "DB 연결 예정";
+  // return new Promise((resolve, reject) => {
+  //   const db = SQLite.openDatabase({name: 'user_diet.sqlite3', location: 'default'});
+  //   db.transaction(tx => {
+  //     tx.executeSql(
+  //       "SELECT * FROM user_result WHERE date=?",
+  //       [date],
+  //       (tx, results) => {
+  //         if (results.rows.length > 0) {
+  //           resolve(results.rows.item(0));
+  //         } else {
+  //           resolve(null);
+  //         }
+  //       },
+  //       error => reject(error)
+  //     );
+  //   });
+  // });
+}
 
-// function createDietPrompt(dietInfo) {
-//   if (!dietInfo) {
-//     return "해당 날짜에 대한 식단 정보가 없습니다.";
-//   }
+function createDietPrompt(dietInfo) {
+  if (!dietInfo) {
+    return "해당 날짜에 대한 식단 정보가 없습니다.";
+  }
 
-//   const { date, tan, dan, dang, ji, result } = dietInfo;
-//   return `${date}에 드신 탄수화물은 ${tan}, 당류는 ${dang}, 단백질은 ${dan}, 지방은 ${ji} 입니다. 최종 결과는 ${result}~`;
-// }
+  const { date, tan, dan, dang, ji, result } = dietInfo;
+  //return '${date}에 드신 탄수화물은 ${tan}, 당류는 ${dang}, 단백질은 ${dan}, 지방은 ${ji} 입니다. 최종 결과는 ${result}~';
+  return 'DB 연결 예정';
+}
 
 
 const ChatScreen = () => {
@@ -54,79 +57,57 @@ const ChatScreen = () => {
       const response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers: {
-          'Authorization': 'Bearer KEY', // KEY에 OpenAI API 키 입력-나중에 환경변수
+          'Authorization': 'Bearer OPEN_API_KEY', // KEY에 OpenAI API 키 입력-나중에 환경변수
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          model: 'gpt-3.5-turbo',
-          messages: [{ role: 'user', content: inputText }]
+          model: tuningModel,
+          messages: [
+            {"role": "system", "content": "너는 식단을 평가해주는 챗봇이야"},
+            {"role": "user", "content": inputText}
+          ],
+          max_tokens:150,
         })
         
       });
 
       const data = await response.json();
-      const botMessage = data.choices[0].message.content;
+      const result = data.choices[0].message.content;
+      //const result="0";
 
-      setChatHistory(currentChat => [...currentChat, { role: 'assistant', content: botMessage }]);
-    
+      if (result=="1"){
+        userDietInfo = fetchDietDB('2023-12-20');
+        dietResponse = createDietPrompt(userDietInfo);
+        setChatHistory(currentChat => [...currentChat, { role: 'assistant', content: dietResponse }]);
+      }
+      else{
+        try {
+          const response = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Authorization': 'Bearer KEY', // KEY에 OpenAI API 키 입력-나중에 환경변수
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              model: 'gpt-3.5-turbo',
+              messages: [
+                {"role": "system", "content": "너는 max_tokens가 있어도 문장을 뚝 끊지 않고 마무리해주는 챗봇이야"},
+                {"role": "user", "content": inputText}
+              ],
+              max_tokens:150,
+            })
+          });
+
+          const data = await response.json();
+          const botMessage = data.choices[0].message.content;
+          setChatHistory(currentChat => [...currentChat, { role: 'assistant', content: botMessage }]);
+      } catch (error) {
+        console.error('DB 호출 에러', error);
+      }}
     } catch (error) {
       console.error('API 호출 에러:', error);
     }
-
   };
-  //   try {
-  //     const response = await fetch('https://api.openai.com/v1/chat/completions', {
-  //       method: 'POST',
-  //       headers: {
-  //         'Authorization': 'Bearer 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', // 여기에 OpenAI API 키 입력
-  //         'Content-Type': 'application/json'
-  //       },
-  //       body: JSON.stringify({
-  //         model: 'ft:gpt-3.5-turbo-0613:personal::8ZqK4Bk9',
-  //         messages: [
-  //           {"role": "system", "content": "너는 식단을 평가해주는 챗봇이야"},
-  //           {"role": "user", "content": inputText}]
-  //       })
-  //     });
-
-  //   const data = await response.json();
-  //   const botResponse = data.choices[0].message.content;
-    
-  //   if (botResponse == "1") {
-  //       //사용자 식단 DB 정보
-  //       //const date = (new Date()).toISOString().split('T')[0]; // 오늘 날짜로 설정, 필요에 따라 변경
-  //       const userDietInfo = await fetchDietDB('2023-12-20');
-  //       const dietResponse = createDietPrompt(userDietInfo);
-  //       setChatHistory(currentChat => [...currentChat, { role: 'assistant', content: dietResponse }]);
-  //   }
-  //   else{ 
-  //       //식단 평가 대화
-  //       response = await fetch('https://api.openai.com/v1/chat/completions', {
-  //         method: 'POST',
-  //         headers: {
-  //           'Authorization': 'Bearer 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',
-  //           'Content-Type': 'application/json'
-  //         },
-  //         body: JSON.stringify({
-  //           model: 'gpt-3.5-turbo',
-  //           messages: [
-  //             { role: 'user', content: inputText },
-  //             { role: 'assistant', content: botResponse },
-  //             { role: 'user', content: inputText } // 재입력 또는 추가 메시지
-  //           ]
-  //         })
-  //       });
-        
-  //       data = await response.json();
-  //       botResponse = data.choices[0].message.content;
-  //       setChatHistory(currentChat => [...currentChat, { role: 'assistant', content: botResponse }]);
-  //   }
-  // } catch (error) {
-  //     console.error('API 호출 에러:', error);
-  //   }
-    // 챗봇 답변오고나서 지워짐
-  //   setInputText('');
-  // };
 
   return (
     <View flex={1}>
@@ -143,7 +124,7 @@ const ChatScreen = () => {
         <View>
           <Image source={ChatIcon} style={{width:25, height:25}} />
         </View>
-        <Text>ㅇㅇㅇ님과의 대화</Text>
+        <Text>chatBot과의 대화</Text>
       </HStack>
       <ScrollView
         onContentSizeChange={() => scrollViewRef.current.scrollToEnd({ animated: true })}
