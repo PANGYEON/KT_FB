@@ -1,5 +1,6 @@
 // ChatScreen.js Test github
-import React, { useState, useRef} from 'react';
+import React, { useState, useRef, useContext} from 'react';
+import ChatContext from '../ChatContext';
 import { Button, View, Input, Text, VStack,HStack, ScrollView} from 'native-base';
 import { useNavigation } from '@react-navigation/native';
 import { Image, ImageComponent, TouchableOpacity } from 'react-native';
@@ -59,7 +60,7 @@ const ChatBotScreen = ({onClose}) => {
       const response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers: {
-          'Authorization': 'Bearer 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', // KEY에 OpenAI API 키 입력-나중에 환경변수
+          'Authorization': 'Bearer KEY', // KEY에 OpenAI API 키 입력-나중에 환경변수
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
@@ -91,7 +92,7 @@ const ChatBotScreen = ({onClose}) => {
           const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
             headers: {
-              'Authorization': 'Bearer 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', // KEY에 OpenAI API 키 입력-나중에 환경변수
+              'Authorization': 'Bearer KEY', // KEY에 OpenAI API 키 입력-나중에 환경변수
               'Content-Type': 'application/json'
             },
             body: JSON.stringify({
@@ -117,7 +118,7 @@ const ChatBotScreen = ({onClose}) => {
           const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
             headers: {
-              'Authorization': 'Bearer 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', // KEY에 OpenAI API 키 입력-나중에 환경변수
+              'Authorization': 'Bearer KEY', // KEY에 OpenAI API 키 입력-나중에 환경변수
               'Content-Type': 'application/json'
             },
             body: JSON.stringify({
