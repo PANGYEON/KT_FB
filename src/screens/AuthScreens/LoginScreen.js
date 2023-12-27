@@ -20,7 +20,7 @@ const LoginScreen = () => {
   
       let config = {
         method: 'post',
-        url: 'http://192.168.10.58:5500/api/login/',
+        url: 'http://192.168.10.53:5500/api/login/',
         headers: {
           'Content-Type': 'application/json'
         },
@@ -97,7 +97,7 @@ const LoginScreen = () => {
           />
         </View>
         <Button
-          // onPress={handleLogin}
+          //onPress={handleLogin}
           onPress={() => navigation.navigate('BottomTabNavigator')}
           
           style={{ marginBottom: 10, borderRadius: 50, backgroundColor: '#8E86FA' }}

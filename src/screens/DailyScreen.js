@@ -1,11 +1,14 @@
 
 import React, { useState } from 'react';
-import { Button, View, Text } from 'native-base';
+import { View, Text, Modal, TouchableOpacity, Image } from 'react-native';
+import { Button } from 'native-base';
+import ChatBotScreen from './ChatBotScreen';
 import { useNavigation } from '@react-navigation/native';
 
 const DailyScreen = () => {
   const navigation = useNavigation();
   const [selectedMeal, setSelectedMeal] = useState(null);
+  const [isModalVisible, setModalVisible] = useState(false);
 
   const meals = ['아침', '점심', '저녁', '간식'];
 
@@ -26,11 +29,15 @@ const DailyScreen = () => {
     justifyContent:'center'
   });
 
+  const toggleModal = () => {
+    setModalVisible(!isModalVisible);
+  };
+
   return (
-    <View>
+    <View style={{ flex:1}}>
       <Text style={{ fontSize: 34, paddingTop: 30 }}>{renderDate()}</Text>
       <Text style={{ fontSize: 20, paddingTop: 10 }}>좋았어</Text>
-      <View style={{ backgroundColor: 'lightgreen', padding: 10 ,height:250,margin:20,borderRadius: 20}}>
+      <View style={{ backgroundColor: 'grey', padding: 10 ,height:250,margin:20,borderRadius: 20}}>
         {/* 여기에 다른 컨텐츠가 추가될 수 있습니다#F3EFEF */}
       </View>
       <View style={{ flexDirection: 'row', justifyContent: 'space-around', padding: 10, backgroundColor: 'lightgray',marginLeft:10,marginRight:10,borderRadius: 20 }}>
@@ -43,6 +50,47 @@ const DailyScreen = () => {
       <View style={{ padding: 10 }}>
         <Text>{selectedMeal ? `${selectedMeal} 메뉴` : ''}</Text>
       </View>
+
+      <TouchableOpacity
+        style={{
+          position: 'absolute',
+          bottom: 30,
+          right: 30,
+          width: 60,
+          height: 60,
+          backgroundColor: '#D7D4FF', // 원하는 색상
+          borderRadius: 30,
+          justifyContent: 'center',
+          alignItems: 'center',
+          elevation: 5
+        }}
+        onPress={toggleModal}>
+        <Image source={require('../icons/ChatBotIcon.png')} style={{ width: 30, height: 30 }} />
+      </TouchableOpacity>
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={isModalVisible}
+        onRequestClose={toggleModal}
+      >
+        <View style={{
+          flex:1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: 'rgba(0, 0, 0, 0.5)'
+        }}>
+          <View style={{
+            flex:1,
+            minWidth:'80%',
+            maxHeight:'80%',
+            backgroundColor: '#fff',
+            borderRadius:30,
+        }}>
+            <ChatBotScreen onClose={toggleModal} />
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
