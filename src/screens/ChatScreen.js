@@ -2,43 +2,8 @@
 import React, { useState, useRef} from 'react';
 import { Button, View, Input, Text, VStack,HStack, ScrollView} from 'native-base';
 import { useNavigation } from '@react-navigation/native';
-import { Image, ImageComponent } from 'react-native';
+import { Image, TouchableOpacity } from 'react-native';
 import { ChatIcon } from '../icons/ChatIcon.png';
-// import SQLite from 'react-native-sqlite-storage';
-
-const openaiApiKey = 'OPENAI_API_KEY'; 
-const tuningModel = 'TUNING_MODEL';
-
-function fetchDietDB(date) {
-  return "DB 연결 예정";
-  // return new Promise((resolve, reject) => {
-  //   const db = SQLite.openDatabase({name: 'user_diet.sqlite3', location: 'default'});
-  //   db.transaction(tx => {
-  //     tx.executeSql(
-  //       "SELECT * FROM user_result WHERE date=?",
-  //       [date],
-  //       (tx, results) => {
-  //         if (results.rows.length > 0) {
-  //           resolve(results.rows.item(0));
-  //         } else {
-  //           resolve(null);
-  //         }
-  //       },
-  //       error => reject(error)
-  //     );
-  //   });
-  // });
-}
-
-function createDietPrompt(dietInfo) {
-  if (!dietInfo) {
-    return "해당 날짜에 대한 식단 정보가 없습니다.";
-  }
-
-  const { date, tan, dan, dang, ji, result } = dietInfo;
-  //return '${date}에 드신 탄수화물은 ${tan}, 당류는 ${dang}, 단백질은 ${dan}, 지방은 ${ji} 입니다. 최종 결과는 ${result}~';
-  return 'DB 연결 예정';
-}
 
 
 const ChatScreen = () => {
@@ -47,70 +12,45 @@ const ChatScreen = () => {
   const [chatHistory, setChatHistory] = useState([]); // To store the chat history
   const scrollViewRef = useRef();
 
+  const [friends, setFriends] = useState(['친구1', '친구2', '친구3']);
+  const [selectedFriend, setSelectedFriend] = useState(null);
+
+  const selectFriend = (friend) => {
+    setSelectedFriend(friend);
+  };
+
   const handleSendMessage = async() => {
     if (inputText.trim() === '') return;
-  
-    setChatHistory([...chatHistory, { role: 'user', content: inputText }]);
+    
+    const newUserMessage = { role: 'user', content: inputText };
+    setChatHistory(prevChatHistory => [...prevChatHistory, newUserMessage]);
     setInputText('');
-    //API 호출
-    try {
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': 'Bearer OPEN_API_KEY', // KEY에 OpenAI API 키 입력-나중에 환경변수
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          model: tuningModel,
-          messages: [
-            {"role": "system", "content": "너는 식단을 평가해주는 챗봇이야"},
-            {"role": "user", "content": inputText}
-          ],
-          max_tokens:150,
-        })
-        
-      });
 
-      const data = await response.json();
-      const result = data.choices[0].message.content;
-      //const result="0";
-
-      if (result=="1"){
-        userDietInfo = fetchDietDB('2023-12-20');
-        dietResponse = createDietPrompt(userDietInfo);
-        setChatHistory(currentChat => [...currentChat, { role: 'assistant', content: dietResponse }]);
-      }
-      else{
-        try {
-          const response = await fetch('https://api.openai.com/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-              'Authorization': 'Bearer KEY', // KEY에 OpenAI API 키 입력-나중에 환경변수
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              model: 'gpt-3.5-turbo',
-              messages: [
-                {"role": "system", "content": "너는 max_tokens가 있어도 문장을 뚝 끊지 않고 마무리해주는 챗봇이야"},
-                {"role": "user", "content": inputText}
-              ],
-              max_tokens:150,
-            })
-          });
-
-          const data = await response.json();
-          const botMessage = data.choices[0].message.content;
-          setChatHistory(currentChat => [...currentChat, { role: 'assistant', content: botMessage }]);
-      } catch (error) {
-        console.error('DB 호출 에러', error);
-      }}
-    } catch (error) {
-      console.error('API 호출 에러:', error);
-    }
+    // 친구 식단 받아오기 뭐 그런거
+    const friendMessage = { role: 'friend', content: '친구 채팅' };
+    setChatHistory(prevChatHistory => [...prevChatHistory, friendMessage]);
   };
 
   return (
-    <View flex={1}>
+    <View style={{ flex: 1, flexDirection: 'row' }}>
+      {/* 친구 목록 */}
+      <View style={{ 
+        width: '20%', 
+        backgroundColor: '#fff',
+        borderRightWidth:1,
+        borderRightColor:'#D9D9D9' }}>
+        <ScrollView>
+          {friends.map((friend, index) => (
+            <TouchableOpacity key={index} onPress={() => selectFriend(friend)}>
+              <Text style={{ padding: 10, backgroundColor: selectedFriend === friend ? '#DFD8F7' : 'transparent' }}>{friend}</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
+
+      {/* 채팅방 */}
+      <View style={{ flex: 1 , backgroundColor:'#fff'}}>
+      <View flex={1}>
       <HStack 
         space={2} 
         alignItems="start" 
@@ -124,7 +64,7 @@ const ChatScreen = () => {
         <View>
           <Image source={ChatIcon} style={{width:25, height:25}} />
         </View>
-        <Text>chatBot과의 대화</Text>
+        {selectedFriend && <Text>{selectedFriend}과의 대화</Text>}
       </HStack>
       <ScrollView
         onContentSizeChange={() => scrollViewRef.current.scrollToEnd({ animated: true })}
@@ -180,7 +120,8 @@ const ChatScreen = () => {
           ><Text style={{ color: 'grey' }}>보내기</Text></Button>
         </HStack>
       </VStack>
-
+    </View>
+    </View>
     </View>
   );
 };

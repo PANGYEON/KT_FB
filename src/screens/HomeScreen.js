@@ -94,7 +94,7 @@ const HomeScreen = ({route}) => {
       </TouchableOpacity>
 
       <Modal
-        animationType="slide"
+        animationType="fade"
         transparent={true}
         visible={isModalVisible}
         onRequestClose={toggleModal}
