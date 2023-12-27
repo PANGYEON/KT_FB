@@ -1,4 +1,4 @@
-// ChatScreen.js
+// ChatScreen.js Test github
 import React, { useState, useRef} from 'react';
 import { Button, View, Input, Text, VStack,HStack, ScrollView} from 'native-base';
 import { useNavigation } from '@react-navigation/native';
