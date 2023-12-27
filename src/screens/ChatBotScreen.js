@@ -1,10 +1,11 @@
 // ChatScreen.js Test github
-import React, { useState, useRef, useContext} from 'react';
-import ChatContext from '../ChatContext';
+import React, { useState, useRef, useEffect } from 'react';
 import { Button, View, Input, Text, VStack,HStack, ScrollView} from 'native-base';
 import { useNavigation } from '@react-navigation/native';
 import { Image, ImageComponent, TouchableOpacity } from 'react-native';
-import { ChatIcon } from '../icons/ChatIcon.png';
+import  ChatBotIcon  from '../icons/ChatBotIcon.png';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 // import SQLite from 'react-native-sqlite-storage';
 
 const openaiApiKey = 'OPENAI_API_KEY'; 
@@ -45,22 +46,58 @@ function fetchDietDB(date) {
 // }
 
 const ChatBotScreen = ({onClose}) => {
+  
   const navigation = useNavigation();
   const [inputText, setInputText] = useState(''); // To store the user input
   const [chatHistory, setChatHistory] = useState([]); // To store the chat history
   const scrollViewRef = useRef();
+  const saveChatHistory = async (chatHistory) => {
+    try {
+      const jsonValue = JSON.stringify(chatHistory);
+      await AsyncStorage.setItem('@chat_history', jsonValue);
+    } catch (e) {
+      // 저장 에러 처리
+    }
+  };
+  
+  const loadChatHistory = async () => {
+    try {
+      const jsonValue = await AsyncStorage.getItem('@chat_history');
+      return jsonValue != null ? JSON.parse(jsonValue) : [];
+    } catch(e) {
+      // 불러오기 에러 처리
+      return [];
+    }
+  };
+  useEffect(() => {
+    const fetchChatHistory = async () => {
+      const loadedChatHistory = await loadChatHistory();
+      setChatHistory(loadedChatHistory);
+    };
 
+    fetchChatHistory();
+  }, []);
   const handleSendMessage = async() => {
     if (inputText.trim() === '') return;
 
-    setChatHistory([...chatHistory, { role: 'user', content: inputText }]);
+    const updatedChatHistory = [...chatHistory, { role: 'user', content: inputText }];
+    setChatHistory(updatedChatHistory);
     setInputText('');
+
+    // 채팅 기록을 AsyncStorage에 저장
+    try {
+      await saveChatHistory(updatedChatHistory);
+    } catch (error) {
+      console.error('채팅 기록 저장 중 오류 발생:', error);
+    }
+
     //API 호출
+    
     try {
       const response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers: {
-          'Authorization': 'Bearer KEY', // KEY에 OpenAI API 키 입력-나중에 환경변수
+          'Authorization': 'Bearer ', // KEY에 OpenAI API 키 입력-나중에 환경변수
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
@@ -92,7 +129,7 @@ const ChatBotScreen = ({onClose}) => {
           const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
             headers: {
-              'Authorization': 'Bearer KEY', // KEY에 OpenAI API 키 입력-나중에 환경변수
+              'Authorization': 'Bearer ', // KEY에 OpenAI API 키 입력-나중에 환경변수
               'Content-Type': 'application/json'
             },
             body: JSON.stringify({
@@ -118,7 +155,7 @@ const ChatBotScreen = ({onClose}) => {
           const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
             headers: {
-              'Authorization': 'Bearer KEY', // KEY에 OpenAI API 키 입력-나중에 환경변수
+              'Authorization': 'Bearer ', // KEY에 OpenAI API 키 입력-나중에 환경변수
               'Content-Type': 'application/json'
             },
             body: JSON.stringify({
@@ -168,7 +205,7 @@ const ChatBotScreen = ({onClose}) => {
           borderBottomWidth:1, 
           borderBottomColor:'#D9D9D9'}}>
         <View>
-          <Image source={ChatIcon} style={{width:25, height:25}} />
+          <Image source={ChatBotIcon} style={{width:25, height:25}} />
         </View>
         <Text>chatBot과의 대화</Text>
       </HStack>
