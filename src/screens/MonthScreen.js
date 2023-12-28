@@ -46,29 +46,27 @@ const getDayName = (day) => {
 };
 
 const MonthScreen = () => {
-  const today = new Date();
-  const [selectedDates, setSelectedDates] = useState('');
-  const [currentMonth, setCurrentMonth] = useState(today.getMonth() + 1);
-  const [currentYear, setCurrentYear] = useState(today.getFullYear());
-  // const currentMonth = today.getMonth() + 1;
-  // const currentYear = today.getFullYear();
-  // const currentDate = today.getDate();
-  const monthData = getMonthData(currentMonth, currentYear);
-  const monthName = getMonthName(currentMonth);
+  const [monthsToRender, setMonthsToRender] = useState([
+    '2023-11-01',
+    '2023-12-01',
+    '2024-01-01',
+    '2024-02-01',
+  ]);
+  const [currentMonth, setCurrentMonth] = useState('');
+  const [initialIndex, setInitialIndex] = useState(0);
+  const swiperRef = useRef(null);
 
-  // 화면 포커스가 변경될 때마다 현재 달과 연도를 업데이트
-  useFocusEffect(
-    React.useCallback(() => {
-      const date = new Date();
-      setCurrentMonth(date.getMonth() + 1);
-      setCurrentYear(date.getFullYear());
-    }, [])
-  );
+  useEffect(() => {
+    // 현재 날짜를 얻어옵니다.
+    const today = new Date();
+    const currentDateString = today.toISOString().split('T')[0];
+    const currentYearMonth = currentDateString.substring(0, 7);
 
-  const goToPreviousMonth = () => {
-    if (currentMonth === 1) {
-      setCurrentMonth(12);
-      setCurrentYear(currentYear - 1);
+    // 현재 날짜가 있는 월의 인덱스를 찾습니다.
+    const foundIndex = monthsToRender.findIndex(month => month.startsWith(currentYearMonth));
+    if (foundIndex !== -1) {
+      setInitialIndex(foundIndex);
+      setCurrentMonth(monthsToRender[foundIndex]);
     } else {
       setCurrentMonth(currentMonth - 1);
     }

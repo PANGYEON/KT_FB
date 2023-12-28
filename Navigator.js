@@ -4,7 +4,6 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NativeBaseProvider } from 'native-base';
 
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 
 import LoginScreen from './src/screens/AuthScreens/LoginScreen';
@@ -13,10 +12,12 @@ import RegisterInfoScreen from './src/screens/AuthScreens/RegisterInfoScreen';
 import ActivityLevelScreen from './src/screens/AuthScreens/ActivityLevelScreen';
 import DietGoalScreen from './src/screens/AuthScreens/DietGoalScreen';
 import PwSearchScreen from './src/screens/AuthScreens/PwSearchScreen';
-
-
 import ProfileScreen from './src/screens/ProfileScreen';
+import ImageInScreen from './src/screens/ImageInScreen';
+// import GalleryScreen from './src/screens/GalleryScreen';
 
+
+import CameraScreen from './src/screens/CameraScreen';
 
 import BottomTabNavigator from './BottomTabNavigator';
 
@@ -39,6 +40,10 @@ const MyStack = () => {
           <Stack.Screen name="DietGoal" component={DietGoalScreen} options={{ headerShown: false }} />
           <Stack.Screen name="PwSearch" component={PwSearchScreen} options={{ headerShown: false }} />
           <Stack.Screen name="Profile" component={ProfileScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="ImageIn" component={ImageInScreen} options={{ headerShown: false }} />
+          {/* <Stack.Screen name="Gallery" component={GalleryScreen} options={{ headerShown: false }} /> */}
+
+          <Stack.Screen name="CameraScreen" component={CameraScreen} options={{ headerShown: false }} />
 
         </Stack.Navigator>
       </NavigationContainer>

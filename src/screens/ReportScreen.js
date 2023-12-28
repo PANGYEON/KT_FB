@@ -16,11 +16,25 @@ const ReportScreen = () => {
   };
 
   return (
-    <Tab.Navigator screenOptions={screenOptions}>
-      <Tab.Screen name="Calendar" component={MonthScreen} />
-      <Tab.Screen name="Daily" component={DailyScreen} />
-    </Tab.Navigator>
+    <Swiper
+      ref={swiperRef}
+      index={initialIndex}
+      loop={false}
+      showsPagination={false}
+      onIndexChanged={handleIndexChanged}
+      horizontalScroll={true}
+    >
+      {monthsToRender.map((month, index) => (
+        <View key={index}>
+          <Calendar
+            current={month}
+            hideArrows={true}
+            renderHeader={customHeader}
+            // 다른 Calendar 속성 추가
+          />
+        </View>
+      ))}
+    </Swiper>
   );
 };
-
 export default ReportScreen;

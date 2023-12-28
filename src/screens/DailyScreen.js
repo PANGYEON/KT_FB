@@ -1,104 +1,97 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { View, Text } from 'react-native';
-import Swiper from 'react-native-swiper';
-import { Calendar } from 'react-native-calendars';
-import { useFocusEffect } from '@react-navigation/native';
+
+import React, { useState } from 'react';
+import { View, Text, Modal, TouchableOpacity, Image } from 'react-native';
+import { Button } from 'native-base';
+import ChatBotScreen from './ChatBotScreen';
+import { useNavigation } from '@react-navigation/native';
+
 const DailyScreen = () => {
-  const [monthsToRender, setMonthsToRender] = useState([
-    '2023-11-01',
-    '2023-12-01',
-    '2024-01-01',
-    '2024-02-01',
-  ]);
-  const [currentMonth, setCurrentMonth] = useState('');
-  const [initialIndex, setInitialIndex] = useState(0);
-  const swiperRef = useRef(null);
+  const navigation = useNavigation();
+  const [selectedMeal, setSelectedMeal] = useState(null);
+  const [isModalVisible, setModalVisible] = useState(false);
 
-  useEffect(() => {
-    // 현재 날짜를 얻어옵니다.
+  const meals = ['아침', '점심', '저녁', '간식'];
+
+  const renderDate = () => {
     const today = new Date();
-    const currentDateString = today.toISOString().split('T')[0];
-    const currentYearMonth = currentDateString.substring(0, 7);
-
-    // 현재 날짜가 있는 월의 인덱스를 찾습니다.
-    const foundIndex = monthsToRender.findIndex(month => month.startsWith(currentYearMonth));
-    if (foundIndex !== -1) {
-      setInitialIndex(foundIndex);
-      setCurrentMonth(monthsToRender[foundIndex]);
-    } else {
-      setCurrentMonth(monthsToRender[0]);
-    }
-  }, []);
-
-  const handleIndexChanged = (index) => {
-    setCurrentMonth(monthsToRender[index]);
-    if (index === monthsToRender.length - 1) {
-      const lastMonth = monthsToRender[monthsToRender.length - 1];
-      const nextMonth = new Date(lastMonth);
-      nextMonth.setMonth(nextMonth.getMonth() + 1);
-      const newMonths = [...monthsToRender, nextMonth.toISOString().split('T')[0]];
-      setMonthsToRender(newMonths);
-    }
+    return `${today.getFullYear()}년 ${today.getMonth() + 1}월 ${today.getDate()}일`;
   };
 
-  const customHeader = () => {
-    return (
-      <View style={{ alignItems: 'center', height: 80 }}>
-        <Text style={{ fontSize: 34, paddingTop: 30 }}>
-          {currentMonth.split('-')[0]} {currentMonth.split('-')[1]}
-        </Text>
-      </View>
-    );
-  };
-  
+  const getButtonStyle = (meal) => ({
+    width: '20%',
+    backgroundColor: selectedMeal === meal ? '#D7D4FF' : 'transparent', // 연보라색 코드로 변경
+    borderColor: selectedMeal === meal ? '#D7D4FF' : 'transparent'
+  });
 
-  const initializeCurrentMonth = () => {
-    const today = new Date();
-    const currentDateString = today.toISOString().split('T')[0];
-    const currentYearMonth = currentDateString.substring(0, 7);
+  const getButtonTextStyle = (meal) => ({
+    color: selectedMeal === meal ? 'white' : 'black',
+    fontSize:20,
+    justifyContent:'center'
+  });
 
-    const foundIndex = monthsToRender.findIndex(month => month.startsWith(currentYearMonth));
-    if (foundIndex !== -1) {
-      setCurrentMonth(monthsToRender[foundIndex]);
-      // Swiper 컴포넌트의 현재 인덱스를 업데이트합니다.
-      if (swiperRef.current) {
-        // 타이머를 사용하여 스와이퍼가 올바르게 로드된 후에 스크롤합니다.
-        setTimeout(() => swiperRef.current.scrollTo(foundIndex, false), 0);
-      }
-    } else {
-      setCurrentMonth(monthsToRender[0]);
-    }
+  const toggleModal = () => {
+    setModalVisible(!isModalVisible);
   };
 
-  useEffect(() => {
-    initializeCurrentMonth();
-  }, []);
-
-  useFocusEffect(
-    React.useCallback(() => {
-      initializeCurrentMonth();
-    }, [monthsToRender])
-  );
   return (
-    <Swiper
-      ref={swiperRef}
-      index={initialIndex}
-      loop={false}
-      showsPagination={false}
-      onIndexChanged={handleIndexChanged}
-      horizontalScroll={true}
-    >
-      {monthsToRender.map((month, index) => (
-        <View key={index}>
-          <Calendar
-            current={month}
-            hideArrows={true}
-            renderHeader={customHeader}
-            // 다른 Calendar 속성 추가
-          />
+    <View style={{ flex:1}}>
+      <Text style={{ fontSize: 34, paddingTop: 30 }}>{renderDate()}</Text>
+      <Text style={{ fontSize: 20, paddingTop: 10 }}>좋았어</Text>
+      <View style={{ backgroundColor: 'grey', padding: 10 ,height:250,margin:20,borderRadius: 20}}>
+        {/* 여기에 다른 컨텐츠가 추가될 수 있습니다#F3EFEF */}
+      </View>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-around', padding: 10, backgroundColor: 'lightgray',marginLeft:10,marginRight:10,borderRadius: 20 }}>
+        {meals.map(meal => (
+          <Button key={meal} onPress={() => setSelectedMeal(meal)} style={getButtonStyle(meal)} borderTopRadius={20} borderBottomRadius={20}>
+            <Text style={getButtonTextStyle(meal)}>{meal}</Text>
+          </Button>
+        ))}
+      </View>
+      <View style={{ padding: 10 }}>
+        <Text>{selectedMeal ? `${selectedMeal} 메뉴` : ''}</Text>
+      </View>
+
+      <TouchableOpacity
+        style={{
+          position: 'absolute',
+          bottom: 30,
+          right: 30,
+          width: 60,
+          height: 60,
+          backgroundColor: '#D7D4FF', // 원하는 색상
+          borderRadius: 30,
+          justifyContent: 'center',
+          alignItems: 'center',
+          elevation: 5
+        }}
+        onPress={toggleModal}>
+        <Image source={require('../icons/ChatBotIcon.png')} style={{ width: 30, height: 30 }} />
+      </TouchableOpacity>
+
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={isModalVisible}
+        onRequestClose={toggleModal}
+      >
+        <View style={{
+          flex:1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: 'rgba(0, 0, 0, 0.5)'
+        }}>
+          <View style={{
+            flex:1,
+            minWidth:'80%',
+            maxHeight:'80%',
+            backgroundColor: '#fff',
+            borderRadius:30,
+        }}>
+            <ChatBotScreen onClose={toggleModal} />
+          </View>
         </View>
-      ))}
-    </Swiper>
+      </Modal>
+    </View>
   );
 };
 
