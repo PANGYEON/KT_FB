@@ -20,7 +20,7 @@ const LoginScreen = () => {
   
       let config = {
         method: 'post',
-        url: 'http://192.168.10.53:5500/api/login/',
+        url: 'http://20.18.18.99/api/login/',
         headers: {
           'Content-Type': 'application/json'
         },
