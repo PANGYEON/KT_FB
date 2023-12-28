@@ -18,6 +18,7 @@ import ImageInScreen from './src/screens/ImageInScreen';
 
 
 import CameraScreen from './src/screens/CameraScreen';
+import ChatBotScreen from './src/screens/ChatBotScreen';
 
 import BottomTabNavigator from './BottomTabNavigator';
 
@@ -44,6 +45,7 @@ const MyStack = () => {
           {/* <Stack.Screen name="Gallery" component={GalleryScreen} options={{ headerShown: false }} /> */}
 
           <Stack.Screen name="CameraScreen" component={CameraScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="ChatBotScreen" component={ChatBotScreen} options={{ headerShown: false }} />
 
         </Stack.Navigator>
       </NavigationContainer>
