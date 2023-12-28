@@ -3,8 +3,9 @@ import { Button, View, Text, Divider, HStack, Box, Modal } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
 
 
-const ProfileScreen = () => {
+const ProfileScreen = ({route}) => {
   const navigation = useNavigation();
+  const { uuid } = route.params ;
   const [logoutModalVisible, setLogoutModalVisible] = useState(false);
   const [dietGoalModalVisible, setDietGoalModalVisible] = useState(false);
   const [activityLevelModalVisible, setactivityLevelModalVisible] = useState(false);
@@ -16,11 +17,11 @@ const ProfileScreen = () => {
   };
   // 예시 유저 정보 (실제 앱에서는 API나 상태 관리로부터 가져옵니다)
   const [userInfo, setUserInfo] = useState({
-    name: '홍길동',
-    birthDate: '1990-01-01',
-    height: '180cm',
-    weight: '70kg',
-    gender: '남성',
+    name: uuid.name,
+    birthDate: uuid.birthdate,
+    height: uuid.height,
+    weight: uuid.weight,
+    gender: uuid.gender,
     dietgoal: '유지',
     activitylevel: '2레벨 - 주 3~4회 이하, 움직임 조금 있는 직종',
   });
