@@ -38,7 +38,7 @@ const DietGoalScreen = ({ route }) => {
     let config = {
       method: 'post',
       maxBodyLength: Infinity,
-      url: 'http://20.18.18.99/api/user/',
+      url: 'http://20.18.18.99/api/user/ ',
       headers: {
         'Content-Type': 'application/json'
       },

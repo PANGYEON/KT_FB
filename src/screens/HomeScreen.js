@@ -7,62 +7,63 @@ import ChatBotScreen from './ChatBotScreen';
 
 const HomeScreen = ({route}) => {
   const navigation = useNavigation();
-  const { token } = route.params || {};
+  const { uuid } = route.params ;
   const [userName, setUserName] = useState(''); 
   const [isModalVisible, setModalVisible] = useState(false);
 
   // 사진 불러오기 공간을 위한 임시 이미지 URL (나중에 실제 이미지로 교체)
   const tempImageUrl = 'https://via.placeholder.com/150';
   useEffect(() => {
-    if (token) {
-      getUserInfo();
+    // console.log(route.params)
+    if (uuid) {
+      console.log(uuid.name)
+      // getUserInfo();
     }
-  }, [token]);
+  }, [uuid]);
 
-  const getUserInfo = async () => {
-    try {
-      const config = {
-        method: 'post',
-        url: 'http://192.168.10.53:5500/api/user/info/',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        data: JSON.stringify({ "access_token": token })
-      };
+  // const getUserInfo = async () => {
+  //   try {
+  //     let data = JSON.stringify({
+  //       "uuid": uuid
+  //     });
+  //     const config = {
+  //       method: 'get',
+  //       url: 'http://20.18.18.99/api/user/info/',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       data: data
+  //     };
 
-      const response = await axios(config);
-      console.log(response); // 서버 응답 출력
-
-      //setUserName(response.data.user.name); // 사용자 이름 설정
-      if (response.data && response.data.user && response.data.user.name) {
-        setUserName(response.data.user.name); // 사용자 이름 설정
-      } else {
-        console.log("사용자 이름 필드가 없습니다.");
-      }
-    } catch (error) {
-      console.log("사용자 이름 필드가 없습니다.", error);
-      // 에러 처리
-    }
-  };
+  //     const response = await axios(config);
+      
+  //     console.log(response); // 서버 응답 출력
+  //     setUserName(response.data.user.name)
+  //   } catch (error) {
+  //     console.log(error.response)
+  //   }
+  // };
 
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
   };
 
+
+
+  
   return (
     
     <View style={styles.container}>
       {/* 프로필 페이지 버튼 */}
       <TouchableOpacity
         style={styles.profileButton}
-        onPress={() => navigation.navigate('Profile')}>
+        onPress={() => navigation.navigate('Profile', { uuid })}>
         <Text style={{color:'black', fontSize:20}}>프로필</Text>
       </TouchableOpacity>
 
       {/* 인사말과 식단 안내 메시지 */}
       <View style={styles.greetingContainer}>
-      <Text style={styles.greetingText}>안녕하세요, {userName ? userName : '게스트'}님!</Text>
+      <Text style={styles.greetingText}>안녕하세요, {uuid.name}님!</Text>
               <Text style={styles.greetingText}>오늘의 식단을 기록하세요!</Text>
       </View>
 
