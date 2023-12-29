@@ -41,57 +41,52 @@ const ChatBotScreen = ({onClose}) => {
   }, []);
 
 
-  const handleSendMessage = async() => {
+  const handleSendMessage = async () => {
     if (inputText.trim() === '') return;
-
-    const updatedChatHistory = [...chatHistory, { role: 'user', content: inputText }];
-    setChatHistory(updatedChatHistory);
-    //setInputText('');
-
-    //Back 부분에 메시지 전송 & 답변 받기
+  
+    // 사용자 메시지를 채팅 기록에 추가
+    const userMessage = { role: 'user', content: inputText };
+    setChatHistory(prevChatHistory => [...prevChatHistory, userMessage]);
+  
     try {
-      let data = {
-        "message": inputText
-      };
-
-      console.log("Register data:", data);
+      // 서버에 메시지 전송
+      const data = { "message": inputText };
       const jsonData = JSON.stringify(data);
+      console.log(data);
 
       let config = {
         method: 'post',
-        maxBodyLength: Infinity,
-        url: 'http://127.0.0.1:8000/chatAPI/',
+        // ip주소 : ipconfig ipv4, port 5500
+        url: 'http://192.168.10.47:5500/chatAPI/',
         headers: { 
           'Content-Type': 'application/json'
         },
-        data : jsonData
+        data: jsonData
       };
-
-      // console.log(response);
-      // console.log(response.error);
+      console.log(config);
 
       axios.request(config)
-      .then((response) => {
+      .then(async (response) => {
         console.log(JSON.stringify(response.data));
+
+        const assistantMessage = { role: 'assistant', content: response.data.message };
+        setChatHistory(prevChatHistory => [...prevChatHistory, assistantMessage]);
+
+        // 채팅 기록을 AsyncStorage에 저장
+        await saveChatHistory([...chatHistory, userMessage, assistantMessage]);
       })
-
       .catch((error) => {
-        console.log(error);
+        console.error('Error sending message to backend:', error);
+        // 에러 처리 로직 추가
       });
+  
     } catch (error) {
-      console.error('Error sending message to backend:', error);
-      console.log(error);
-
+      console.error('Error:', error);
     }
-
-    // 채팅 기록을 AsyncStorage에 저장
-    try {
-      await saveChatHistory([...updatedChatHistory, { role: 'assistant', content: data.message }]);
-    } catch (error) {
-      console.error('채팅 기록 저장 중 오류 발생:', error);
-    }
+  
+    // 입력창 초기화
+    setInputText('');
   };
-
   return (
     <View flex={1}>
       {/*닫기 버튼*/}
