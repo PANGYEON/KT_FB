@@ -70,18 +70,34 @@ const CameraScreen = () => {
   const devices = useCameraDevices();
 
   useEffect(() => {
-    requestCameraPermission().then(() => {
-      if (devices && Object.keys(devices).length > 0) {
-        // selectCameraDeviceByName("FRONT (1)"); // 카메라 이름을 정확히 확인하세요
-        selectCameraDeviceByName("BACK (0)");
+    const setupCamera = async() =>{
+      const result = await request(PERMISSIONS.ANDROID.CAMERA);
+      if (result === RESULTS.GRANTED) {
+        console.log('Camera permission granted');
+        if (devices.back) { // 예를 들어 후면 카메라를 선택
+          selectCameraDeviceByName("BACK (0)");
+        } else {
+          console.log("No back camera device found");
+        }
+      } else {
+        console.log('Camera permission not granted');
       }
-    });
+    };
+
+    setupCamera();
+    // requestCameraPermission().then(() => {
+    //   if (devices && Object.keys(devices).length > 0) {
+    //     //selectCameraDeviceByName("FRONT (1)"); // 카메라 이름을 정확히 확인하세요
+    //     selectCameraDeviceByName("BACK (0)");
+    //   }
+    // });
   }, [devices]);
 
   const requestCameraPermission = async () => {
     const result = await request(PERMISSIONS.ANDROID.CAMERA);
     if (result === RESULTS.GRANTED) {
       console.log('granted');
+      setupCamera();
     } else {
       console.log('not granted');
     }
@@ -90,6 +106,7 @@ const CameraScreen = () => {
 
   const selectCameraDeviceByName = (cameraName) => {
     const device = Object.values(devices).find(d => d.name === cameraName);
+    console.log(device);
     setSelectedDevice(device);
   };
 
@@ -98,25 +115,25 @@ const CameraScreen = () => {
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={StyleSheet.absoluteFill}>
       <Camera
-        ref={camera}
-        style={styles.camera}
+        ref={ref}
+        style={StyleSheet.absoluteFill}
         device={selectedDevice} // 수정된 부분
         isActive={true}
       />
-    </View>
+    </SafeAreaView>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: 'black',
-  },
-  camera: {
-    flex: 1,
-  }
-});
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     backgroundColor: 'black',
+//   },
+//   camera: {
+//     flex: 1,
+//   }
+// });
 
 export default CameraScreen;
