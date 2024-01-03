@@ -1,5 +1,8 @@
 
 import * as React from 'react';
+import { useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NativeBaseProvider } from 'native-base';
@@ -13,22 +16,51 @@ import ActivityLevelScreen from './src/screens/AuthScreens/ActivityLevelScreen';
 import DietGoalScreen from './src/screens/AuthScreens/DietGoalScreen';
 import PwSearchScreen from './src/screens/AuthScreens/PwSearchScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
+import QuestionScreen from './src/screens/QuestionScreen';
+
+
+
 import ImageInScreen from './src/screens/ImageInScreen';
+
+
 // import GalleryScreen from './src/screens/GalleryScreen';
 
 
 import CameraScreen from './src/screens/CameraScreen';
 
 import BottomTabNavigator from './BottomTabNavigator';
+import { useNavigation } from '@react-navigation/native';
 
 const Stack = createNativeStackNavigator();
 
+const AuthChecker = () => {
+  const navigation = useNavigation();
 
+  useEffect(() => {
+    const checkLoginStatus = async () => {
+      try {
+        const token = await AsyncStorage.getItem('@user_token');
+        if (token !== null) {
+          navigation.navigate('BottomTabNavigator');
+        } else {
+          navigation.navigate('Login');
+        }
+      } catch (e) {
+        console.log('Error checking token', e);
+      }
+    };
 
+    checkLoginStatus();
+  }, []);
+
+  return null; // 또는 로딩 화면을 표시할 수 있습니다.
+};
 const MyStack = () => {
+  
   return (
     <NativeBaseProvider>
       <NavigationContainer>
+      <AuthChecker />
         <Stack.Navigator>
           <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
 
@@ -40,6 +72,10 @@ const MyStack = () => {
           <Stack.Screen name="DietGoal" component={DietGoalScreen} options={{ headerShown: false }} />
           <Stack.Screen name="PwSearch" component={PwSearchScreen} options={{ headerShown: false }} />
           <Stack.Screen name="Profile" component={ProfileScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="Question" component={QuestionScreen} options={{ headerShown: false }} />
+
+
+          
           <Stack.Screen name="ImageIn" component={ImageInScreen} options={{ headerShown: false }} />
           {/* <Stack.Screen name="Gallery" component={GalleryScreen} options={{ headerShown: false }} /> */}
 

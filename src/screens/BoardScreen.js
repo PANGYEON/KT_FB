@@ -1,34 +1,176 @@
-// BoardScreen.js
-import React, { useState } from 'react';
-import { Button, View, Input, Image } from 'native-base';
+import React, { useState, useEffect } from 'react';
+import { Button, View, Text } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
-import { TouchableOpacity, Modal } from 'react-native';
-import ChatBotScreen from './ChatBotScreen'; 
-
+import { TouchableOpacity, Modal, Image, ScrollView, Dimensions } from 'react-native';
+import ChatBotScreen from './ChatBotScreen';
+import axios from 'axios';
+ 
+const { width, height } = Dimensions.get('window');
+ 
 const BoardScreen = () => {
   const navigation = useNavigation();
-  // 텍스트 상태를 관리하기 위한 useState 훅
-  const [text, setText] = useState('');
   const [isModalVisible, setModalVisible] = useState(false);
-
-  // 버튼 클릭시 실행될 함수
-  const handlePress = () => {
-    console.log(text);  // 콘솔에 텍스트 출력
-    navigation.navigate("Home");
-  }
+  const [selectedCategory, setSelectedCategory] = useState('FAQ'); // FAQ를 기본 선택
+  const [titles, setTitles] = useState([]);
+  const categories = ['FAQ', '공지사항'];
+ 
+  const cardNews = ['탄수화물 정말 다이어', 'test2', 'test3', 'test4'];
+ 
+  const imageHeight = height * 0.22;
+  const imageWidth = height * 0.22;
+ 
+  const [faqData, setFaqData] = useState([]); // FAQ 데이터를 저장할 상태 변수
+  const [noticesData, setNoticesData] = useState([]); // FAQ 데이터를 저장할 상태 변수
+  const [cardNewsData, setCardNewsData] = useState([]); // 카드 뉴스 데이터를 저장할 상태 변수
+ 
+  // FAQ 데이터를 로드하는 함수
+  const loadFaqData = async () => {
+    try {
+      let config = {
+        method: 'get',
+        url: 'http://edm.japaneast.cloudapp.azure.com/api/faqs/',
+        headers: {}
+      };
+      const response = await axios.request(config);
+      setFaqData(response.data); // 데이터를 상태 변수에 저장
+    } catch (error) {
+      console.error("FAQ 데이터 로드 중 오류 발생:", error);
+    }
+  };
+  // 공지사항 데이터를 로드하는 함수
+  const loadNoticesData = async () => {
+    try {
+      let config = {
+        method: 'get',
+        maxBodyLength: Infinity,
+        url: 'http://edm.japaneast.cloudapp.azure.com/api/notices/',
+        headers: {}
+      };
+      const response = await axios.request(config);
+      setNoticesData(response.data); // 데이터를 상태 변수에 저장
+    } catch (error) {
+      console.error("FAQ 데이터 로드 중 오류 발생:", error);
+    }
+  };
+  const loadCardNewsData = async () => {
+    try {
+      let config = {
+        method: 'get',
+        url: 'http://edm.japaneast.cloudapp.azure.com/api/cardnews/',
+        headers: {}
+      };
+      const response = await axios.request(config);
+      setCardNewsData(response.data); // 데이터를 상태 변수에 저장
+    } catch (error) {
+      console.error("카드 뉴스 데이터 로드 중 오류 발생:", error);
+    }
+  };
+ 
+ 
+  const getButtonStyle = (category) => ({
+    width: '45%',
+    backgroundColor: selectedCategory === category ? '#D7D4FF' : 'transparent',
+    borderColor: selectedCategory === category ? '#D7D4FF' : 'transparent',
+  });
+ 
+  const getButtonTextStyle = (category) => ({
+    color: selectedCategory === category ? 'white' : 'black',
+    fontSize: 20,
+  });
+ 
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
   };
-
+ 
+  const renderContent = () => {
+    if (selectedCategory === 'FAQ') {
+      return (
+        <ScrollView>
+          {faqData.map((faq, index) => (
+            <TouchableOpacity key={index} onPress={() => toggleContent(index, 'FAQ')}>
+              <View style={{ paddingVertical: 10 }}>
+                <Text>{faq.title}</Text>
+                {titles[index] === 'FAQ' && <Text>- {faq.content}</Text>}
+              </View>
+              {index < faqData.length - 1 && <View style={{ borderBottomWidth: 1, borderBottomColor: 'gray' }} />}
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      );
+    } else if (selectedCategory === '공지사항') {
+      return (
+        <ScrollView>
+          {noticesData.map((notice, index) => (
+            <TouchableOpacity key={index} onPress={() => toggleContent(index, '공지사항')}>
+              <View style={{ paddingVertical: 10 }}>
+                <Text>{notice.title}</Text>
+                {titles[index] === '공지사항' && <Text>- {notice.content}</Text>}
+              </View>
+              {index < noticesData.length - 1 && <View style={{ borderBottomWidth: 1, borderBottomColor: 'gray' }} />}
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      );
+    } else {
+      return null;
+    }
+  };
+ 
+  const toggleContent = (index, category) => {
+    const newTitles = [...titles];
+    newTitles[index] = newTitles[index] === category ? null : category;
+    setTitles(newTitles);
+  };
+ 
+  // 초기 데이터 설정
+  useEffect(() => {
+    loadFaqData();
+    loadNoticesData();
+    loadCardNewsData();
+ 
+  }, []);
+ 
   return (
-    <View style={{flex:1}}>
-      <Input 
-        value={text}
-        onChangeText={setText} // 텍스트가 변경될 때마다 text 상태를 업데이트
-        placeholder="여기에 텍스트를 입력하세요"
-      />
-      <Button onPress={handlePress}>이전</Button>
-
+    <View style={{ flex: 1 }}>
+      <View style={{ alignItems: 'center', marginTop: '3%', height: height * 0.06 }}>
+        <Text style={{ fontSize: 24, fontWeight: 'bold', paddingTop: '4%' }}>카드 뉴스</Text>
+      </View>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={{ padding: 10 }}
+      >
+        {cardNewsData.map((cardNews, index) => (
+          <View key={index} style={{ marginRight: 15 }}>
+            <View style={{ width: imageWidth, height: imageHeight, overflow: 'hidden', borderRadius: 10 }}>
+              <Image
+                source={{ uri: cardNews.image }}
+                style={{ flex: 1, width: undefined, height: undefined }}
+                resizeMode="contain"
+              />
+            </View>
+            <Text style={{ textAlign: 'center', marginTop: 5 }}>{cardNews.title}</Text>
+          </View>
+        ))}
+      </ScrollView>
+ 
+      <View style={{ borderTopWidth: 1, borderTopColor: 'gray', marginVertical: height * 0.013 }} />
+ 
+      <View style={{ flexDirection: 'row', justifyContent: 'space-around', padding: 10 }}>
+        {categories.map(category => (
+          <Button
+            key={category}
+            onPress={() => setSelectedCategory(category)}
+            style={getButtonStyle(category)}
+          >
+            <Text style={getButtonTextStyle(category)}>{category}</Text>
+          </Button>
+        ))}
+      </View>
+ 
+      <View style={{ backgroundColor: '#EBEBEB', padding: 10, borderRadius: 10, margin: 10, height: height * 0.45 }}>
+        {renderContent()}
+      </View>
       <TouchableOpacity
         style={{
           position: 'absolute',
@@ -36,7 +178,7 @@ const BoardScreen = () => {
           right: 30,
           width: 60,
           height: 60,
-          backgroundColor: '#D7D4FF', 
+          backgroundColor: '#D7D4FF',
           borderRadius: 30,
           justifyContent: 'center',
           alignItems: 'center',
@@ -45,7 +187,7 @@ const BoardScreen = () => {
         onPress={toggleModal}>
         <Image source={require('../icons/ChatBotIcon.png')} style={{ width: 30, height: 30 }} />
       </TouchableOpacity>
-
+ 
       <Modal
         animationType="fade"
         transparent={true}
@@ -53,25 +195,25 @@ const BoardScreen = () => {
         onRequestClose={toggleModal}
       >
         <View style={{
-          flex:1,
+          flex: 1,
           justifyContent: 'center',
           alignItems: 'center',
           backgroundColor: 'rgba(0, 0, 0, 0.5)'
         }}>
           <View style={{
-            flex:1,
-            minWidth:'80%',
-            maxHeight:'80%',
+            flex: 1,
+            minWidth: '80%',
+            maxHeight: '80%',
             backgroundColor: '#fff',
-            borderRadius:30,
-        }}>
+            borderRadius: 30,
+          }}>
             <ChatBotScreen onClose={toggleModal} />
           </View>
         </View>
       </Modal>
     </View>
+ 
   );
 }
-
+ 
 export default BoardScreen;
-

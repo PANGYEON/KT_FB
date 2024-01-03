@@ -5,11 +5,23 @@ import React, { useState } from 'react';
 import { Button, View, Input, Text } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+
 const LoginScreen = () => {
   const navigation = useNavigation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-   
+
+  const storeToken = async (token) => {
+    try {
+      await AsyncStorage.setItem('@user_token', token);
+    } catch (e) {
+      console.log('eeeeee')
+    }
+  }
+
+
   const handleLogin = async () => {
     try {
       let data = JSON.stringify({
@@ -20,7 +32,7 @@ const LoginScreen = () => {
       let config = {
         method: 'post',
         maxBodyLength: Infinity,
-        url: 'http://20.18.18.99/api/login/',
+        url: 'http://edm.japaneast.cloudapp.azure.com/api/login/',
         headers: { 
           'Content-Type': 'application/json'
         },
@@ -32,11 +44,14 @@ const LoginScreen = () => {
       if (response.status === 200) {
         // 로그인 성공 처리
         
-        const uuid = response.data.user;
-
-        console.log(uuid)
-        
-        navigation.navigate('BottomTabNavigator', { screen: '홈',params: { uuid:uuid }, });
+        const token = response.data.access_token;
+        console.log(token)
+        storeToken(response.data.access_token);
+        // navigation.replace('BottomTabNavigator', { screen: '홈',params: { token: token }, }); // 뒤로가기 누르면 바로 종료
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'BottomTabNavigator', params: { token: token } }],
+        });
         // navigation.navigate('BottomTabNavigator', { token, uuid });
       } else {
         // 서버가 로그인 실패에 대해 다른 상태 코드를 반환하는 경우
@@ -54,60 +69,7 @@ const LoginScreen = () => {
       Alert.alert("오류 발생", "로그인 중 문제가 발생했습니다.");
     }
   };
-  // const handleLogin = async () => {
-  //   try {
-  //     const response = await axios.post('http://20.18.18.99/api/login/', {
-  //       email: email,
-  //       password: password
-  //     }, {
-  //       headers: { 
-  //         'Content-Type': 'application/json'
-  //       }
-  //     });
-
-  //     if (response.status === 200) {
-  //       const { access_token, user } = response.data;
-  //       navigation.navigate('BottomTabNavigator', {
-  //         screen: '홈',
-  //         params: { token: access_token, uuid: user.uuid }
-  //       });
-  //     } else {
-  //       Alert.alert("로그인 실패", "이메일 또는 비밀번호가 잘못되었습니다.");
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //     Alert.alert("오류 발생", "로그인 중 문제가 발생했습니다.");
-  //   }
-  // };
-  // const handleLogin = async () => {
-  //   try {
-  //     const response = await fetch('http://20.18.18.99/api/login/', {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json'
-  //       },
-  //       body: JSON.stringify({
-  //         email: email,
-  //         password: password
-  //       })
-  //     });
-
-  //     if (response.ok) {
-  //       const data = await response.json();
-  //       const { access_token, user } = data;
-  //       navigation.navigate('BottomTabNavigator', {
-  //         screen: '홈',
-  //         params: { token: access_token, uuid: user.uuid }
-  //       });
-  //     } else {
-  //       Alert.alert("로그인 실패", "이메일 또는 비밀번호가 잘못되었습니다.");
-  //     }
-  //   } catch (error) {
-  //     console.error(error);
-  //     Alert.alert("오류 발생", "로그인 중 문제가 발생했습니다.");
-  //   }
-  // };
-
+  
   return (
     <View style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: '#fff' }}>
       <View

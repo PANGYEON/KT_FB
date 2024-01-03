@@ -1,48 +1,64 @@
 
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { View, Text, Button, TouchableOpacity, Image, StyleSheet, Modal } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { View, Text, Button, TouchableOpacity, Image, StyleSheet, Modal,Dimensions } from 'react-native';
+import { useNavigation,useRoute  } from '@react-navigation/native';
 import ChatBotScreen from './ChatBotScreen';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const HomeScreen = ({route}) => {
+const HomeScreen = () => {
   const navigation = useNavigation();
-  const { uuid } = route.params ;
-  const [userName, setUserName] = useState(''); 
+  const route = useRoute();
+  const [userName, setUserName] = useState('');
   const [isModalVisible, setModalVisible] = useState(false);
+  // const [photoUri, setPhotoUri] = useState(null);
+  const [photoUri, setPhotoUri] = useState('https://via.placeholder.com/150');
 
-  // 사진 불러오기 공간을 위한 임시 이미지 URL (나중에 실제 이미지로 교체)
-  const tempImageUrl = 'https://via.placeholder.com/150';
+  const { width, height } = Dimensions.get('window');
+
   useEffect(() => {
-    // console.log(route.params)
-    if (uuid) {
-      console.log(uuid.name)
-      // getUserInfo();
+    if (route.params?.photo) {
+      setPhotoUri(`file://${route.params.photo}`);
     }
-  }, [uuid]);
+  }, [route.params?.photo]);
 
-  // const getUserInfo = async () => {
-  //   try {
-  //     let data = JSON.stringify({
-  //       "uuid": uuid
-  //     });
-  //     const config = {
-  //       method: 'get',
-  //       url: 'http://20.18.18.99/api/user/info/',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //       data: data
-  //     };
-
-  //     const response = await axios(config);
-      
-  //     console.log(response); // 서버 응답 출력
-  //     setUserName(response.data.user.name)
-  //   } catch (error) {
-  //     console.log(error.response)
-  //   }
-  // };
+  useEffect(() => {
+    getTokenAndFetchUserInfo();
+  }, []);
+  
+  const getTokenAndFetchUserInfo = async () => {
+    try {
+      const storedToken = await AsyncStorage.getItem('@user_token');
+      if (storedToken) {
+        fetchUserInfo(storedToken);
+      }
+    } catch (e) {
+      console.log('Error retrieving token', e);
+    }
+  };
+  
+  const fetchUserInfo = async (token) => {
+    try {
+      let config = {
+        method: 'get',
+        maxBodyLength: Infinity,
+        url: 'http://edm.japaneast.cloudapp.azure.com/api/user/info/',
+        headers: { 
+          'Authorization': `Bearer ${token}`
+        }
+      };
+  
+      const response = await axios(config);
+      if (response.status === 200) {
+        // console.log(response)
+        setUserName(response.data.user.name); // Set the user's name in state
+      } else {
+        console.log('Failed to fetch user info');
+      }
+    } catch (error) {
+      console.log('Error fetching user info', error);
+    }
+  };
 
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
@@ -57,21 +73,19 @@ const HomeScreen = ({route}) => {
       {/* 프로필 페이지 버튼 */}
       <TouchableOpacity
         style={styles.profileButton}
-        onPress={() => navigation.navigate('Profile', { uuid })}>
+        onPress={() => navigation.navigate('Profile')}>
         <Text style={{color:'black', fontSize:20}}>프로필</Text>
       </TouchableOpacity>
 
       {/* 인사말과 식단 안내 메시지 */}
       <View style={styles.greetingContainer}>
-      <Text style={styles.greetingText}>안녕하세요, {uuid.name}님!</Text>
-              <Text style={styles.greetingText}>오늘의 식단을 기록하세요!</Text>
+      <Text style={styles.greetingText}>안녕하세요, {userName}님!</Text>
+              <Text style={styles.greetingText}>오늘의 식단을 기록하세요:)</Text>
       </View>
 
       {/* 이미지 불러오기 공간 */}
-      <Image
-        source={{ uri: tempImageUrl }}
-        style={styles.image}
-      />
+      {photoUri && <Image source={{ uri: photoUri }} style={styles.image} />}
+
 
       {/* 사진 촬영 버튼 */}
       {/* <Button title="사진 촬영" onPress={() => navigation.navigate('ImageIn')} /> */}
@@ -143,6 +157,11 @@ const styles = StyleSheet.create({
   greetingText: {
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  image: {
+    width: 150,
+    height: 150,
+    marginBottom: 20,
   },
   image: {
     width: 150,

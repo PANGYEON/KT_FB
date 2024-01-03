@@ -7,10 +7,12 @@ import { StyleSheet, Text, Alert } from 'react-native';
 const ActivityLevelScreen = ({ route }) => {
   const navigation = useNavigation();
   const { email, password, name, birthdate, personheight, personweight, gender } = route.params;
-  const [levelIndex, setLevelIndex] = useState(-1);
+  // const [levelIndex, setLevelIndex] = useState(-1);
   const handleLevelSelect = (index) => {
-    setLevelIndex(index + 1); // 인덱스에 1을 더함
+    setSelectedActivityLevel(levels[index]);
   };
+  const [selectedActivityLevel, setSelectedActivityLevel] = useState('');
+
   const levels = [
     '1레벨 - 주 2회 미만, 움직임 거의 없는 사무직',
     '2레벨 - 주 3~4회 이하, 움직임 조금 있는 직종',
@@ -19,10 +21,12 @@ const ActivityLevelScreen = ({ route }) => {
     '5레벨 - 운동 선수'
   ];
   const navigateToNextPage = () => {
-    if (levelIndex === -1) {
+    if (selectedActivityLevel === '') {
       Alert.alert("경고", "활동 레벨을 선택해주세요.");
     } else {
-      navigation.navigate('DietGoal', { email, password, name, birthdate, personheight, personweight, gender, levelIndex });
+      navigation.navigate('DietGoal', { 
+        email, password, name, birthdate, personheight, personweight, gender, selectedActivityLevel 
+      });
     }
   };
   return (
@@ -32,18 +36,18 @@ const ActivityLevelScreen = ({ route }) => {
           <Text style={styles.levelTextText}>활동 레벨</Text>
         </View>
         {levels.map((level, index) => (
-          <View key={index} style={{ marginVertical: 5 }}>
-            <Button
-              onPress={() => handleLevelSelect(index)}
-              style={levelIndex === index + 1 ? styles.activeButton : styles.inactiveButton}
-              _text={levelIndex !== index + 1 ? styles.inactiveButtonText : {}}
-            >
-              {level}
-            </Button>
-          </View>
-        ))}
+  <View key={index} style={{ marginVertical: 5 }}>
+    <Button
+      onPress={() => handleLevelSelect(index)}
+      style={selectedActivityLevel === level ? styles.activeButton : styles.inactiveButton}
+      _text={selectedActivityLevel !== level ? styles.inactiveButtonText : {}}
+    >
+      {level}
+    </Button>
+  </View>
+))}
         <View style={styles.buttonContainer}>
-          <Button style={styles.MovingButton} onPress={() => navigation.navigate('RegisterInfo', { email, password, name, birthdate, personheight, personweight, gender, levelIndex })} >이전</Button>
+          <Button style={styles.MovingButton} onPress={() => navigation.navigate('RegisterInfo', { email, password, name, birthdate, personheight, personweight, gender })} >이전</Button>
           <Button style={styles.MovingButton} onPress={navigateToNextPage}>다음</Button>
         </View>
       </View>
