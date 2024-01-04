@@ -21,12 +21,24 @@ const ImageInScreen = () => {
   // }, [route.params?.photo, route.params?.apiResult]);
   useEffect(() => {
     if (route.params?.photo) {
-      setPhotoUri(`file://${route.params.photo}`);
+      setPhotoUri(route.params.photo); // Set the photo URI
     }
-    // if (route.params?.apiResult) {
-    //   setApiResult(route.params.apiResult);
-    // }
-  }, [route.params?.photo]);
+    if (route.params?.apiResult) {
+      setApiResult(route.params.apiResult); // Set the API result
+    }
+  }, [route.params]);
+
+
+
+
+  // useEffect(() => {
+  //   if (route.params?.photo) {
+  //     setPhotoUri(`file://${route.params.photo}`);
+  //   }
+  //   // if (route.params?.apiResult) {
+  //   //   setApiResult(route.params.apiResult);
+  //   // }
+  // }, [route.params?.photo]);
 
   const [selectedMeal, setSelectedMeal] = useState(null);
   const meals = ['아침', '점심', '저녁', '간식'];
@@ -78,6 +90,7 @@ const ImageInScreen = () => {
         </View>
 
         <View><Text>{JSON.stringify(apiResult, null, 2)}</Text></View>
+        
         <Button isDisabled={!selectedMeal} onPress={registerMeal}>
           식단 등록
         </Button>

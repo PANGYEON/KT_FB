@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button, View, Text } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
-import { TouchableOpacity, Modal, Image, ScrollView, Dimensions } from 'react-native';
+import { TouchableOpacity, Modal, Image, ScrollView, Dimensions,Linking  } from 'react-native';
 import ChatBotScreen from './ChatBotScreen';
 import axios from 'axios';
  
@@ -13,9 +13,7 @@ const BoardScreen = () => {
   const [selectedCategory, setSelectedCategory] = useState('FAQ'); // FAQ를 기본 선택
   const [titles, setTitles] = useState([]);
   const categories = ['FAQ', '공지사항'];
- 
-  const cardNews = ['탄수화물 정말 다이어', 'test2', 'test3', 'test4'];
- 
+  
   const imageHeight = height * 0.22;
   const imageWidth = height * 0.22;
  
@@ -49,7 +47,7 @@ const BoardScreen = () => {
       const response = await axios.request(config);
       setNoticesData(response.data); // 데이터를 상태 변수에 저장
     } catch (error) {
-      console.error("FAQ 데이터 로드 중 오류 발생:", error);
+      console.error("공지 데이터 로드 중 오류 발생:", error);
     }
   };
   const loadCardNewsData = async () => {
@@ -136,23 +134,27 @@ const BoardScreen = () => {
         <Text style={{ fontSize: 24, fontWeight: 'bold', paddingTop: '4%' }}>카드 뉴스</Text>
       </View>
       <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={{ padding: 10 }}
-      >
-        {cardNewsData.map((cardNews, index) => (
-          <View key={index} style={{ marginRight: 15 }}>
-            <View style={{ width: imageWidth, height: imageHeight, overflow: 'hidden', borderRadius: 10 }}>
-              <Image
-                source={{ uri: cardNews.image }}
-                style={{ flex: 1, width: undefined, height: undefined }}
-                resizeMode="contain"
-              />
-            </View>
-            <Text style={{ textAlign: 'center', marginTop: 5 }}>{cardNews.title}</Text>
-          </View>
-        ))}
-      </ScrollView>
+  horizontal
+  showsHorizontalScrollIndicator={false}
+  style={{ padding: 10 }}
+>
+  {cardNewsData.map((cardNews, index) => (
+    <TouchableOpacity 
+      key={index} 
+      style={{ marginRight: 15 }}
+      onPress={() => Linking.openURL(cardNews.link)} // Add this line
+    >
+      <View style={{ width: imageWidth, height: imageHeight, overflow: 'hidden', borderRadius: 10 }}>
+        <Image
+          source={{ uri: cardNews.image }}
+          style={{ flex: 1, width: undefined, height: undefined }}
+          resizeMode="contain"
+        />
+      </View>
+      <Text style={{ textAlign: 'center', marginTop: 5 }}>{cardNews.title}</Text>
+    </TouchableOpacity>
+  ))}
+</ScrollView>
  
       <View style={{ borderTopWidth: 1, borderTopColor: 'gray', marginVertical: height * 0.013 }} />
  

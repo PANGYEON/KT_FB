@@ -4,7 +4,7 @@ import { Button, View  } from 'react-native';
 import { Camera, useCameraDevice } from 'react-native-vision-camera';
 import { useNavigation } from '@react-navigation/native';
 import { CameraRoll } from "@react-native-camera-roll/camera-roll";
-import { processApi } from '../ai_model/BP_Food';
+import { odApi } from '../ai_model/BP_Food';
 function CameraScreen() {
   const device = useCameraDevice('back');
   const navigation = useNavigation();
@@ -22,7 +22,7 @@ function CameraScreen() {
 
         // CameraRoll을 사용하여 사진 저장
         await CameraRoll.save(`file://${file.path}`, { type: 'photo' });
-        // const apiResult = await processApi(`file://${file.path}`,`${file.name}`);
+        const apiResult = await odApi(`file://${file.path}`,`${file.name}`);
         // processApi 함수를 호출하여 결과를 가져옵니다.
         // 사진 파일을 fetch 하여 blob 데이터로 변환
         const result = await fetch(`file://${file.path}`);
@@ -30,8 +30,8 @@ function CameraScreen() {
         console.log(data)
         // 변환된 blob 데이터를 다음 화면으로 넘김
         // navigation.navigate('홈', { photo: file.path });
-        // navigation.navigate('ImageIn', { photo: file.path, apiResult });
-        navigation.navigate('ImageIn', { photo: file.path });
+        navigation.navigate('ImageIn', { photo: file.path, apiResult });
+        // navigation.navigate('ImageIn', { photo: file.path });
 
       } catch (error) {
         console.error(error);

@@ -549,6 +549,18 @@ const ProfileScreen = () => {
     isOpen={subscribeModalVisible}
     onClose={() => setSubscribeModalVisible(false)}
   >
+    {/* <Modal.Content>
+      <Modal.Body>
+        <TextInput
+          placeholder="이메일을 입력하세요"
+          value={subscribeEmail}
+          onChangeText={setSubscribeEmail}
+        />
+      </Modal.Body>
+      <Modal.Footer>
+        <Button onPress={handleSubscribe}>구독하기</Button>
+      </Modal.Footer>
+    </Modal.Content> */}
     <Modal.Content>
       <Modal.Body>
         <TextInput

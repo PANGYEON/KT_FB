@@ -1,20 +1,46 @@
 
-
-
-// import React, { useState ,useEffect } from 'react';
-// import { View, Text, Modal, TouchableOpacity, Image,StyleSheet } from 'react-native';
+// import React, { useState, useEffect, Component } from 'react';
+// import { View, Text, Modal, TouchableOpacity, Image, StyleSheet } from 'react-native';
 // import { Button } from 'native-base';
 // import ChatBotScreen from './ChatBotScreen';
-// import { useNavigation,useRoute  } from '@react-navigation/native';
+// import { useNavigation, useRoute } from '@react-navigation/native';
+// import ScrollPicker from "react-native-wheel-scrollview-picker";
 
- 
 // const DailyScreen = () => {
 //   const navigation = useNavigation();
 //   const route = useRoute();
 //   const [selectedMeal, setSelectedMeal] = useState('아침');
 //   const [isModalVisible, setModalVisible] = useState(false);
 //   const tempImageUrl = 'https://via.placeholder.com/150';
- 
+//   // 인분 선택을 위한 state
+//   const [selectedPortion, setSelectedPortion] = useState('1');
+//   const [isPortionModalVisible, setPortionModalVisible] = useState(false); // 인분 선택 Modal 표시 여부
+//   const [pickerSelectedIndex, setPickerSelectedIndex] = useState(9);
+
+
+//   const onPickerValueChange = (selectedValue, selectedIndex) => {
+//     setPickerSelectedIndex(selectedIndex);
+//     setSelectedPortion(selectedValue);
+//   };
+//   // 인분 선택 시 Modal을 토글하는 함수
+//   const togglePortionModal = () => {
+//     // 여기에 Modal 표시 및 숨김을 위한 로직 작성
+//     setPortionModalVisible(!isPortionModalVisible);
+//   };
+
+//   // 인분 선택 변경 시 호출되는 함수
+//   const handlePortionChange = (itemValue) => {
+//     setSelectedPortion(itemValue);
+//     togglePortionModal(); // 선택 시 Modal 닫기
+//     // 여기에 선택한 인분에 따라 처리하는 로직 작성
+//   };
+
+//   useEffect(() => {
+//     if (route.params?.selectedMeal) {
+//       setSelectedMeal(route.params.selectedMeal);
+//     }
+//   }, [route.params?.selectedMeal]);
+
 //   // 각 식사 시간별 식사 정보
 //   const mealData = {
 //     아침: {
@@ -73,14 +99,10 @@
 //       image: tempImageUrl, // 실제 아침 식사 이미지 URL로 변경하세요
 //     },
 //   };
- 
-//   useEffect(() => {
-//     if (route.params?.selectedMeal) {
-//       setSelectedMeal(route.params.selectedMeal);
-//     }
-//   }, [route.params?.selectedMeal]);
+
+
 //   const meals = ['아침', '점심', '저녁', '간식'];
- 
+
 //   // 총 영양소 합계 계산 함수
 //   const calculateTotalNutrient = (nutrientKey) => {
 //     return Object.values(mealData).reduce((acc, meal) => {
@@ -91,35 +113,35 @@
 //       return acc;
 //     }, 0);
 //   };
- 
+
 //   // 각 영양소 총 합 계산
 //   const totalCarbohydrates = calculateTotalNutrient('탄수화물');
 //   const totalProtein = calculateTotalNutrient('단백질');
 //   const totalFat = calculateTotalNutrient('지방');
 //   const totalSodium = calculateTotalNutrient('나트륨');
 //   const totalCholesterol = calculateTotalNutrient('콜레스테롤');
- 
+
 //   const renderDate = () => {
 //     const today = new Date();
 //     return `${today.getFullYear()}년 ${today.getMonth() + 1}월 ${today.getDate()}일`;
 //   };
- 
+
 //   const getButtonStyle = (meal) => ({
 //     width: '20%',
 //     backgroundColor: selectedMeal === meal ? '#8E86FA' : 'transparent',
 //     borderColor: selectedMeal === meal ? '#8E86FA' : 'transparent',
 //   });
- 
+
 //   const getButtonTextStyle = (meal) => ({
 //     color: selectedMeal === meal ? 'white' : 'black',
 //     fontSize: 16,
 //     justifyContent: 'center',
 //   });
- 
+
 //   const toggleModal = () => {
 //     setModalVisible(!isModalVisible);
 //   };
- 
+
 //   ///////////////////////////////////////////(test)
 //   const evaluateCarbohydrates = (value) => {
 //     if (value >= 600 && value <= 700) {
@@ -130,18 +152,18 @@
 //       return { text: 'Bad', color: 'red' };
 //     }
 //   };
- 
+
 //   // 탄수화물 값 평가 결과 가져오기
 //   const carbohydratesEvaluation = evaluateCarbohydrates(totalCarbohydrates);
 //   //////////////////////////////////////////////////////////////////////////////////
- 
- 
+
+
 //   // navigation.navigate('MonthScreen', {
 //   //   carbohydratesText: carbohydratesEvaluation.text,
 //   //   carbohydratesColor: carbohydratesEvaluation.color,
 //   // });
- 
- 
+
+
 //   return (
 //     <View style={styles.container}>
 //       <Text style={styles.dateText}>{renderDate()}</Text>
@@ -155,25 +177,25 @@
 //       <View style={styles.contentContainer}>
 //         {/* 여기에 다른 컨텐츠가 추가될 수 있습니다#F3EFEF */}
 //         <View style={styles.contentstext}>
-//           <View style={{...styles.PersonalRegions, marginBottom: '5%'}}>
-//             <Text style={{fontSize: 16, color: 'black',}}>섭취 칼로리</Text>
-//             <Text style={{fontSize: 16, color: 'black',}}>604kcal</Text>
+//           <View style={{ ...styles.PersonalRegions, marginBottom: '5%' }}>
+//             <Text style={{ fontSize: 16, color: 'black', }}>섭취 칼로리</Text>
+//             <Text style={{ fontSize: 16, color: 'black', }}>604kcal</Text>
 //           </View>
-//           <View style={{marginBottom: '5%'}}>
+//           <View style={{ marginBottom: '5%' }}>
 //             <View style={styles.PersonalRegions}>
 //               <Text style={styles.nutrient}>탄수화물</Text>
 //               <Text style={styles.kcal}>{totalCarbohydrates.toFixed(1)}g</Text>
 //             </View>
-//             <View style={{...styles.PersonalRegions, marginLeft: '10%',}}>
-//               <Text style={{fontSize: 13}}>- 당류</Text>
-//               <Text style={{fontSize: 13}}>50g</Text>
+//             <View style={{ ...styles.PersonalRegions, marginLeft: '10%', }}>
+//               <Text style={{ fontSize: 13 }}>- 당류</Text>
+//               <Text style={{ fontSize: 13 }}>50g</Text>
 //             </View>
-//             <View style={{...styles.PersonalRegions, marginLeft: '10%'}}>
-//               <Text style={{fontSize: 13}}>- 식이섬유</Text>
-//               <Text style={{fontSize: 13}}>10g</Text>
+//             <View style={{ ...styles.PersonalRegions, marginLeft: '10%' }}>
+//               <Text style={{ fontSize: 13 }}>- 식이섬유</Text>
+//               <Text style={{ fontSize: 13 }}>10g</Text>
 //             </View>
 //           </View>
-         
+
 //           <View style={styles.PersonalRegions}>
 //             <Text style={styles.nutrient}>단백질</Text>
 //             <Text style={styles.kcal}>{totalProtein.toFixed(1)}g</Text>
@@ -216,26 +238,52 @@
 //             />
 //           ) : (
 //             <TouchableOpacity style={styles.selectPhotoButton}>
-//                 <Image
-//                   source={require('../icons/A.png')}
-//                   style={styles.photoIcon}
-//                 />
-//                 <Text style={styles.selectPhotoButtonText}>사진 선택</Text>
+//               <Image
+//                 source={require('../icons/A.png')}
+//                 style={styles.photoIcon}
+//               />
+//               <Text style={styles.selectPhotoButtonText}>사진 선택</Text>
 //             </TouchableOpacity>
 //           )}
- 
+
 //           <View style={styles.MealMenu}>
-//             <View>
-//               <Text style={{fontSize: 15, fontWeight: 'bold', marginBottom: '20%'}}>{'< '}{selectedMeal ? `${selectedMeal} 메뉴` : ''}{' >'}</Text>
+//             <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: '20%' }}>{'< '}{selectedMeal ? `${selectedMeal} 메뉴` : ''}{' >'}</Text>
+//             <View style={styles.TodayIs}>
 //               <Text style={{}}>{mealData[selectedMeal]?.menu}</Text>
+//               <View style={styles.Size}>
+//                 <TouchableOpacity onPress={() => setPortionModalVisible(true)}>
+//                   <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: '20%' }}>
+//                     {selectedPortion}인분
+//                   </Text>
+//                 </TouchableOpacity>
+//               </View>
 //             </View>
- 
-//             <View>
-//               <Text style={{fontSize: 15, fontWeight: 'bold', marginBottom: '20%'}}>{'< '}인분{' >'}</Text>
-//               <Text style={{}}>{mealData[selectedMeal]?.menu}</Text>
-//             </View>
+
+//             <Modal
+//               animationType="slide"
+//               transparent={true}
+//               visible={isPortionModalVisible}
+//               onRequestClose={() => setPortionModalVisible(false)}
+//             >
+//               <View style={styles.modalContainer}>
+//                 <View style={styles.numbermodalContent}>
+//                   <ScrollPicker
+//                     dataSource={["0.1", "0.2", "0.3", "0.4", "0.5", "0.6", "0.7", "0.8", "0.9", "1.0", "1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9", "2.0", "2.1", "2.2", "2.3", "2.4", "2.5"]}
+//                     selectedIndex={pickerSelectedIndex}
+//                     onValueChange={onPickerValueChange}
+//                     wrapperHeight={200}
+//                     itemHeight={40}
+//                     highlightColor="#d8d8d8"
+//                     highlightBorderWidth={2}
+//                   />
+//                   <Button onPress={() => setPortionModalVisible(false)}>
+//                     <Text>확인</Text>
+//                   </Button>
+//                 </View>
+//               </View>
+//             </Modal>
 //           </View>
- 
+
 //         </View>
 //         <View style={styles.selectedMealInfo_2}>
 //           <View style={{
@@ -248,16 +296,16 @@
 //               <Text style={styles.nutrient}>탄수화물</Text>
 //               <Text style={styles.kcal}>{mealData[selectedMeal].탄수화물}</Text>
 //             </View>
-//             <View style={{...styles.PersonalRegions, marginLeft: '10%',}}>
-//               <Text style={{fontSize: 13}}>- 당류</Text>
-//               <Text style={{fontSize: 13}}>{mealData[selectedMeal].당류}</Text>
+//             <View style={{ ...styles.PersonalRegions, marginLeft: '10%', }}>
+//               <Text style={{ fontSize: 13 }}>- 당류</Text>
+//               <Text style={{ fontSize: 13 }}>{mealData[selectedMeal].당류}</Text>
 //             </View>
-//             <View style={{...styles.PersonalRegions, marginLeft: '10%'}}>
-//               <Text style={{fontSize: 13}}>- 식이섬유</Text>
-//               <Text style={{fontSize: 13}}>{mealData[selectedMeal].식이섬유}</Text>
+//             <View style={{ ...styles.PersonalRegions, marginLeft: '10%' }}>
+//               <Text style={{ fontSize: 13 }}>- 식이섬유</Text>
+//               <Text style={{ fontSize: 13 }}>{mealData[selectedMeal].식이섬유}</Text>
 //             </View>
 //           </View>
-         
+
 //           <View style={{
 //             //backgroundColor: 'red',
 //             //width: '30%'
@@ -280,12 +328,12 @@
 //             </View>
 //           </View>
 //         </View>
-//       </View>  
- 
+//       </View>
+
 //       <TouchableOpacity style={styles.chatbotButton} onPress={toggleModal}>
 //         <Image source={require('../icons/ChatBotIcon.png')} style={styles.chatbotIcon} />
 //       </TouchableOpacity>
- 
+
 //       <Modal animationType="fade" transparent={true} visible={isModalVisible} onRequestClose={toggleModal}>
 //         <View style={styles.modalContainer}>
 //           <View style={styles.modalContent}>
@@ -296,7 +344,7 @@
 //     </View>
 //   );
 // };
- 
+
 // const styles = StyleSheet.create({
 //   // 네비게이션 밑의 전체영역(Daily전체부분 스타일)
 //   container: {
@@ -314,7 +362,7 @@
 //     //alignSelf: 'center',
 //     textAlign: 'center',
 //   },
- 
+
 //   // 식단평가 영역
 //   testbox: {
 //     flexDirection: 'row',
@@ -334,7 +382,7 @@
 //     fontSize: 16,
 //     fontWeight: 'bold',
 //   },
- 
+
 //   // 통계 부분 전체영역
 //   contentContainer: {
 //     flexDirection: 'row',
@@ -346,27 +394,27 @@
 //     marginVertical: '3%',
 //     borderRadius: 20,
 //   },
- 
+
 //   //통계부분 글 영역
 //   contentstext: {
 //     width: '50%',
 //     //height: '100%',
 //     //backgroundColor: 'white',
 //   },
- 
+
 //   //글 안의 영양소 별 줄 맞추기
 //   PersonalRegions: {
 //     flexDirection: 'row',
 //     justifyContent: 'space-between',
 //   },
- 
+
 //   // 영양소 텍스트 조절
 //   nutrient: {
 //     fontSize: 14,
 //     color: 'black',
 //     marginBottom: '1%',
 //   },
- 
+
 //   //통계부분 사진 영역
 //   contentsImg: {
 //     width: 140,
@@ -383,7 +431,7 @@
 //     //marginRight: 10,
 //     borderRadius: 20,
 //   },
- 
+
 //   // 식사시간대별 메뉴표시 영역
 //   selectedMealContainer: {
 //     paddingVertical: '5%',
@@ -392,13 +440,13 @@
 //     flexDirection: 'row',
 //     justifyContent: 'space-between',
 //   },
- 
+
 //   selectedMealInfo_1: {
 //     //flexDirection: 'row',
 //     //justifyContent: 'space-between',
 //     //backgroundColor: 'white',
 //   },
- 
+
 //   MealImg: {
 //     //backgroundColor: 'blue',
 //     width: 170,
@@ -410,14 +458,23 @@
 //   MealMenu: {
 //     marginLeft: '10%',
 //   },
- 
+
+//   TodayIs: {
+//     flexDirection: 'row',
+//     justifyContent: 'space-between',
+//   },
+
+//   Size: {
+//     flexDirection: 'row',
+//   },
+
 //   selectedMealInfo_2: {
 //     //backgroundColor: 'orange',
 //     //flexDirection: 'row',
 //     //marginTop: '5%',
 //     //justifyContent: 'space-between',
 //   },
- 
+
 //   // 챗봇버튼
 //   chatbotButton: {
 //     position: 'absolute',
@@ -431,13 +488,13 @@
 //     alignItems: 'center',
 //     elevation: 5,
 //   },
- 
+
 //   // 챗봇버튼영역의 아이콘영역
 //   chatbotIcon: {
 //     width: 30,
 //     height: 30,
 //   },
- 
+
 //   // 챗봇을 눌렀을 때의 modal창 영역 바깥 부분
 //   modalContainer: {
 //     flex: 1,
@@ -445,7 +502,7 @@
 //     alignItems: 'center',
 //     backgroundColor: 'rgba(0, 0, 0, 0.5)',
 //   },
- 
+
 //   // 챗봇 modal 창
 //   modalContent: {
 //     flex: 1,
@@ -454,10 +511,28 @@
 //     backgroundColor: '#fff',
 //     borderRadius: 30,
 //   },
+
+//   // 챗봇을 눌렀을 때의 modal창 영역 바깥 부분
+//   modalContainer: {
+//     flex: 1,
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//     backgroundColor: 'rgba(0, 0, 0, 0.5)',
+//   },
+
+//   // 인분 선택 modal 창
+//   numbermodalContent: {
+//     flex: 1,
+//     minWidth: '80%',
+//     maxHeight: '30%',
+//     backgroundColor: '#fff',
+//     borderRadius: 30,
+//   },
+
 //   // image: {
-   
+
 //   // }
- 
+
 //   // noImageContainer: {
 //   //   width: 150,
 //   //   height: 150,
@@ -466,13 +541,13 @@
 //   //   justifyContent: 'center',
 //   //   alignItems: 'center',
 //   // },
- 
+
 //   photoIcon: {
 //     width: '20%', // 원하는 크기로 조정
 //     height: '20%', // 원하는 크기로 조정
 //     marginBottom: 10, // 이미지 아래 간격 조정
 //   },
- 
+
 //   // "사진 선택" 버튼 스타일
 //   selectPhotoButton: {
 //     width: 170,
@@ -489,16 +564,37 @@
 //     color: 'white',
 //   },
 // });
- 
+// const pickerSelectStyles = StyleSheet.create({
+//   inputIOS: {
+//     fontSize: 16,
+//     paddingVertical: 12,
+//     paddingHorizontal: 10,
+//     borderWidth: 1,
+//     borderColor: 'gray',
+//     borderRadius: 4,
+//     color: 'black',
+//     paddingRight: 30, // to ensure the text is never behind the icon
+//   },
+//   inputAndroid: {
+//     fontSize: 16,
+//     paddingHorizontal: 10,
+//     paddingVertical: 8,
+//     borderWidth: 0.5,
+//     borderColor: 'purple',
+//     borderRadius: 8,
+//     color: 'black',
+//     paddingRight: 30, // to ensure the text is never behind the icon
+//   },
+// });
 // export default DailyScreen;
 
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect, Component } from 'react';
 import { View, Text, Modal, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { Button } from 'native-base';
 import ChatBotScreen from './ChatBotScreen';
-import { useNavigation,useRoute } from '@react-navigation/native';
-import { Picker as RNPicker } from '@react-native-picker/picker'; // Picker를 @react-native-picker/picker에서 가져옵니다
- 
+import { useNavigation, useRoute } from '@react-navigation/native';
+import ScrollPicker from "react-native-wheel-scrollview-picker";
+
 const DailyScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
@@ -508,26 +604,34 @@ const DailyScreen = () => {
   // 인분 선택을 위한 state
   const [selectedPortion, setSelectedPortion] = useState('1');
   const [isPortionModalVisible, setPortionModalVisible] = useState(false); // 인분 선택 Modal 표시 여부
- 
+
+  const [integerPart, setIntegerPart] = useState('0');
+  const [fractionalPart, setFractionalPart] = useState('0');
+  
+  const handleIntegerChange = (selectedValue, selectedIndex) => {
+    setIntegerPart(selectedValue);
+    setSelectedPortion(`${selectedValue}.${fractionalPart}`);
+  };
+  
+  const handleFractionalChange = (selectedValue, selectedIndex) => {
+    setFractionalPart(selectedValue);
+    setSelectedPortion(`${integerPart}.${selectedValue}`);
+  };
+  
   // 인분 선택 시 Modal을 토글하는 함수
   const togglePortionModal = () => {
     // 여기에 Modal 표시 및 숨김을 위한 로직 작성
     setPortionModalVisible(!isPortionModalVisible);
   };
- 
-  // 인분 선택 변경 시 호출되는 함수
-  const handlePortionChange = (itemValue) => {
-    setSelectedPortion(itemValue);
-    togglePortionModal(); // 선택 시 Modal 닫기
-    // 여기에 선택한 인분에 따라 처리하는 로직 작성
-  };
+
+
 
   useEffect(() => {
     if (route.params?.selectedMeal) {
       setSelectedMeal(route.params.selectedMeal);
     }
   }, [route.params?.selectedMeal]);
- 
+
   // 각 식사 시간별 식사 정보
   const mealData = {
     아침: {
@@ -586,10 +690,10 @@ const DailyScreen = () => {
       image: tempImageUrl, // 실제 아침 식사 이미지 URL로 변경하세요
     },
   };
- 
- 
+
+
   const meals = ['아침', '점심', '저녁', '간식'];
- 
+
   // 총 영양소 합계 계산 함수
   const calculateTotalNutrient = (nutrientKey) => {
     return Object.values(mealData).reduce((acc, meal) => {
@@ -600,35 +704,35 @@ const DailyScreen = () => {
       return acc;
     }, 0);
   };
- 
+
   // 각 영양소 총 합 계산
   const totalCarbohydrates = calculateTotalNutrient('탄수화물');
   const totalProtein = calculateTotalNutrient('단백질');
   const totalFat = calculateTotalNutrient('지방');
   const totalSodium = calculateTotalNutrient('나트륨');
   const totalCholesterol = calculateTotalNutrient('콜레스테롤');
- 
+
   const renderDate = () => {
     const today = new Date();
     return `${today.getFullYear()}년 ${today.getMonth() + 1}월 ${today.getDate()}일`;
   };
- 
+
   const getButtonStyle = (meal) => ({
     width: '20%',
     backgroundColor: selectedMeal === meal ? '#8E86FA' : 'transparent',
     borderColor: selectedMeal === meal ? '#8E86FA' : 'transparent',
   });
- 
+
   const getButtonTextStyle = (meal) => ({
     color: selectedMeal === meal ? 'white' : 'black',
     fontSize: 16,
     justifyContent: 'center',
   });
- 
+
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
   };
- 
+
   ///////////////////////////////////////////(test)
   const evaluateCarbohydrates = (value) => {
     if (value >= 600 && value <= 700) {
@@ -639,18 +743,18 @@ const DailyScreen = () => {
       return { text: 'Bad', color: 'red' };
     }
   };
- 
+
   // 탄수화물 값 평가 결과 가져오기
   const carbohydratesEvaluation = evaluateCarbohydrates(totalCarbohydrates);
   //////////////////////////////////////////////////////////////////////////////////
- 
- 
+
+
   // navigation.navigate('MonthScreen', {
   //   carbohydratesText: carbohydratesEvaluation.text,
   //   carbohydratesColor: carbohydratesEvaluation.color,
   // });
- 
- 
+
+
   return (
     <View style={styles.container}>
       <Text style={styles.dateText}>{renderDate()}</Text>
@@ -664,25 +768,25 @@ const DailyScreen = () => {
       <View style={styles.contentContainer}>
         {/* 여기에 다른 컨텐츠가 추가될 수 있습니다#F3EFEF */}
         <View style={styles.contentstext}>
-          <View style={{...styles.PersonalRegions, marginBottom: '5%'}}>
-            <Text style={{fontSize: 16, color: 'black',}}>섭취 칼로리</Text>
-            <Text style={{fontSize: 16, color: 'black',}}>604kcal</Text>
+          <View style={{ ...styles.PersonalRegions, marginBottom: '5%' }}>
+            <Text style={{ fontSize: 16, color: 'black', }}>섭취 칼로리</Text>
+            <Text style={{ fontSize: 16, color: 'black', }}>604kcal</Text>
           </View>
-          <View style={{marginBottom: '5%'}}>
+          <View style={{ marginBottom: '5%' }}>
             <View style={styles.PersonalRegions}>
               <Text style={styles.nutrient}>탄수화물</Text>
               <Text style={styles.kcal}>{totalCarbohydrates.toFixed(1)}g</Text>
             </View>
-            <View style={{...styles.PersonalRegions, marginLeft: '10%',}}>
-              <Text style={{fontSize: 13}}>- 당류</Text>
-              <Text style={{fontSize: 13}}>50g</Text>
+            <View style={{ ...styles.PersonalRegions, marginLeft: '10%', }}>
+              <Text style={{ fontSize: 13 }}>- 당류</Text>
+              <Text style={{ fontSize: 13 }}>50g</Text>
             </View>
-            <View style={{...styles.PersonalRegions, marginLeft: '10%'}}>
-              <Text style={{fontSize: 13}}>- 식이섬유</Text>
-              <Text style={{fontSize: 13}}>10g</Text>
+            <View style={{ ...styles.PersonalRegions, marginLeft: '10%' }}>
+              <Text style={{ fontSize: 13 }}>- 식이섬유</Text>
+              <Text style={{ fontSize: 13 }}>10g</Text>
             </View>
           </View>
-         
+
           <View style={styles.PersonalRegions}>
             <Text style={styles.nutrient}>단백질</Text>
             <Text style={styles.kcal}>{totalProtein.toFixed(1)}g</Text>
@@ -725,55 +829,71 @@ const DailyScreen = () => {
             />
           ) : (
             <TouchableOpacity style={styles.selectPhotoButton}>
-                <Image
-                  source={require('../icons/A.png')}
-                  style={styles.photoIcon}
-                />
-                <Text style={styles.selectPhotoButtonText}>사진 선택</Text>
+              <Image
+                source={require('../icons/A.png')}
+                style={styles.photoIcon}
+              />
+              <Text style={styles.selectPhotoButtonText}>사진 선택</Text>
             </TouchableOpacity>
           )}
- 
+
           <View style={styles.MealMenu}>
-            <Text style={{fontSize: 15, fontWeight: 'bold', marginBottom: '20%'}}>{'< '}{selectedMeal ? `${selectedMeal} 메뉴` : ''}{' >'}</Text>
+            <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: '20%' }}>{'< '}{selectedMeal ? `${selectedMeal} 메뉴` : ''}{' >'}</Text>
             <View style={styles.TodayIs}>
               <Text style={{}}>{mealData[selectedMeal]?.menu}</Text>
               <View style={styles.Size}>
-                <TouchableOpacity onPress={togglePortionModal}>
+                <TouchableOpacity onPress={() => setPortionModalVisible(true)}>
                   <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: '20%' }}>
                     {selectedPortion}인분
                   </Text>
                 </TouchableOpacity>
               </View>
             </View>
- 
+
             <Modal
               animationType="slide"
               transparent={true}
               visible={isPortionModalVisible}
-              onRequestClose={togglePortionModal}
+              onRequestClose={() => setPortionModalVisible(false)}
             >
               <View style={styles.modalContainer}>
-                <View style={styles.modalContent}>
-                  <View style={{ backgroundColor: 'white', padding: 20 }}>
-                    <RNPicker
-                      selectedValue={selectedPortion}
-                      style={{ height: 200, width: 200 }}
-                      onValueChange={(itemValue) => handlePortionChange(itemValue)}
-                    >
-                      <RNPicker.Item label="1" value="1" />
-                      <RNPicker.Item label="2" value="2" />
-                      <RNPicker.Item label="3" value="3" />
-                      {/* 여기에 인분에 맞게 Picker.Item 추가 */}
-                    </RNPicker>
-                    <Button onPress={togglePortionModal}>
-                      <Text>확인</Text>
-                    </Button>
-                  </View>
-                </View>
-              </View>
+  <View style={styles.numbermodalContent}>
+  <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+      {/* 정수 부분을 위한 ScrollPicker */}
+      <ScrollPicker
+        dataSource={["0", "1", "2", "3"]}
+        selectedIndex={parseInt(integerPart)}
+        onValueChange={handleIntegerChange}
+        wrapperHeight={200}
+        itemHeight={40}
+        highlightColor="#d8d8d8"
+        highlightBorderWidth={2}
+      />
+      <Text style={{ fontSize: 24, marginHorizontal: 10 }}>.</Text>
+      {/* 소수 부분을 위한 ScrollPicker */}
+      <ScrollPicker
+        dataSource={["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]}
+        selectedIndex={parseInt(fractionalPart)}
+        onValueChange={handleFractionalChange}
+        wrapperHeight={200}
+        itemHeight={40}
+        highlightColor="#d8d8d8"
+        highlightBorderWidth={2}
+      />
+    </View>
+    <View style={{ alignItems: 'center', marginVertical: 20 }}>
+      <Button onPress={() => setPortionModalVisible(false)} style={{ width: 100, justifyContent: 'center' }}>
+        <Text>확인</Text>
+      </Button>
+    </View>
+  </View>
+</View>
+
+
+
             </Modal>
           </View>
- 
+
         </View>
         <View style={styles.selectedMealInfo_2}>
           <View style={{
@@ -786,16 +906,16 @@ const DailyScreen = () => {
               <Text style={styles.nutrient}>탄수화물</Text>
               <Text style={styles.kcal}>{mealData[selectedMeal].탄수화물}</Text>
             </View>
-            <View style={{...styles.PersonalRegions, marginLeft: '10%',}}>
-              <Text style={{fontSize: 13}}>- 당류</Text>
-              <Text style={{fontSize: 13}}>{mealData[selectedMeal].당류}</Text>
+            <View style={{ ...styles.PersonalRegions, marginLeft: '10%', }}>
+              <Text style={{ fontSize: 13 }}>- 당류</Text>
+              <Text style={{ fontSize: 13 }}>{mealData[selectedMeal].당류}</Text>
             </View>
-            <View style={{...styles.PersonalRegions, marginLeft: '10%'}}>
-              <Text style={{fontSize: 13}}>- 식이섬유</Text>
-              <Text style={{fontSize: 13}}>{mealData[selectedMeal].식이섬유}</Text>
+            <View style={{ ...styles.PersonalRegions, marginLeft: '10%' }}>
+              <Text style={{ fontSize: 13 }}>- 식이섬유</Text>
+              <Text style={{ fontSize: 13 }}>{mealData[selectedMeal].식이섬유}</Text>
             </View>
           </View>
-         
+
           <View style={{
             //backgroundColor: 'red',
             //width: '30%'
@@ -818,12 +938,12 @@ const DailyScreen = () => {
             </View>
           </View>
         </View>
-      </View>  
- 
+      </View>
+
       <TouchableOpacity style={styles.chatbotButton} onPress={toggleModal}>
         <Image source={require('../icons/ChatBotIcon.png')} style={styles.chatbotIcon} />
       </TouchableOpacity>
- 
+
       <Modal animationType="fade" transparent={true} visible={isModalVisible} onRequestClose={toggleModal}>
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
@@ -834,7 +954,7 @@ const DailyScreen = () => {
     </View>
   );
 };
- 
+
 const styles = StyleSheet.create({
   // 네비게이션 밑의 전체영역(Daily전체부분 스타일)
   container: {
@@ -852,7 +972,7 @@ const styles = StyleSheet.create({
     //alignSelf: 'center',
     textAlign: 'center',
   },
- 
+
   // 식단평가 영역
   testbox: {
     flexDirection: 'row',
@@ -872,7 +992,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
- 
+
   // 통계 부분 전체영역
   contentContainer: {
     flexDirection: 'row',
@@ -884,27 +1004,27 @@ const styles = StyleSheet.create({
     marginVertical: '3%',
     borderRadius: 20,
   },
- 
+
   //통계부분 글 영역
   contentstext: {
     width: '50%',
     //height: '100%',
     //backgroundColor: 'white',
   },
- 
+
   //글 안의 영양소 별 줄 맞추기
   PersonalRegions: {
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
- 
+
   // 영양소 텍스트 조절
   nutrient: {
     fontSize: 14,
     color: 'black',
     marginBottom: '1%',
   },
- 
+
   //통계부분 사진 영역
   contentsImg: {
     width: 140,
@@ -921,7 +1041,7 @@ const styles = StyleSheet.create({
     //marginRight: 10,
     borderRadius: 20,
   },
- 
+
   // 식사시간대별 메뉴표시 영역
   selectedMealContainer: {
     paddingVertical: '5%',
@@ -930,13 +1050,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
- 
+
   selectedMealInfo_1: {
     //flexDirection: 'row',
     //justifyContent: 'space-between',
     //backgroundColor: 'white',
   },
- 
+
   MealImg: {
     //backgroundColor: 'blue',
     width: 170,
@@ -948,23 +1068,23 @@ const styles = StyleSheet.create({
   MealMenu: {
     marginLeft: '10%',
   },
- 
+
   TodayIs: {
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
- 
+
   Size: {
     flexDirection: 'row',
   },
- 
+
   selectedMealInfo_2: {
     //backgroundColor: 'orange',
     //flexDirection: 'row',
     //marginTop: '5%',
     //justifyContent: 'space-between',
   },
- 
+
   // 챗봇버튼
   chatbotButton: {
     position: 'absolute',
@@ -978,13 +1098,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     elevation: 5,
   },
- 
+
   // 챗봇버튼영역의 아이콘영역
   chatbotIcon: {
     width: 30,
     height: 30,
   },
- 
+
   // 챗봇을 눌렀을 때의 modal창 영역 바깥 부분
   modalContainer: {
     flex: 1,
@@ -992,7 +1112,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
- 
+
   // 챗봇 modal 창
   modalContent: {
     flex: 1,
@@ -1001,10 +1121,28 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 30,
   },
+
+  // 챗봇을 눌렀을 때의 modal창 영역 바깥 부분
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+
+  // 인분 선택 modal 창
+  numbermodalContent: {
+    flex: 1,
+    minWidth: '80%',
+    maxHeight: '30%',
+    backgroundColor: '#fff',
+    borderRadius: 30,
+  },
+
   // image: {
-   
+
   // }
- 
+
   // noImageContainer: {
   //   width: 150,
   //   height: 150,
@@ -1013,13 +1151,13 @@ const styles = StyleSheet.create({
   //   justifyContent: 'center',
   //   alignItems: 'center',
   // },
- 
+
   photoIcon: {
     width: '20%', // 원하는 크기로 조정
     height: '20%', // 원하는 크기로 조정
     marginBottom: 10, // 이미지 아래 간격 조정
   },
- 
+
   // "사진 선택" 버튼 스타일
   selectPhotoButton: {
     width: 170,
@@ -1036,5 +1174,26 @@ const styles = StyleSheet.create({
     color: 'white',
   },
 });
- 
+const pickerSelectStyles = StyleSheet.create({
+  inputIOS: {
+    fontSize: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    borderWidth: 1,
+    borderColor: 'gray',
+    borderRadius: 4,
+    color: 'black',
+    paddingRight: 30, // to ensure the text is never behind the icon
+  },
+  inputAndroid: {
+    fontSize: 16,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderWidth: 0.5,
+    borderColor: 'purple',
+    borderRadius: 8,
+    color: 'black',
+    paddingRight: 30, // to ensure the text is never behind the icon
+  },
+});
 export default DailyScreen;

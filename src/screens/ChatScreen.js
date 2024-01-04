@@ -102,6 +102,34 @@ const ChatScreen = () => {
   const [friends, setFriends] = useState([]);
   const [selectedFriend, setSelectedFriend] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
+  
+  const unsubscribeFriend = async (friendName) => {
+    const friend = friends.find(f => f.name === friendName);
+    if (!friend) {
+      alert('친구 정보를 찾을 수 없습니다.');
+      return;
+    }
+  
+    const token = await AsyncStorage.getItem('@user_token');
+    let config = {
+      method: 'delete',
+      url: `http://edm.japaneast.cloudapp.azure.com/api/unsubscribe/${friend.uuid}/`,
+      headers: { 
+        'Authorization': `Bearer ${token}`
+      }
+    };
+    
+    try {
+      await axios(config);
+      alert(`${friendName}와의 구독이 취소되었습니다.`);
+      fetchFriends();
+    } catch (error) {
+      console.error('구독 취소 실패:', error);
+      alert('구독 취소에 실패했습니다.');
+    }
+  };
+
+
 
   const fetchFriends = async () => {
     setRefreshing(true); // 새로고침 시작
@@ -118,20 +146,20 @@ const ChatScreen = () => {
     try {
       const uuidResponse = await axios(config);
       const uuids = uuidResponse.data;
-      const friendNames = await Promise.all(uuids.map(async (uuid) => {
+      const friendInfo = await Promise.all(uuids.map(async (uuid) => {
         try {
           const response = await axios.get(`http://edm.japaneast.cloudapp.azure.com/api/subscribe/info/${uuid}/`, {
             headers: { 
               'Authorization': `Bearer ${token}`
             }
           });
-          return response.data.name;
+          return { name: response.data.name, uuid: uuid };
         } catch (error) {
           console.error('친구 이름 불러오기 실패:', error);
           return 'Unknown';
         }
       }));
-      setFriends(friendNames);
+  setFriends(friendInfo);
     } catch (error) {
       console.error('UUID 목록 불러오기 실패:', error);
     }
@@ -146,15 +174,14 @@ const ChatScreen = () => {
     fetchFriends();
   }, []);
 
-  const selectFriend = (friend) => {
-    setSelectedFriend(friend);
+  const selectFriend = (friendName) => {
+    setSelectedFriend(friendName);
   };
-
   return (
     <View style={{ flex: 1, flexDirection: 'row' }}>
       {/* 친구 목록 */}
       <View style={{ 
-        width: '20%', 
+        width: '30%', 
         backgroundColor: '#fff',
         borderRightWidth: 1,
         borderRightColor: '#D9D9D9'
@@ -165,24 +192,30 @@ const ChatScreen = () => {
           }
         >
           {friends.map((friend, index) => (
-            <TouchableOpacity key={index} onPress={() => selectFriend(friend)}>
-              <Text style={{ 
-                padding: 10, 
-                backgroundColor: selectedFriend === friend ? '#DFD8F7' : 'transparent' 
-              }}>{friend}</Text>
-            </TouchableOpacity>
-          ))}
+  <TouchableOpacity key={index} onPress={() => selectFriend(friend.name)}>
+    <Text style={{ 
+      padding: 10, 
+      backgroundColor: selectedFriend === friend.name ? '#DFD8F7' : 'transparent' 
+    }}>
+      {friend.name} {/* 객체가 아닌, 친구의 이름을 렌더링 */}
+    </Text>
+  </TouchableOpacity>
+))}
+
         </ScrollView>
       </View>
 
       {/* 채팅방 */}
       <View style={{ flex: 1, backgroundColor: '#fff' }}>
-        {selectedFriend && (
-          <View>
-            <Text>{selectedFriend}의 식단 기록</Text>
-          </View>
-        )}
-      </View>
+  {selectedFriend && (
+    <View>
+      <Text>{selectedFriend}의 식단 기록</Text>
+      <TouchableOpacity onPress={() => unsubscribeFriend(selectedFriend)}>
+        <Text>구독 취소</Text>
+      </TouchableOpacity>
+    </View>
+  )}
+</View>
     </View>
   );
 };
