@@ -94,7 +94,7 @@
 
 // export default ChatScreen;
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, RefreshControl, StyleSheet, Image, Modal, TextInput, Button  } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, RefreshControl, StyleSheet, Button, Image } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import WelcomeIcon from '../icons/WelcomeIcon.png';
@@ -106,84 +106,15 @@ const ChatScreen = () => {
   const [selectedFriend, setSelectedFriend] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const navigation = useNavigation();
-  const [subscribeModalVisible, setSubscribeModalVisible] = useState(false);
-  const { needsRefresh, setNeedsRefresh } = useSubscription();
+  const { subscriptionList } = useSubscription(); 
   
-  // const [subscribeEmail, setSubscribeEmail] = useState('');
-
-  // useEffect(() => {
-  //   const fetchUserInfo = async () => {
-  //     try {
-  //       const token = await AsyncStorage.getItem('@user_token');
-  //       if (token) {
-  //         let config = {
-  //           method: 'get',
-  //           url: 'http://edm.japaneast.cloudapp.azure.com/api/user/info/',
-  //           headers: {
-  //             'Authorization': `Bearer ${token}`
-  //           },
-  //         };
-  //         // Use fetch or axios to make the API call
-  //         const response = await axios(config);
-  //         console.log(response.data.user)
-  //         setUserInfo(response.data.user); // Assuming the response contains user info
-  //       }
-  //     } catch (e) {
-  //       console.error('Error fetching user info', e);
-  //     }
-  //   };
-
-  //   fetchUserInfo();
-  // }, []);
-
-  // const handleSubscribe = async () => {
-  //   try {
-  //     const token = await AsyncStorage.getItem('@user_token');
-  //     let data = JSON.stringify({
-  //       email: subscribeEmail
-  //     });
-  
-  //     let config = {
-  //       method: 'post',
-  //       maxBodyLength: Infinity,
-  //       url: 'http://edm.japaneast.cloudapp.azure.com/api/subscribe/',
-  //       headers: { 
-  //         'Content-Type': 'application/json', 
-  //         'Authorization': `Bearer ${token}`
-  //       },
-  //       data: data
-  //     };
-  
-  //     const response = await axios(config);
-  
-  //     console.log('Response Status:', response.status);
-  //     console.log('Response Data:', response.data);
-  
-  //     if (response.status === 200) {
-  //       console.log('구독 정보가 성공적으로 전송되었습니다.');
-  //       alert('구독 정보가 성공적으로 전송되었습니다.');
-  //     } else {
-  //       alert('구독 정보 전송에 실패했습니다: ' + response.status);
-  //     }
-  //   } catch (error) {
-  //     if (error.response && error.response.data && error.response.data.display_message) {
-  //       alert(error.response.data.display_message);
-  //     } else {
-  //       console.error('구독 정보 전송 중 오류 발생', error);
-  //       alert('구독 정보 전송 중 오류가 발생했습니다.');
-  //     }
-  //   }
-  // };
-
   const unsubscribeFriend = async (friendName) => {
     const friend = friends.find(f => f.name === friendName);
     if (!friend) {
       alert('친구 정보를 찾을 수 없습니다.');
       return;
     }
-    if (selectedFriend === friendName) {
-      setSelectedFriend(null); // 구독 취소한 친구가 현재 선택된 친구일 경우, 선택 해제
-    }
+  
     const token = await AsyncStorage.getItem('@user_token');
     let config = {
       method: 'delete',
@@ -202,8 +133,6 @@ const ChatScreen = () => {
       alert('구독 취소에 실패했습니다.');
     }
   };
-
-
 
   const fetchFriends = async () => {
     setRefreshing(true); // 새로고침 시작
@@ -233,6 +162,7 @@ const ChatScreen = () => {
           return 'Unknown';
         }
       }));
+
   setFriends(friendInfo);
     } catch (error) {
       console.error('UUID 목록 불러오기 실패:', error);
@@ -241,15 +171,12 @@ const ChatScreen = () => {
   };
 
   useEffect(() => {
-    if (needsRefresh) {
-      fetchFriends();
-      setNeedsRefresh(false); // 상태 초기화
-    }
-  }, [needsRefresh, setNeedsRefresh]);
+    fetchFriends();
+  }, [subscriptionList]);
 
   const onRefresh = useCallback(() => {
     fetchFriends();
-  }, []);
+  }, [subscriptionList]);
 
   const selectFriend = (friendName) => {
     setSelectedFriend(friendName);
@@ -258,8 +185,7 @@ const ChatScreen = () => {
   const navigateToProfile = () => {
     navigation.navigate('Profile');
   };
-
-
+  
   return (
     <View style={{ flex: 1 }}>
       {/* 상단바 */}

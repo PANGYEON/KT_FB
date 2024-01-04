@@ -64,7 +64,8 @@ const ChatBotScreen = ({onClose}) => {
       let config = {
         method: 'post',
         // ip주소 : ipconfig ipv4, port 5500
-        url: 'http://192.168.10.47:5500/chatAPI/',
+        // url: 'http://edm-diet.japaneast.cloudapp.azure.com:5500/chat_test/chatAPI/',
+        url: 'http://192.168.0.2:5500/chatAPI/',
         headers: { 
           'Content-Type': 'application/json'
         },

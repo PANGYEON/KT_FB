@@ -24,7 +24,7 @@ const ProfileScreen = () => {
   //구독 관련
   const [subscribeModalVisible, setSubscribeModalVisible] = useState(false);
   const [subscribeEmail, setSubscribeEmail] = useState('');
-  const { setNeedsRefresh } = useSubscription();
+  const { updateSubscriptionList } = useSubscription();
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -75,6 +75,7 @@ const ProfileScreen = () => {
       console.error('Failed to fetch the token from storage', e);
     }
   };
+
   const handleSubscribe = async () => {
     try {
       const token = await AsyncStorage.getItem('@user_token');
@@ -104,7 +105,6 @@ const ProfileScreen = () => {
       } else {
         alert('구독 정보 전송에 실패했습니다: ' + response.status);
       }
-      setNeedsRefresh(true);
     } catch (error) {
       if (error.response && error.response.data && error.response.data.display_message) {
         alert(error.response.data.display_message);
@@ -113,7 +113,9 @@ const ProfileScreen = () => {
         alert('구독 정보 전송 중 오류가 발생했습니다.');
       }
     }
+    await updateSubscriptionList();
   };
+
   const [password, setPassword] = useState('');
 
   const deleteuser = async () => {

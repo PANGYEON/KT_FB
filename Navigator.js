@@ -63,8 +63,8 @@ const MyStack = () => {
   return (
     <NativeBaseProvider>
       <NavigationContainer>
-      <AuthChecker />
       <SubscriptionProvider>
+      <AuthChecker />
         <Stack.Navigator>
           <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
 
