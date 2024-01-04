@@ -5,14 +5,14 @@ import axios from 'axios';
 import { StyleSheet, Text, Alert } from 'react-native';
 
 const DietGoalScreen = ({ route }) => {
-  const { email, password, name, birthdate, personheight, personweight, gender, levelIndex } = route.params;
+  const { email, password, name, birthdate, personheight, personweight, gender, selectedActivityLevel } = route.params;
   const navigation = useNavigation();
   const [goalIndex, setGoalIndex] = useState(-1); // -1 for no selection
 
   const goals = ['체중 감량', '체중 유지', '체중 증량'];
-  const handleLevelSelect = (index) => {
-    setGoalIndex(index + 1); // 인덱스에 1을 더함
-  };
+  // const handleLevelSelect = (index) => {
+  //   setGoalIndex(index + 1); // 인덱스에 1을 더함
+  // };
   const handleRegister = () => {
     if (goalIndex === -1) {
       Alert.alert("경고", "목표를 선택해주세요.");
@@ -24,12 +24,13 @@ const DietGoalScreen = ({ route }) => {
       "email": email,
       "name": name,
       "birthdate": birthdate,
-      "active_level": levelIndex.toString(),
+      "active_level": selectedActivityLevel, //levelIndex.toString(),
       "height": parseInt(personheight, 10),
       "weight": parseInt(personweight, 10),
       "diet_purpose": adjustedGoalIndex >= 0 ? goals[adjustedGoalIndex - 1] : null, // 인덱스 1 증가
       "password": password,
-      "gender": gender
+      "gender": gender,
+      "agreed_to_privacy_policy": true
     };
 
     console.log("Register data:", data);
@@ -38,11 +39,11 @@ const DietGoalScreen = ({ route }) => {
     let config = {
       method: 'post',
       maxBodyLength: Infinity,
-      url: 'http://192.168.10.53:5500/api/user/',
-      headers: {
+      url: 'http://edm.japaneast.cloudapp.azure.com/api/user/',
+      headers: { 
         'Content-Type': 'application/json'
       },
-      data: jsonData
+      data : jsonData
     };
 
     axios.request(config)

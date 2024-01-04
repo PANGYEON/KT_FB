@@ -5,35 +5,54 @@ import React, { useState } from 'react';
 import { Button, View, Input, Text } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { StyleSheet, Alert } from 'react-native';
 
 const LoginScreen = () => {
   const navigation = useNavigation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-   
+
+  const storeToken = async (token) => {
+    try {
+      await AsyncStorage.setItem('@user_token', token);
+    } catch (e) {
+      console.log('eeeeee')
+    }
+  }
+
+
   const handleLogin = async () => {
     try {
       let data = JSON.stringify({
-        email: email,
-        password: password
+        "email": email,
+        "password": password
       });
-  
+      
       let config = {
         method: 'post',
-        url: 'http://192.168.10.53:5500/api/login/',
-        headers: {
+        maxBodyLength: Infinity,
+        url: 'http://edm.japaneast.cloudapp.azure.com/api/login/',
+        headers: { 
           'Content-Type': 'application/json'
         },
-        data: data
+        data : data
       };
   
       const response = await axios(config);
   
       if (response.status === 200) {
         // 로그인 성공 처리
-        console.log(response)
-        const token = response.data.access;
-        navigation.navigate('BottomTabNavigator', { screen: 'Home',params: { token: token }, });
+        
+        const token = response.data.access_token;
+        console.log(token)
+        storeToken(response.data.access_token);
+        // navigation.replace('BottomTabNavigator', { screen: '홈',params: { token: token }, }); // 뒤로가기 누르면 바로 종료
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'BottomTabNavigator', params: { token: token } }],
+        });
+        // navigation.navigate('BottomTabNavigator', { token, uuid });
       } else {
         // 서버가 로그인 실패에 대해 다른 상태 코드를 반환하는 경우
         Alert.alert("로그인 실패", "이메일 또는 비밀번호가 잘못되었습니다.");
@@ -97,9 +116,9 @@ const LoginScreen = () => {
           />
         </View>
         <Button
-          //onPress={handleLogin}
-          onPress={() => navigation.navigate('BottomTabNavigator')}
-          
+          onPress={handleLogin}
+          // onPress={() => navigation.navigate('BottomTabNavigator')}
+          //////////////////////////////////////////////////////////////////////////////////////////
           style={{ marginBottom: 10, borderRadius: 50, backgroundColor: '#8E86FA' }}
         >
           로그인

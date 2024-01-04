@@ -1,122 +1,55 @@
-// import React, { useEffect, useRef, useState } from 'react';
-// import { View, Text, StyleSheet } from 'react-native';
-// import { Camera, useCameraDevices } from 'react-native-vision-camera';
-// import { request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 
-// const CameraScreen = () => {
-//   const camera = useRef(null);
-//   const [selectedDevice, setSelectedDevice] = useState(null);
-//   const devices = useCameraDevices('back');
+import React, { useRef } from 'react';
+import { Button, View  } from 'react-native';
+import { Camera, useCameraDevice } from 'react-native-vision-camera';
+import { useNavigation } from '@react-navigation/native';
+import { CameraRoll } from "@react-native-camera-roll/camera-roll";
+import { odApi } from '../ai_model/BP_Food';
+function CameraScreen() {
+  const device = useCameraDevice('back');
+  const navigation = useNavigation();
+  const cameraRef = useRef(null); // 카메라 참조 생성
+  if (device == null) return <View />;
 
-//   useEffect(() => {
-//     requestCameraPermission().then(() => {
-//       if (devices && Object.keys(devices).length > 0) { //카메라가 있으면 실행
-//         // selectCameraDeviceByName("BACK (0)");
-//         selectCameraDeviceByName("FRONT (1)");
-//       }
-//     });
-//   }, [devices]);
+  
+  const takePhoto = async () => {
+    if (cameraRef.current) {
+      try {
+        const file = await cameraRef.current.takePhoto({
+          qualityPrioritization: 'speed',
+          flash: 'off',
+        });
 
-//   const requestCameraPermission = async () => { //권한 코드
-//     const result = await request(PERMISSIONS.ANDROID.CAMERA);
-//     if (result === RESULTS.GRANTED) {
-//       console.log('granted');
-//     } else {
-//       console.log('not granted');
-//     }
-//     return result;
-//   };
+        // CameraRoll을 사용하여 사진 저장
+        await CameraRoll.save(`file://${file.path}`, { type: 'photo' });
+        const apiResult = await odApi(`file://${file.path}`,`${file.name}`);
+        // processApi 함수를 호출하여 결과를 가져옵니다.
+        // 사진 파일을 fetch 하여 blob 데이터로 변환
+        const result = await fetch(`file://${file.path}`);
+        const data = await result.blob();
+        console.log(data)
+        // 변환된 blob 데이터를 다음 화면으로 넘김
+        // navigation.navigate('홈', { photo: file.path });
+        navigation.navigate('ImageIn', { photo: file.path, apiResult });
+        // navigation.navigate('ImageIn', { photo: file.path });
 
-//   const selectCameraDeviceByName = (cameraName) => {
-//     const device = Object.values(devices).find(d => d.name === cameraName);
-//     setSelectedDevice(device);
-//   };
-
-//   if (!selectedDevice) {
-//     return <Text>Loading Camera...</Text>;
-//   }
-
-//   return (
-//     <View style={styles.container}>
-//       <Camera
-//         ref={camera}
-//         style={styles.camera}
-//         device={devices}
-//         isActive={true}
-//       />
-//     </View>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: 'black',
-//   },
-//   camera: {
-//     flex: 1,
-//   }
-// });
-
-// export default CameraScreen;
-import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { Camera, useCameraDevices } from 'react-native-vision-camera';
-import { request, PERMISSIONS, RESULTS } from 'react-native-permissions';
-
-const CameraScreen = () => {
-  const camera = useRef(null);
-  const [selectedDevice, setSelectedDevice] = useState(null);
-  const devices = useCameraDevices();
-
-  useEffect(() => {
-    requestCameraPermission().then(() => {
-      if (devices && Object.keys(devices).length > 0) {
-        // selectCameraDeviceByName("FRONT (1)"); // 카메라 이름을 정확히 확인하세요
-        selectCameraDeviceByName("BACK (0)");
+      } catch (error) {
+        console.error(error);
       }
-    });
-  }, [devices]);
-
-  const requestCameraPermission = async () => {
-    const result = await request(PERMISSIONS.ANDROID.CAMERA);
-    if (result === RESULTS.GRANTED) {
-      console.log('granted');
-    } else {
-      console.log('not granted');
     }
-    return result;
   };
-
-  const selectCameraDeviceByName = (cameraName) => {
-    const device = Object.values(devices).find(d => d.name === cameraName);
-    setSelectedDevice(device);
-  };
-
-  if (!selectedDevice) {
-    return <Text>Loading Camera...</Text>;
-  }
-
   return (
-    <View style={styles.container}>
+    <View style={{ flex: 1 }}>
       <Camera
-        ref={camera}
-        style={styles.camera}
-        device={selectedDevice} // 수정된 부분
+        ref={cameraRef} // 카메라 참조 할당
+        style={{ flex: 1 }}
+        device={device}
         isActive={true}
+        photo={true}
       />
+      <Button title="사진 찍기" onPress={takePhoto} />
     </View>
   );
-};
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: 'black',
-  },
-  camera: {
-    flex: 1,
-  }
-});
+}
 
 export default CameraScreen;

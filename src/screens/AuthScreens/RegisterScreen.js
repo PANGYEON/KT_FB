@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Button, View, Input, Text } from 'native-base';
 import { StyleSheet, Alert, Dimensions, KeyboardAvoidingView, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
 
 // 이메일 및 비밀번호 정규식
 const emailRegEx = /^[A-Za-z0-9]([-_.]?[A-Za-z0-9])*@[A-Za-z0-9]([-_.]?[A-Za-z0-9])*\.[A-Za-z]{2,}(\.[A-Za-z]{2,})?$/i;
@@ -26,6 +27,24 @@ const RegisterScreen = ({ route }) => {
   const [isPasswordValid, setIsPasswordValid] = useState(false);
   const { width, height } = Dimensions.get('window');
 
+  // 이메일 중복 확인 함수
+  const checkEmailExistence = async (email) => {
+    try {
+      let config = {
+        method: 'post',
+        url: 'http://edm.japaneast.cloudapp.azure.com/api/check-email-existence/',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        data: JSON.stringify({ email })
+      };
+      const response = await axios.request(config);
+      return response.data; // 서버로부터 받은 응답 반환
+    } catch (error) {
+      console.error("이메일 중복 확인 중 오류 발생:", error);
+      return null; // 오류 발생 시 null 반환
+    }
+  };
   const handlePasswordChange = (password) => {
     setPassword(password);
     setIsPasswordValid(passwordCheck(password));
@@ -62,20 +81,44 @@ const RegisterScreen = ({ route }) => {
     }
     return <View style={{ height: 8 }} />;
   };
-  const handleNextPage = () => {
+
+
+  const handleNextPage = async () => {
     if (!email || !password || !confirmPassword) {
       Alert.alert("오류", "이메일과 비밀번호를 모두 입력해주세요.");
       return;
     }
+
     if (isPasswordValid && isPasswordsMatch) {
+      // 이메일 중복 확인
+      const emailCheckResult = await checkEmailExistence(email);
+      if (emailCheckResult && emailCheckResult.message === "이미 사용 중인 이메일입니다.") {
+        Alert.alert("오류", "이메일이 중복입니다. 다시 입력해주세요.");
+        return;
+      }
+      // 중복이 아닌 경우 다음 페이지로 네비게이션
       navigation.navigate("RegisterInfo", { email, password });
     } else {
       Alert.alert("오류", "비밀번호 조건을 확인해주세요.");
     }
   };
+
+  const emailInputContainerStyle = {
+    
+    marginTop: height * 0.02, // 화면 높이의 70% 위치에 설정
+    // 기타 필요한 스타일 속성 추가
+  };
+  const passwordInputContainerStyle = {
+    marginTop: height * 0.02, // 화면 높이의 55% 위치에 설정
+    // 기타 필요한 스타일 속성 추가
+  };
+  const passwordconfirmInputContainerStyle = {
+    marginTop: height * 0.02, // 화면 높이의 40% 위치에 설정
+    // 기타 필요한 스타일 속성 추가
+  };
   const contentContainerStyle = {
     ...styles.contentContainer,
-    height: height * 0.75, // 화면 높이의 70%
+    height: height * 0.75, // 화면 높이의 75%
   };
   const buttonContainerStyle = {
     ...styles.buttonContainer,
@@ -102,59 +145,64 @@ const RegisterScreen = ({ route }) => {
 
         <View style={styles.container}>
           <View style={contentContainerStyle}>
-            <View style={{ marginTop: '6%' }} />
-            <Text style={{ marginLeft: 5, fontSize: 16 }} >이메일</Text>
-            <View style={styles.inputContainer}>
-              <Input
-                placeholder="이메일을 입력해주세요"
-                value={email}
-                onChangeText={(value) => setEmail(value)}
-                variant="outline"
-                w="100%"
-                borderWidth={2}
-                borderColor={emailCheck(email) || email.length === 0 ? "gray.300" : "red.600"}
-                _focus={{
-                  backgroundColor: "none",
-                  borderColor: emailCheck(email) ? "transparent" : "red.600"
-                }}
-              />
+            <View style={emailInputContainerStyle}>
+              {/* <View style={{ marginTop: '6%' }} /> */}
+              <Text style={{ marginLeft: 5, fontSize: 16 }} >이메일</Text>
+              <View style={styles.inputContainer}>
+                <Input
+                  placeholder="이메일을 입력해주세요"
+                  value={email}
+                  onChangeText={(value) => setEmail(value)}
+                  variant="outline"
+                  w="100%"
+                  borderWidth={2}
+                  borderColor={emailCheck(email) || email.length === 0 ? "gray.300" : "red.600"}
+                  _focus={{
+                    backgroundColor: "none",
+                    borderColor: emailCheck(email) ? "transparent" : "red.600"
+                  }}
+                />
+              </View>
+              {renderEmailError()}
             </View>
-            {renderEmailError()}
-            <View style={{ marginTop: '6%' }} />
-            {/* <View style={{ height: 2 }} /> */}
-            <Text style={{ marginLeft: 5, fontSize: 16 }}>비밀번호</Text>
-            <View style={styles.inputContainer}>
-              <Input
-                placeholder="비밀번호를 입력해주세요"
-                secureTextEntry
-                value={password}
-                onChangeText={handlePasswordChange}
-                borderWidth={2}
-                _focus={{
-                  backgroundColor: "none",
-                  borderColor: passwordCheck(password) ? "transparent" : "red.600"
-                }}
-              />
+            
+            <View style={passwordInputContainerStyle}>
+              <Text style={{ marginLeft: 5, fontSize: 16 }}>비밀번호</Text>
+              <View style={styles.inputContainer}>
+                <Input
+                  placeholder="비밀번호를 입력해주세요"
+                  secureTextEntry
+                  value={password}
+                  onChangeText={handlePasswordChange}
+                  borderWidth={2}
+                  _focus={{
+                    backgroundColor: "none",
+                    borderColor: passwordCheck(password) ? "transparent" : "red.600"
+                  }}
+                />
+              </View>
+              {renderPasswordError()}
             </View>
 
-            {renderPasswordError()}
-            <View style={{ marginTop: '6%' }} />
-            <Text style={{ marginLeft: 5, fontSize: 16 }}>비밀번호 확인</Text>
-            <View style={styles.inputContainer}>
-              <Input
-                placeholder="비밀번호를 다시 입력해주세요"
-                secureTextEntry
-                value={confirmPassword}
-                onChangeText={setConfirmPassword}
-                borderWidth={2}
-                borderColor={isPasswordsMatch || confirmPassword.length === 0 ? "gray.300" : "red.600"}
-                _focus={{
-                  backgroundColor: "none",
-                  borderColor: isPasswordsMatch ? "transparent" : "red.600"
-                }}
-              />
+            <View style={passwordconfirmInputContainerStyle}>
+              <Text style={{ marginLeft: 5, fontSize: 16 }}>비밀번호 확인</Text>
+              <View style={styles.inputContainer}>
+                <Input
+                  placeholder="비밀번호를 다시 입력해주세요"
+                  secureTextEntry
+                  value={confirmPassword}
+                  onChangeText={setConfirmPassword}
+                  borderWidth={2}
+                  borderColor={isPasswordsMatch || confirmPassword.length === 0 ? "gray.300" : "red.600"}
+                  _focus={{
+                    backgroundColor: "none",
+                    borderColor: isPasswordsMatch ? "transparent" : "red.600"
+                  }}
+                />
+              </View>
+              {renderConfirmPasswordError()}
             </View>
-            {renderConfirmPasswordError()}
+
             <View style={buttonContainerStyle}>
               <Button style={movingButtonStyle} onPress={() => navigation.navigate("Login")}>
                 이전

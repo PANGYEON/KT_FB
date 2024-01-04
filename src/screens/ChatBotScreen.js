@@ -20,7 +20,14 @@ const ChatBotScreen = ({onClose}) => {
       // 저장 에러 처리
     }
   };
-  
+  const clearChatHistory = async () => {
+    try {
+      await AsyncStorage.removeItem('@chat_history'); // AsyncStorage에서 대화 기록 삭제
+      setChatHistory([]); // 상태 업데이트
+    } catch (e) {
+      console.error('대화 기록 삭제 에러', e);
+    }
+  };
   const loadChatHistory = async () => {
     try {
       const jsonValue = await AsyncStorage.getItem('@chat_history');
@@ -101,7 +108,17 @@ const ChatBotScreen = ({onClose}) => {
         }}>
         <Text>X</Text>
       </TouchableOpacity>
-
+      <TouchableOpacity
+        onPress={clearChatHistory}
+        style={{
+          position: 'absolute',
+          top: 10,
+          right: 50, // '닫기' 버튼 옆에 위치
+          padding: 10,
+          zIndex: 1
+        }}>
+        <Text>초기화</Text>
+      </TouchableOpacity>
       <HStack 
         space={2} 
         alignItems="start" 
