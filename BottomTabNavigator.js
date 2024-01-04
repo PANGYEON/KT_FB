@@ -8,7 +8,7 @@ import ChatScreen from './src/screens/ChatScreen';
 import HomeIcon from './src/icons/HomeIcon.png';
 import ReportIcon from './src/icons/ReportIcon.png';
 import BoardIcon from './src/icons/BoardIcon.png';
-import ChatIcon from './src/icons/ChatIcon.png';
+import FriendIcon from './src/icons/FriendIcon.png';
 import { Image, Text,Dimensions,View, StyleSheet,BackHandler } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
