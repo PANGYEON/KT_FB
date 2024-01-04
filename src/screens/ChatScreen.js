@@ -94,16 +94,87 @@
 
 // export default ChatScreen;
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, RefreshControl, StyleSheet, Image } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, RefreshControl, StyleSheet, Image, Modal, TextInput, Button  } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import WelcomeIcon from '../icons/WelcomeIcon.png';
+import { useNavigation } from '@react-navigation/native';
+import { useSubscription } from '../../SubscriptionContext';
 
 const ChatScreen = () => {
   const [friends, setFriends] = useState([]);
   const [selectedFriend, setSelectedFriend] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
+  const navigation = useNavigation();
+  const [subscribeModalVisible, setSubscribeModalVisible] = useState(false);
+  const { needsRefresh, setNeedsRefresh } = useSubscription();
   
+  // const [subscribeEmail, setSubscribeEmail] = useState('');
+
+  // useEffect(() => {
+  //   const fetchUserInfo = async () => {
+  //     try {
+  //       const token = await AsyncStorage.getItem('@user_token');
+  //       if (token) {
+  //         let config = {
+  //           method: 'get',
+  //           url: 'http://edm.japaneast.cloudapp.azure.com/api/user/info/',
+  //           headers: {
+  //             'Authorization': `Bearer ${token}`
+  //           },
+  //         };
+  //         // Use fetch or axios to make the API call
+  //         const response = await axios(config);
+  //         console.log(response.data.user)
+  //         setUserInfo(response.data.user); // Assuming the response contains user info
+  //       }
+  //     } catch (e) {
+  //       console.error('Error fetching user info', e);
+  //     }
+  //   };
+
+  //   fetchUserInfo();
+  // }, []);
+
+  // const handleSubscribe = async () => {
+  //   try {
+  //     const token = await AsyncStorage.getItem('@user_token');
+  //     let data = JSON.stringify({
+  //       email: subscribeEmail
+  //     });
+  
+  //     let config = {
+  //       method: 'post',
+  //       maxBodyLength: Infinity,
+  //       url: 'http://edm.japaneast.cloudapp.azure.com/api/subscribe/',
+  //       headers: { 
+  //         'Content-Type': 'application/json', 
+  //         'Authorization': `Bearer ${token}`
+  //       },
+  //       data: data
+  //     };
+  
+  //     const response = await axios(config);
+  
+  //     console.log('Response Status:', response.status);
+  //     console.log('Response Data:', response.data);
+  
+  //     if (response.status === 200) {
+  //       console.log('구독 정보가 성공적으로 전송되었습니다.');
+  //       alert('구독 정보가 성공적으로 전송되었습니다.');
+  //     } else {
+  //       alert('구독 정보 전송에 실패했습니다: ' + response.status);
+  //     }
+  //   } catch (error) {
+  //     if (error.response && error.response.data && error.response.data.display_message) {
+  //       alert(error.response.data.display_message);
+  //     } else {
+  //       console.error('구독 정보 전송 중 오류 발생', error);
+  //       alert('구독 정보 전송 중 오류가 발생했습니다.');
+  //     }
+  //   }
+  // };
+
   const unsubscribeFriend = async (friendName) => {
     const friend = friends.find(f => f.name === friendName);
     if (!friend) {
@@ -170,8 +241,11 @@ const ChatScreen = () => {
   };
 
   useEffect(() => {
-    fetchFriends();
-  }, []);
+    if (needsRefresh) {
+      fetchFriends();
+      setNeedsRefresh(false); // 상태 초기화
+    }
+  }, [needsRefresh, setNeedsRefresh]);
 
   const onRefresh = useCallback(() => {
     fetchFriends();
@@ -182,7 +256,7 @@ const ChatScreen = () => {
   };
 
   const navigateToProfile = () => {
-    // 여기에 프로필 페이지로 이동하는 로직을 추가
+    navigation.navigate('Profile');
   };
 
 
@@ -235,10 +309,32 @@ const ChatScreen = () => {
       // 친구가 없을 때의 화면
       <View style={styles.noFriendsContainer}>
         <Image source={WelcomeIcon} style={styles.emoticon} />
-        <Text style={styles.noFriendsText}>친구의 식단 식단을 확인해보세요</Text>
+        <Text style={styles.noFriendsText}>친구의 식단을 확인해보세요</Text>
+        {/* <TouchableOpacity onPress={() => setSubscribeModalVisible(true)} style={styles.profileButton}>
+          <Text>친구 구독하기</Text>
+        </TouchableOpacity> */}
         <TouchableOpacity onPress={navigateToProfile} style={styles.profileButton}>
-          <Text>프로필로 가기</Text>
+          <Text>친구 구독하기</Text>
         </TouchableOpacity>
+
+        {/* 구독하기 모달
+        <Modal
+            isOpen={subscribeModalVisible}
+            onClose={() => setSubscribeModalVisible(false)}
+          >
+            <Modal.Content>
+              <Modal.Body>
+                <TextInput
+                  placeholder="친구의 이메일을 입력하세요"
+                  value={subscribeEmail}
+                  onChangeText={setSubscribeEmail}
+                />
+              </Modal.Body>
+              <Modal.Footer>
+                <Button onPress={handleSubscribe} style={styles.subscribeButton}>구독하기</Button>
+              </Modal.Footer>
+            </Modal.Content>
+        </Modal> */}
       </View>
     )}
     </View>
@@ -274,7 +370,7 @@ const styles = StyleSheet.create({
   profileButton: {
     paddingHorizontal: 20,
     paddingVertical: 10,
-    backgroundColor: '#4F6D7A',
+    backgroundColor: '#D7D4FF',
     borderRadius: 40
   }
 });

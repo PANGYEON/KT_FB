@@ -7,6 +7,7 @@ import AIcon from '../icons/A.png';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 const { width, height } = Dimensions.get('window');
+import { useSubscription } from '../../SubscriptionContext';
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
@@ -23,6 +24,7 @@ const ProfileScreen = () => {
   //구독 관련
   const [subscribeModalVisible, setSubscribeModalVisible] = useState(false);
   const [subscribeEmail, setSubscribeEmail] = useState('');
+  const { setNeedsRefresh } = useSubscription();
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -102,6 +104,7 @@ const ProfileScreen = () => {
       } else {
         alert('구독 정보 전송에 실패했습니다: ' + response.status);
       }
+      setNeedsRefresh(true);
     } catch (error) {
       if (error.response && error.response.data && error.response.data.display_message) {
         alert(error.response.data.display_message);
@@ -273,6 +276,10 @@ const ProfileScreen = () => {
         <View style={styles.userText}>
           <Text>이름</Text>
           <Text>{userInfo.name}</Text>
+        </View>
+        <View style={styles.userText}>
+          <Text>이메일</Text>
+          <Text>{userInfo.email}</Text>
         </View>
         <View style={styles.userText}>
           <Text>생년월일</Text>
@@ -564,13 +571,13 @@ const ProfileScreen = () => {
     <Modal.Content>
       <Modal.Body>
         <TextInput
-          placeholder="이메일을 입력하세요"
+          placeholder="친구의 이메일을 입력하세요"
           value={subscribeEmail}
           onChangeText={setSubscribeEmail}
         />
       </Modal.Body>
       <Modal.Footer>
-        <Button onPress={handleSubscribe}>구독하기</Button>
+        <Button onPress={handleSubscribe} style={styles.subscribeButton}>구독하기</Button>
       </Modal.Footer>
     </Modal.Content>
   </Modal>
@@ -622,7 +629,7 @@ const styles = StyleSheet.create({
   divider: {
     height: 1, // 구분선의 세로 길이를 지정합니다.
     backgroundColor: '#ccc', // 구분선의 색상을 지정합니다.
-    marginVertical: '1%', // 구분선의 상하 여백을 퍼센트로 조정합니다.
+    marginVertical: '1%',
   },
 
   // 저장, 취소 버튼 파트
@@ -658,7 +665,6 @@ const styles = StyleSheet.create({
     marginVertical: 5, // 버튼 사이의 수직 간격 설정
     justifyContent: 'center', // 컨텐츠를 세로 방향으로 중앙에 위치시킵니다.
     backgroundColor: '#8E86FA',
-
     alignItems: 'center',
   },
   // 계정정보 파트
@@ -673,6 +679,11 @@ const styles = StyleSheet.create({
     paddingTop: '3%',
     // backgroundColor: 'orange',
   },
+  //구독하기 버튼
+  subscribeButton: {
+    backgroundColor: '#8E86FA',
+    borderRadius: 40,
+  }, 
 
   // 계정정보 - 유저각각의 정보들의 스타일
   userText: {
