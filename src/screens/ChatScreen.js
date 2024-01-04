@@ -94,13 +94,12 @@
 
 // export default ChatScreen;
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, RefreshControl } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, RefreshControl, StyleSheet, Image } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import WelcomeIcon from '../icons/WelcomeIcon.png';
 
 const ChatScreen = () => {
-  const navigation = useNavigation();
-
   const [friends, setFriends] = useState([]);
   const [selectedFriend, setSelectedFriend] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
@@ -179,47 +178,103 @@ const ChatScreen = () => {
   const selectFriend = (friendName) => {
     setSelectedFriend(friendName);
   };
-  return (
-    <View style={{ flex: 1, flexDirection: 'row' }}>
-      {/* 친구 목록 */}
-      <View style={{ 
-        width: '30%', 
-        backgroundColor: '#fff',
-        borderRightWidth: 1,
-        borderRightColor: '#D9D9D9'
-      }}>
-        <ScrollView
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
-        >
-          {friends.map((friend, index) => (
-  <TouchableOpacity key={index} onPress={() => selectFriend(friend.name)}>
-    <Text style={{ 
-      padding: 10, 
-      backgroundColor: selectedFriend === friend.name ? '#DFD8F7' : 'transparent' 
-    }}>
-      {friend.name} {/* 객체가 아닌, 친구의 이름을 렌더링 */}
-    </Text>
-  </TouchableOpacity>
-))}
 
-        </ScrollView>
+  const navigateToProfile = () => {
+    // 여기에 프로필 페이지로 이동하는 로직을 추가
+  };
+
+
+  return (
+    <View style={{ flex: 1 }}>
+      {/* 상단바 */}
+      <View style={styles.titleBar}>
+        <Text style={styles.titleText}>친구 식단</Text>
       </View>
 
-      {/* 채팅방 */}
-      <View style={{ flex: 1, backgroundColor: '#fff' }}>
-  {selectedFriend && (
-    <View>
-      <Text>{selectedFriend}의 식단 기록</Text>
-      <TouchableOpacity onPress={() => unsubscribeFriend(selectedFriend)}>
-        <Text>구독 취소</Text>
-      </TouchableOpacity>
+      {friends.length > 0 ? (
+        <View style={{ flex: 1, flexDirection: 'row' }}>
+          {/* 친구 목록 */}
+          <View style={{ 
+              width: '30%',
+              borderRightWidth: 1,
+              borderRightColor: '#D9D9D9'
+            }}>
+          <ScrollView
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
+          >
+          {friends.map((friend, index) => (
+          <TouchableOpacity key={index} onPress={() => selectFriend(friend.name)}>
+          <Text style={{ 
+            padding: 10, 
+            backgroundColor: selectedFriend === friend.name ? '#DFD8F7' : 'transparent' 
+          }}>
+            {friend.name} {/* 객체가 아닌, 친구의 이름을 렌더링 */}
+            </Text>
+          </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
+    
+        {/* 채팅방 */}
+        <View style={{ flex: 1}}>
+          {selectedFriend && (
+          <View>
+            <Text>{selectedFriend}의 식단 기록</Text>
+            <TouchableOpacity onPress={() => unsubscribeFriend(selectedFriend)}>
+            <Text>구독 취소</Text>
+            </TouchableOpacity>
+          </View>
+          )}
+      </View>
+      </View>
+    ) : (
+      // 친구가 없을 때의 화면
+      <View style={styles.noFriendsContainer}>
+        <Image source={WelcomeIcon} style={styles.emoticon} />
+        <Text style={styles.noFriendsText}>친구의 식단 식단을 확인해보세요</Text>
+        <TouchableOpacity onPress={navigateToProfile} style={styles.profileButton}>
+          <Text>프로필로 가기</Text>
+        </TouchableOpacity>
+      </View>
+    )}
     </View>
-  )}
-</View>
-    </View>
-  );
+);
 };
+
+
+const styles = StyleSheet.create({
+  titleBar: {
+    padding: '4%',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  titleText: {
+    color: 'black',
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+  noFriendsContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  emoticon: {
+    width: 50,
+    height: 50,
+    marginBottom: 10
+  },
+  noFriendsText: {
+    fontSize: 16,
+    marginBottom: 20
+  },
+  profileButton: {
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    backgroundColor: '#4F6D7A',
+    borderRadius: 40
+  }
+});
 
 export default ChatScreen;
