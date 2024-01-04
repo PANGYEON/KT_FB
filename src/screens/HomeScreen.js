@@ -1,9 +1,9 @@
 
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState,useCallback } from 'react';
 import axios from 'axios';
 import { View, Text, Button, TouchableOpacity, Image, StyleSheet, Modal, Dimensions } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute,useFocusEffect  } from '@react-navigation/native';
 import ChatBotScreen from './ChatBotScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { launchImageLibrary } from 'react-native-image-picker';
@@ -19,12 +19,38 @@ const HomeScreen = () => {
 
   const { width, height } = Dimensions.get('window');
 
-  useEffect(() => {
-    if (route.params?.photo) {
-      setPhotoUri(`file://${route.params.photo}`);
+  // useEffect(() => {
+  //   if (route.params?.photo) {
+  //     setPhotoUri(`file://${route.params.photo}`);
+  //   }
+  // }, [route.params?.photo]);
+  // useEffect(() => {
+  //   const getLatestPhoto = async () => {
+  //     const latestPhotoUri = await AsyncStorage.getItem('@latest_photo');
+  //     if (latestPhotoUri) {
+  //       setPhotoUri(latestPhotoUri);
+  //     }
+  //   };
+  
+  //   getLatestPhoto();
+  // }, []);
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     loadLatestPhoto();
+  //   }, [])
+  // );
+  const loadLatestPhoto = async () => {
+    const latestPhotoUri = await AsyncStorage.getItem('@latest_photo');
+    if (latestPhotoUri) {
+      setPhotoUri(latestPhotoUri);
     }
-  }, [route.params?.photo]);
+  };
 
+  useFocusEffect(
+    useCallback(() => {
+      loadLatestPhoto();
+    }, [])
+  );
   useEffect(() => {
     getTokenAndFetchUserInfo();
   }, []);
@@ -44,14 +70,12 @@ const HomeScreen = () => {
         console.log('ImagePicker Error: ', response.errorMessage);
       } else {
         const source = { uri: response.assets[0].uri };
-        const imageName = response.assets[0].fileName;
-  
-        try {
-          const apiResult = await odApi(source.uri, imageName);
-          navigation.navigate('ImageIn', { photo: source.uri, apiResult });
-        } catch (error) {
-          console.error('Error fetching data from odApi', error);
-        }
+        const name = { name: response.assets[0].fileName };
+        console.log(response.assets[0].fileName)
+        await AsyncStorage.setItem('@latest_photo', source.uri);
+        const apiResult = await odApi(source.uri,response.assets[0].fileName);
+        // ImageInScreen으로 이동하면서 photoUri 전달
+        navigation.navigate('ImageIn', { photo: source.uri,apiResult });
       }
     });
   };
@@ -114,7 +138,7 @@ const HomeScreen = () => {
       </View>
       <View style={styles.ImgContainer}>
       {/* 이미지 불러오기 공간 */}
-      {photoUri && <Image source={{ uri: photoUri }} style={styles.image} />}
+      {photoUri && <Image source={{ uri: photoUri  }} style={styles.image} resizeMode='contain'/>}
 
 
       {/* 사진 촬영 버튼 */}
@@ -236,6 +260,7 @@ const styles = StyleSheet.create({
   ImgContainer: {
     alignItems: 'center',
     justifyContent: 'center',
+    
   },
   image: {
     width: width * 0.8,

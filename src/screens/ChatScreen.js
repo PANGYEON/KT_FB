@@ -109,7 +109,9 @@ const ChatScreen = () => {
       alert('친구 정보를 찾을 수 없습니다.');
       return;
     }
-  
+    if (selectedFriend === friendName) {
+      setSelectedFriend(null); // 구독 취소한 친구가 현재 선택된 친구일 경우, 선택 해제
+    }
     const token = await AsyncStorage.getItem('@user_token');
     let config = {
       method: 'delete',
