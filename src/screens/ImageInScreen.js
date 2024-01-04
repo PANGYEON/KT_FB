@@ -10,7 +10,32 @@ const ImageInScreen = () => {
   const [photoUri, setPhotoUri] = useState(null);
   const navigation = useNavigation();
   const [apiResult, setApiResult] = useState(null);
+  const [foodNames, setFoodNames] = useState([]);
 
+  useEffect(() => {
+    if (route.params?.photo) {
+      setPhotoUri(route.params.photo);
+    }
+    if (route.params?.apiResult) {
+      setApiResult(route.params.apiResult);
+    }
+  }, [route.params]);
+
+  useEffect(() => {
+    if (route.params?.photo) {
+      setPhotoUri(route.params.photo);
+    }
+    if (route.params?.apiResult) {
+      // apiResult를 객체로 변환
+      const resultObj = JSON.parse(route.params.apiResult);
+      setApiResult(resultObj);
+
+      // foodNames 추출 및 상태 업데이트
+      if (resultObj.predict && resultObj.predict.foodNames) {
+        setFoodNames(resultObj.predict.foodNames);
+      }
+    }
+  }, [route.params]);
   // useEffect(() => {
   //   if (route.params?.photo) {
   //     setPhotoUri(`file://${route.params.photo}`);
@@ -19,26 +44,24 @@ const ImageInScreen = () => {
   //     setApiResult(route.params.apiResult);
   //   }
   // }, [route.params?.photo, route.params?.apiResult]);
-  useEffect(() => {
-    if (route.params?.photo) {
-      setPhotoUri(route.params.photo); // Set the photo URI
-    }
-    if (route.params?.apiResult) {
-      setApiResult(route.params.apiResult); // Set the API result
-    }
-  }, [route.params]);
-
-
+  // useEffect(() => {
+  //   if (route.params?.photo) {
+  //     setPhotoUri(route.params.photo); // Set the photo URI
+  //   }
+  //   if (route.params?.apiResult) {
+  //     setApiResult(route.params.apiResult); // Set the API result
+  //   }
+  // }, [route.params]);
 
 
   // useEffect(() => {
   //   if (route.params?.photo) {
-  //     setPhotoUri(`file://${route.params.photo}`);
+  //     setPhotoUri(route.params.photo);
   //   }
-  //   // if (route.params?.apiResult) {
-  //   //   setApiResult(route.params.apiResult);
-  //   // }
-  // }, [route.params?.photo]);
+  //   if (route.params?.apiResult) {
+  //     setApiResult(route.params.apiResult);
+  //   }
+  // }, [route.params]);
 
   const [selectedMeal, setSelectedMeal] = useState(null);
   const meals = ['아침', '점심', '저녁', '간식'];
@@ -59,16 +82,35 @@ const ImageInScreen = () => {
     // 'CameraScreen'으로 이동
     navigation.navigate('CameraScreen');
   };
-  const registerMeal = () => {
+  // const registerMeal = () => {
+  //   // ReportScreen 내의 DailyScreen으로 이동
+  //   navigation.navigate('BottomTabNavigator', {
+  //     screen: '리포트', 
+  //     params: {
+  //       screen: 'Daily',
+  //       params: { selectedMeal: selectedMeal }
+  //     }
+  //   });
+  // };
+ const registerMeal = () => {
     // ReportScreen 내의 DailyScreen으로 이동
     navigation.navigate('BottomTabNavigator', {
       screen: '리포트', 
       params: {
         screen: 'Daily',
-        params: { selectedMeal: selectedMeal }
+        params: { selectedMeal: selectedMeal
+                  ,photoUri: photoUri }
       }
     });
   };
+  // const registerMeal = () => {
+  //   // 식단 등록 시, 선택된 식사 시간과 사진 URI를 함께 전달
+  //   navigation.navigate('Daily', {
+  //     selectedMeal: selectedMeal,
+  //     photoUri: photoUri
+  //   });
+  // };
+
   return (
     <View flex={1}>
       <TouchableOpacity onPress={handleImagePress}>
@@ -89,7 +131,10 @@ const ImageInScreen = () => {
           ))}
         </View>
 
-        <View><Text>{JSON.stringify(apiResult, null, 2)}</Text></View>
+        <Text>식품 목록:</Text>
+      {foodNames.map((foodName, index) => (
+        <Text key={index}>{foodName}</Text>
+      ))}
         
         <Button isDisabled={!selectedMeal} onPress={registerMeal}>
           식단 등록

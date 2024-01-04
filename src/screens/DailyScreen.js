@@ -605,6 +605,8 @@ const DailyScreen = () => {
   const [isPortionModalVisible, setPortionModalVisible] = useState(false); // 인분 선택 Modal 표시 여부
   const [photoUri, setPhotoUri] = useState('https://via.placeholder.com/150');
  
+  const [photoUri, setPhotoUri] = useState('https://via.placeholder.com/150');
+
   const [integerPart, setIntegerPart] = useState('0');
   const [fractionalPart, setFractionalPart] = useState('0');
  
@@ -623,24 +625,36 @@ const DailyScreen = () => {
     // 여기에 Modal 표시 및 숨김을 위한 로직 작성
     setPortionModalVisible(!isPortionModalVisible);
   };
- 
- 
- 
+
+
+
   // useEffect(() => {
   //   if (route.params?.selectedMeal && route.params?.photoUri) {
   //     // 선택된 식사 시간에 맞는 mealData 객체의 이미지 업데이트
   //     const updatedMealData = { ...mealData };
   //     updatedMealData[route.params.selectedMeal].image = route.params.photoUri;
- 
+  
   //     setMealData(updatedMealData); // 업데이트된 mealData 상태 설정
   //   }
   // }, [route.params]);
+  // useEffect(() => {
+  //   if (route.params?.selectedMeal) {
+  //     setSelectedMeal(route.params.selectedMeal);
+  //   }
+  //   if (route.params?.photoUri) {
+  //     setPhotoUri(route.params.photoUri);
+  //   }
+  // }, [route.params]);
   useEffect(() => {
-    if (route.params?.selectedMeal) {
+    console.log('Received params:', route.params);
+    if (route.params?.selectedMeal && route.params?.photoUri) {
       setSelectedMeal(route.params.selectedMeal);
-    }
-    if (route.params?.photoUri) {
       setPhotoUri(route.params.photoUri);
+      const updatedMealData = { ...mealData };
+      updatedMealData[route.params.selectedMeal].image = route.params.photoUri;
+  
+      setMealData(updatedMealData); // 업데이트된 mealData 상태 설정
+      // 여기에서 필요한 처리를 수행합니다.
     }
   }, [route.params]);
   // 각 식사 시간별 식사 정보
@@ -656,7 +670,7 @@ const DailyScreen = () => {
       나트륨: '50mg',
       콜레스테롤: '50mg',
       //... 아침 식사에 대한 다른 영양소나 식사 정보
-      image: tempImageUrl, // 실제 아침 식사 이미지 URL로 변경하세요
+      image: photoUri, // 실제 아침 식사 이미지 URL로 변경하세요
     },
     점심: {
       // //점심 식사에 대한 정보
@@ -670,7 +684,7 @@ const DailyScreen = () => {
       // 나트륨: '50mg',
       // 콜레스테롤: '50mg',
       // //... 아침 식사에 대한 다른 영양소나 식사 정보
-      //image: tempImageUrl, // 실제 아침 식사 이미지 URL로 변경하세요
+      image: photoUri, // 실제 아침 식사 이미지 URL로 변경하세요
     },
     저녁: {
       // 저녁 식사에 대한 정보
@@ -684,7 +698,7 @@ const DailyScreen = () => {
       나트륨: '50mg',
       콜레스테롤: '50mg',
       //... 아침 식사에 대한 다른 영양소나 식사 정보
-      image: tempImageUrl, // 실제 아침 식사 이미지 URL로 변경하세요
+      image: photoUri, // 실제 아침 식사 이미지 URL로 변경하세요
     },
     간식: {
       // 간식 식사에 대한 정보
@@ -698,11 +712,11 @@ const DailyScreen = () => {
       나트륨: '50mg',
       콜레스테롤: '50mg',
       //... 아침 식사에 대한 다른 영양소나 식사 정보
-      image: tempImageUrl, // 실제 아침 식사 이미지 URL로 변경하세요
+      image: photoUri, // 실제 아침 식사 이미지 URL로 변경하세요
     },
   });
- 
- 
+
+
   const meals = ['아침', '점심', '저녁', '간식'];
  
   // 총 영양소 합계 계산 함수
