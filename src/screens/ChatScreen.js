@@ -94,12 +94,13 @@
 
 // export default ChatScreen;
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, RefreshControl, StyleSheet, Button, Image } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, RefreshControl, StyleSheet, Button, Image, Modal } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import WelcomeIcon from '../icons/WelcomeIcon.png';
 import { useNavigation } from '@react-navigation/native';
 import { useSubscription } from '../../SubscriptionContext';
+import { HStack } from 'native-base';
 
 const ChatScreen = () => {
   const [friends, setFriends] = useState([]);
@@ -107,11 +108,15 @@ const ChatScreen = () => {
   const [refreshing, setRefreshing] = useState(false);
   const navigation = useNavigation();
   const { subscriptionList } = useSubscription(); 
-  
+  const [alertModalVisible, setAlertModalVisible] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+
   const unsubscribeFriend = async (friendName) => {
     const friend = friends.find(f => f.name === friendName);
     if (!friend) {
       alert('친구 정보를 찾을 수 없습니다.');
+      // setAlertMessage('친구 정보를 찾을 수 없습니다.');
+      // setAlertModalVisible(true);
       return;
     }
   
@@ -127,10 +132,14 @@ const ChatScreen = () => {
     try {
       await axios(config);
       alert(`${friendName}와의 구독이 취소되었습니다.`);
+      // setAlertMessage(`${friendName}와의 구독이 취소되었습니다.`);
+      // setAlertModalVisible(true);
       fetchFriends();
     } catch (error) {
       console.error('구독 취소 실패:', error);
       alert('구독 취소에 실패했습니다.');
+      // setAlertMessage('구독 취소 실패:', error);
+      // setAlertModalVisible(true);
     }
   };
 
@@ -173,6 +182,12 @@ const ChatScreen = () => {
   useEffect(() => {
     fetchFriends();
   }, [subscriptionList]);
+
+  useEffect(() => {
+    if (friends.length > 0) {
+      selectFriend(friends[0].name);
+    }
+  }, [friends]);
 
   const onRefresh = useCallback(() => {
     fetchFriends();
@@ -219,56 +234,89 @@ const ChatScreen = () => {
         </ScrollView>
       </View>
     
-        {/* 채팅방 */}
-        <View style={{ flex: 1}}>
-          {selectedFriend && (
-          <View>
-            <Text>{selectedFriend}의 식단 기록</Text>
-            <TouchableOpacity onPress={() => unsubscribeFriend(selectedFriend)}>
-            <Text>구독 취소</Text>
-            </TouchableOpacity>
-          </View>
-          )}
-      </View>
-      </View>
-    ) : (
-      // 친구가 없을 때의 화면
-      <View style={styles.noFriendsContainer}>
-        <Image source={WelcomeIcon} style={styles.emoticon} />
-        <Text style={styles.noFriendsText}>친구의 식단을 확인해보세요</Text>
-        {/* <TouchableOpacity onPress={() => setSubscribeModalVisible(true)} style={styles.profileButton}>
-          <Text>친구 구독하기</Text>
-        </TouchableOpacity> */}
-        <TouchableOpacity onPress={navigateToProfile} style={styles.profileButton}>
-          <Text>친구 구독하기</Text>
-        </TouchableOpacity>
 
-        {/* 구독하기 모달
-        <Modal
-            isOpen={subscribeModalVisible}
-            onClose={() => setSubscribeModalVisible(false)}
-          >
-            <Modal.Content>
-              <Modal.Body>
-                <TextInput
-                  placeholder="친구의 이메일을 입력하세요"
-                  value={subscribeEmail}
-                  onChangeText={setSubscribeEmail}
-                />
-              </Modal.Body>
-              <Modal.Footer>
-                <Button onPress={handleSubscribe} style={styles.subscribeButton}>구독하기</Button>
-              </Modal.Footer>
-            </Modal.Content>
-        </Modal> */}
+
+        {/* 채팅방 */}
+        <View style={{ flex:1 }}>
+          {selectedFriend && (
+          <HStack justifyContent="space-between" alignItems="center" paddingHorizontal={10}>
+            <Text style={styles.unsubscribeText}>{selectedFriend}의 식단 기록</Text>
+            <TouchableOpacity onPress={() => unsubscribeFriend(selectedFriend)} style={styles.unsubscribeButton}>
+            <Text style={{color:'#FFFFFF'}}>구독 취소</Text>
+            </TouchableOpacity>
+          </HStack>
+          )}
+        </View>
       </View>
-    )}
+      ) : (
+        // 친구가 없을 때의 화면
+        <View style={styles.noFriendsContainer}>
+          <Image source={WelcomeIcon} style={styles.emoticon} />
+          <Text style={styles.noFriendsText}>친구의 식단을 확인해보세요</Text>
+          {/* <TouchableOpacity onPress={() => setSubscribeModalVisible(true)} style={styles.profileButton}>
+            <Text>친구 구독하기</Text>
+          </TouchableOpacity> */}
+          <TouchableOpacity onPress={navigateToProfile} style={styles.profileButton}>
+            <Text>친구 구독하기</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+        {/* <Modal isOpen={alertModalVisible}>
+          <View style={styles.alertModalContainer}>
+            <Text style={styles.alertText}>{alertMessage}</Text>
+            <View style={styles.alertButtonContainer}>
+            <Button style={styles.alertButton} title="OK" onPress={() => setAlertModalVisible(false)}>
+              <Text style={{color:'#fff'}}>OK</Text>
+            </Button>
+            </View>
+          </View>
+        </Modal> */}
     </View>
 );
 };
 
 
 const styles = StyleSheet.create({
+  alertModalContainer:{
+    backgroundColor:'#fff',
+    borderRadius: 10, 
+    padding:'5%',
+    alignItems:'flex-start',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    fontSize:1,
+    height:150,
+    width:300,
+  },
+  modalText: {
+    fontSize: 16,             // 글자 크기
+    textAlign: 'flex-start',      // 텍스트 중앙 정렬
+  },
+  alertButtonContainer:{
+    flex: 1,
+    justifyContent: 'flex-end', // 버튼을 하단으로 이동
+    alignItems: 'flex-end', // 버튼을 오른쪽으로 이동
+    width:'100%',
+  },
+  alertButton:{
+    backgroundColor: '#8E86FA',
+    borderRadius: 18,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+
   titleBar: {
     padding: '4%',
     alignItems: 'center',
@@ -298,7 +346,32 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     backgroundColor: '#D7D4FF',
     borderRadius: 40
-  }
+  },
+
+  friendDietRecord: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    padding: 10,
+  },
+
+  unsubscribeText:{
+    fontSize: 15,
+    fontWeight: 'bold',
+  },
+
+  unsubscribeButton: {
+    backgroundColor: '#8E86FA',
+    borderRadius: 40,
+    padding:10,
+    marginHorizontal:10,
+    shadowColor: '#000', // Shadow color
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
 });
 
 export default ChatScreen;
