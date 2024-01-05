@@ -72,7 +72,14 @@ const ImageInScreen = () => {
       }
     });
   };
- 
+  // const registerMeal = () => {
+  //   // 식단 등록 시, 선택된 식사 시간과 사진 URI를 함께 전달
+  //   navigation.navigate('Daily', {
+  //     selectedMeal: selectedMeal,
+  //     photoUri: photoUri
+  //   });
+  // };
+
   return (
     <View flex={1}>
       <TouchableOpacity style={{ padding:20, justifyContent: 'center', alignItems: 'center'}} onPress={handleImagePress}>

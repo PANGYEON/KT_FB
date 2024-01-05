@@ -7,12 +7,15 @@ import AIcon from '../icons/A.png';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 const { width, height } = Dimensions.get('window');
+import { useSubscription } from '../../SubscriptionContext';
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
 
   const [logoutModalVisible, setLogoutModalVisible] = useState(false);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [alertModalVisible, setAlertModalVisible] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
 
 
   const [dietGoalModalVisible, setDietGoalModalVisible] = useState(false);
@@ -23,6 +26,8 @@ const ProfileScreen = () => {
   //구독 관련
   const [subscribeModalVisible, setSubscribeModalVisible] = useState(false);
   const [subscribeEmail, setSubscribeEmail] = useState('');
+  const { updateSubscriptionList } = useSubscription();
+
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -73,6 +78,7 @@ const ProfileScreen = () => {
       console.error('Failed to fetch the token from storage', e);
     }
   };
+
   const handleSubscribe = async () => {
     try {
       const token = await AsyncStorage.getItem('@user_token');
@@ -98,19 +104,30 @@ const ProfileScreen = () => {
   
       if (response.status === 200) {
         console.log('구독 정보가 성공적으로 전송되었습니다.');
-        alert('구독 정보가 성공적으로 전송되었습니다.');
+        setAlertMessage('구독 정보가 성공적으로 전송되었습니다.');
+        setAlertModalVisible(true);
+        // alert('구독 정보가 성공적으로 전송되었습니다.');
       } else {
-        alert('구독 정보 전송에 실패했습니다: ' + response.status);
+        // alert('구독 정보 전송에 실패했습니다: ' + response.status);
+        setAlertMessage('구독 정보 전송에 실패했습니다: ' + response.status);
+        setAlertModalVisible(true);
       }
     } catch (error) {
       if (error.response && error.response.data && error.response.data.display_message) {
-        alert(error.response.data.display_message);
+        // alert(error.response.data.display_message);
+        setAlertMessage(error.response.data.display_message);
+        setAlertModalVisible(true);
       } else {
         console.error('구독 정보 전송 중 오류 발생', error);
-        alert('구독 정보 전송 중 오류가 발생했습니다.');
+        // alert('구독 정보 전송 중 오류가 발생했습니다.');
+        setAlertMessage('구독 정보 전송 중 오류가 발생했습니다.');
+        setAlertModalVisible(true);
       }
     }
+    await updateSubscriptionList();
+    setSubscribeModalVisible(false);
   };
+
   const [password, setPassword] = useState('');
 
   const deleteuser = async () => {
@@ -142,10 +159,14 @@ const ProfileScreen = () => {
     } catch (e) {
       // 오류 발생 시 알림 표시
       if (e.response && e.response.status === 404) {
-        alert('비밀번호가 틀렸습니다.');
+        setAlertMessage('비밀번호가 틀렸습니다.');
+        setAlertModalVisible(true);
+        // alert('비밀번호가 틀렸습니다.');
       } else {
         console.error('회원 탈퇴 에러', e);
-        alert('탈퇴 처리 중 오류가 발생했습니다.');
+        // alert('탈퇴 처리 중 오류가 발생했습니다.');
+        setAlertMessage('탈퇴 처리 중 오류가 발생했습니다.');
+        setAlertModalVisible(true);
       }
     }
   };
@@ -256,7 +277,7 @@ const ProfileScreen = () => {
         <Text style={styles.titleText}>구독하기</Text>
         <TouchableOpacity
   style={styles.shareButton}
-  onPress={() => setSubscribeModalVisible(true)} // 이 부분을 추가
+  onPress={() => setSubscribeModalVisible(true)}
 >
   <Text style={styles.buttonText}>구독 정보 입력</Text>
 </TouchableOpacity>
@@ -273,6 +294,10 @@ const ProfileScreen = () => {
         <View style={styles.userText}>
           <Text>이름</Text>
           <Text>{userInfo.name}</Text>
+        </View>
+        <View style={styles.userText}>
+          <Text>이메일</Text>
+          <Text>{userInfo.email}</Text>
         </View>
         <View style={styles.userText}>
           <Text>생년월일</Text>
@@ -506,10 +531,10 @@ const ProfileScreen = () => {
           </Modal.Body>
           <Modal.Footer>
             <Button.Group space={2}>
-              <Button variant="ghost" onPress={() => setLogoutModalVisible(false)}>
+              <Button style={styles.subscribeButton} variant="ghost" onPress={() => setLogoutModalVisible(false)}>
                 아니요
               </Button>
-              <Button onPress={logout}>
+              <Button style={styles.subscribeButton} onPress={logout}>
                 네
               </Button>
             </Button.Group>
@@ -534,10 +559,10 @@ const ProfileScreen = () => {
           </Modal.Body>
           <Modal.Footer>
             <Button.Group space={2}>
-              <Button variant="ghost" onPress={() => setDeleteModalVisible(false)}>
+              <Button style={styles.subscribeButton} variant="ghost" onPress={() => setDeleteModalVisible(false)}>
                 아니요
               </Button>
-              <Button onPress={deleteuser}>
+              <Button style={styles.subscribeButton} onPress={deleteuser}>
                 네
               </Button>
             </Button.Group>
@@ -549,40 +574,78 @@ const ProfileScreen = () => {
     isOpen={subscribeModalVisible}
     onClose={() => setSubscribeModalVisible(false)}
   >
-    {/* <Modal.Content>
-      <Modal.Body>
-        <TextInput
-          placeholder="이메일을 입력하세요"
-          value={subscribeEmail}
-          onChangeText={setSubscribeEmail}
-        />
-      </Modal.Body>
-      <Modal.Footer>
-        <Button onPress={handleSubscribe}>구독하기</Button>
-      </Modal.Footer>
-    </Modal.Content> */}
     <Modal.Content>
       <Modal.Body>
         <TextInput
-          placeholder="이메일을 입력하세요"
+          placeholder="친구의 이메일을 입력하세요"
           value={subscribeEmail}
           onChangeText={setSubscribeEmail}
         />
       </Modal.Body>
       <Modal.Footer>
-        <Button onPress={handleSubscribe}>구독하기</Button>
+        <Button onPress={handleSubscribe} style={styles.subscribeButton}>구독하기</Button>
       </Modal.Footer>
     </Modal.Content>
   </Modal>
 
-
-
+  <Modal isOpen={alertModalVisible}>
+    <View style={styles.alertModalContainer}>
+      <Text style={styles.alertText}>{alertMessage}</Text>
+      <View style={styles.alertButtonContainer}>
+      <Button style={styles.alertButton} onPress={() => setAlertModalVisible(false)}>
+        <Text style={{color:'#fff'}}>OK</Text>
+      </Button>
+      </View>
     </View>
+  </Modal>
+  {/* //merge */}
+  </View>
   );
 };
 
 const styles = StyleSheet.create({
   // 정적 스타일 정의
+  alertModalContainer:{
+    backgroundColor:'#fff',
+    borderRadius: 10, 
+    padding:'5%',
+    alignItems:'flex-start',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    fontSize:1,
+    height:150,
+    width:300,
+  },
+  modalText: {
+    fontSize: 16,             // 글자 크기
+    textAlign: 'flex-start',      // 텍스트 중앙 정렬
+  },
+  alertButtonContainer:{
+    flex: 1,
+    justifyContent: 'flex-end', // 버튼을 하단으로 이동
+    alignItems: 'flex-end', // 버튼을 오른쪽으로 이동
+    width:'100%',
+  },
+  alertButton:{
+    backgroundColor: '#8E86FA',
+    borderRadius: 18,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+
+
   container: {
     // flex: 1,
     // justifyContent: 'flex-end',
@@ -618,11 +681,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: '4%', // 버튼의 좌우 여백을 퍼센트로 조정합니다.
     paddingVertical: '2%', // 버튼의 상하 여백을 퍼센트로 조정합니다.
     borderRadius: 20,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 3,
+      height: 3
+    },
+    shadowOpacity: 1,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   divider: {
     height: 1, // 구분선의 세로 길이를 지정합니다.
     backgroundColor: '#ccc', // 구분선의 색상을 지정합니다.
-    marginVertical: '1%', // 구분선의 상하 여백을 퍼센트로 조정합니다.
+    marginVertical: '1%',
   },
 
   // 저장, 취소 버튼 파트
@@ -658,7 +729,6 @@ const styles = StyleSheet.create({
     marginVertical: 5, // 버튼 사이의 수직 간격 설정
     justifyContent: 'center', // 컨텐츠를 세로 방향으로 중앙에 위치시킵니다.
     backgroundColor: '#8E86FA',
-
     alignItems: 'center',
   },
   // 계정정보 파트
@@ -673,6 +743,11 @@ const styles = StyleSheet.create({
     paddingTop: '3%',
     // backgroundColor: 'orange',
   },
+  //구독하기 버튼
+  subscribeButton: {
+    backgroundColor: '#8E86FA',
+    borderRadius: 40,
+  }, 
 
   // 계정정보 - 유저각각의 정보들의 스타일
   userText: {
