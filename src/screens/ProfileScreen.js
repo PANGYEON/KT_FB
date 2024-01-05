@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button, View, Text, Divider, HStack, Box, Modal, Input, Center } from 'native-base';
 import { StyleSheet, TouchableOpacity, Image, Dimensions, TextInput } from 'react-native';
@@ -11,7 +12,7 @@ import { useSubscription } from '../../SubscriptionContext';
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
-
+ 
   const [logoutModalVisible, setLogoutModalVisible] = useState(false);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [alertModalVisible, setAlertModalVisible] = useState(false);
@@ -22,7 +23,7 @@ const ProfileScreen = () => {
   const [activityLevelModalVisible, setactivityLevelModalVisible] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [userInfo, setUserInfo] = useState(false)
-
+ 
   //구독 관련
   const [subscribeModalVisible, setSubscribeModalVisible] = useState(false);
   const [subscribeEmail, setSubscribeEmail] = useState('');
@@ -50,10 +51,10 @@ const ProfileScreen = () => {
         console.error('Error fetching user info', e);
       }
     };
-
+ 
     fetchUserInfo();
   }, []);
-
+ 
   // useEffect(() => {
   //   if (userInfo) {
   //     setUpdatedHeight(userInfo.height || ''); // 현재 userInfo의 값을 사용
@@ -85,23 +86,23 @@ const ProfileScreen = () => {
       let data = JSON.stringify({
         email: subscribeEmail
       });
-  
+ 
       let config = {
         method: 'post',
         maxBodyLength: Infinity,
         url: 'http://edm.japaneast.cloudapp.azure.com/api/subscribe/',
-        headers: { 
-          'Content-Type': 'application/json', 
+        headers: {
+          'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
         data: data
       };
-  
+ 
       const response = await axios(config);
-  
+ 
       console.log('Response Status:', response.status);
       console.log('Response Data:', response.data);
-  
+ 
       if (response.status === 200) {
         console.log('구독 정보가 성공적으로 전송되었습니다.');
         setAlertMessage('구독 정보가 성공적으로 전송되었습니다.');
@@ -129,7 +130,7 @@ const ProfileScreen = () => {
   };
 
   const [password, setPassword] = useState('');
-
+ 
   const deleteuser = async () => {
     try {
       const token = await AsyncStorage.getItem('@user_token');
@@ -139,7 +140,7 @@ const ProfileScreen = () => {
         email: userInfo.email,
         password: password
       });
-
+ 
       let config = {
         method: 'post',
         url: 'http://edm.japaneast.cloudapp.azure.com/api/user/info/', // 회원 탈퇴 API 엔드포인트
@@ -149,7 +150,7 @@ const ProfileScreen = () => {
         },
         data: data
       };
-
+ 
       const response = await axios(config);
       if (response.status === 200) {
         console.log('탈퇴가 완료되었습니다');
@@ -180,19 +181,19 @@ const ProfileScreen = () => {
       console.error('로그아웃 에러', e);
     }
   };
-
+ 
   const [updatedHeight, setUpdatedHeight] = useState(userInfo.height);
   const [updatedWeight, setUpdatedWeight] = useState(userInfo.weight);
   const [updatedActivityLevel, setUpdatedActivityLevel] = useState(userInfo.active_level);
   const [updatedDietGoal, setUpdatedDietGoal] = useState(userInfo.diet_purpose);
-
+ 
   const changeActivityLevel = (newLevel) => {
     if (isEditing) { // 수정 모드일 때만 상태를 업데이트
       setUpdatedActivityLevel(newLevel);
     }
     setactivityLevelModalVisible(false);
   };
-
+ 
   // 다이어트 목표 변경 함수
   const changeDietGoal = (newGoal) => {
     if (isEditing) { // 수정 모드일 때만 상태를 업데이트
@@ -200,7 +201,7 @@ const ProfileScreen = () => {
     }
     setDietGoalModalVisible(false);
   };
-
+ 
   // 이전 버튼 눌렀을 때 처리
   const goBack = () => {
     // 변경된 활동 레벨과 식단 목표를 파라미터로 전달하여 이전 화면으로 돌아감
@@ -209,7 +210,7 @@ const ProfileScreen = () => {
       updatedDietGoal: userInfo.diet_purpose,
     });
   };
-
+ 
   const cancelEdit = () => {
     setUpdatedHeight(userInfo.height);
     setUpdatedWeight(userInfo.weight);
@@ -217,7 +218,7 @@ const ProfileScreen = () => {
     setUpdatedDietGoal(userInfo.diet_purpose); // 원래 값으로 재설정
     setIsEditing(false);
   };
-
+ 
   const saveEdit = async () => {
     // Update local state
     const token = await getToken();
@@ -232,14 +233,14 @@ const ProfileScreen = () => {
       active_level: newActivityLevel,
       diet_purpose: newDietGoal,
     });
-
+ 
     let data = JSON.stringify({
       height: newHeight,
       weight: newWeight,
       diet_purpose: newDietGoal,
       active_level: newActivityLevel,
     });
-
+ 
     let config = {
       method: 'patch',
       maxBodyLength: Infinity,
@@ -250,7 +251,7 @@ const ProfileScreen = () => {
       },
       data: data
     };
-
+ 
     // API call to update user information
     try {
       const response = await axios(config);
@@ -262,17 +263,17 @@ const ProfileScreen = () => {
     } catch (error) {
       console.log('Error updating user info', error);
     }
-
+ 
     setIsEditing(false);
   };
-
+ 
   return (
     <View style={styles.container}>
       {/* 이전 버튼 */}
       <TouchableOpacity onPress={goBack}>
         <Image source={BackIcon} style={{ width: 25, height: 25 }} />
       </TouchableOpacity>
-
+ 
       <View style={styles.content1}>
         <Text style={styles.titleText}>구독하기</Text>
         <TouchableOpacity
@@ -283,13 +284,13 @@ const ProfileScreen = () => {
 </TouchableOpacity>
       </View>
       <View style={styles.divider} />
-
+ 
       {/* 계정 정보 및 수정 버튼 */}
       <View style={styles.content1}>
         <Text style={{ ...styles.titleText, paddingTop: '3%' }}>계정정보</Text>
       </View>
       <View style={styles.divider} />
-
+ 
       <View>
         <View style={styles.userText}>
           <Text>이름</Text>
@@ -307,7 +308,7 @@ const ProfileScreen = () => {
           <Text>성별</Text>
           <Text>{userInfo.gender}</Text>
         </View>
-
+ 
         <View style={styles.content1}>
           <Text style={{ ...styles.titleText, paddingTop: '3%' }}>수정가능정보</Text>
           {!isEditing ? (
@@ -335,7 +336,7 @@ const ProfileScreen = () => {
         </View>
       </View>
       <View style={styles.divider} />
-
+ 
       <View>
         <Box>
           {/* <View style={styles.userText}>
@@ -393,7 +394,7 @@ const ProfileScreen = () => {
               <Text>cm</Text>
             </View>
           </View>
-
+ 
           <View style={styles.userText}>
             <Text>몸무게</Text>
             <View style={styles.ex}>
@@ -415,8 +416,8 @@ const ProfileScreen = () => {
           </View>
         </Box>
         <View>
-
-
+ 
+ 
           <View style={styles.userText}>
             <Text>활동레벨</Text>
             <TouchableOpacity
@@ -428,9 +429,9 @@ const ProfileScreen = () => {
               </Text>
             </TouchableOpacity>
           </View>
-
-
-
+ 
+ 
+ 
           <View style={styles.userText}>
             <Text>식단목적</Text>
             <TouchableOpacity
@@ -444,7 +445,7 @@ const ProfileScreen = () => {
           </View>
         </View>
       </View>
-
+ 
       <View>
         <Text style={styles.titleText}>설정</Text>
         <View style={styles.divider} />
@@ -454,23 +455,23 @@ const ProfileScreen = () => {
         >
           <Text style={styles.settingText}>1:1 문의하기</Text>
         </TouchableOpacity>
-
+ 
         <TouchableOpacity
           // style = {styles.shareButton}
           onPress={() => setLogoutModalVisible(true)}
         >
           <Text style={styles.settingText}>로그아웃</Text>
         </TouchableOpacity>
-
+ 
         <TouchableOpacity onPress={() => setDeleteModalVisible(true)}>
           <Text style={styles.settingText}>회원탈퇴</Text>
         </TouchableOpacity>
       </View>
-
+ 
       {/* 건강 정보 및 수정 안내 */}
-
+ 
       {/* 기타 버튼들 */}
-
+ 
       {/* 활동 레벨 변경 모달 */}
       <Modal
         isOpen={activityLevelModalVisible}
@@ -499,8 +500,8 @@ const ProfileScreen = () => {
           </Modal.Body>
         </Modal.Content>
       </Modal>
-
-
+ 
+ 
       {/* 다이어트 목표 변경 모달 */}
       <Modal
         isOpen={dietGoalModalVisible}
@@ -518,8 +519,8 @@ const ProfileScreen = () => {
           </Modal.Body>
         </Modal.Content>
       </Modal>
-
-
+ 
+ 
       {/* 설정 및 로그아웃/회원탈퇴 버튼 */}
       <Modal
         isOpen={logoutModalVisible}
@@ -541,13 +542,13 @@ const ProfileScreen = () => {
           </Modal.Footer>
         </Modal.Content>
       </Modal>
-
+ 
       <Modal
         isOpen={deleteModalVisible}
         onClose={() => setDeleteModalVisible(false)}
       >
-        <Modal.Content maxWidth="400px">
-          <Modal.Body>
+        <Modal.Content maxWidth="400px" style={styles.customSubscribeModalContent}>
+          <View>
             <Text>탈퇴하시려면 비밀번호를 입력해주세요:</Text>
             <TextInput
               secureTextEntry={true}
@@ -566,7 +567,6 @@ const ProfileScreen = () => {
                 네
               </Button>
             </Button.Group>
-          </Modal.Footer>
         </Modal.Content>
       </Modal>
       {/* // 구독 모달 렌더링 */}
@@ -581,6 +581,13 @@ const ProfileScreen = () => {
           value={subscribeEmail}
           onChangeText={setSubscribeEmail}
         />
+ 
+        <Button
+          onPress={handleSubscribe}
+          style={styles.subscribeButton}
+        >구독하기</Button>
+      {/* <Modal.Body style={styles.customSubscribeModalBody}>
+       
       </Modal.Body>
       <Modal.Footer>
         <Button onPress={handleSubscribe} style={styles.subscribeButton}>구독하기</Button>
@@ -602,7 +609,7 @@ const ProfileScreen = () => {
   </View>
   );
 };
-
+ 
 const styles = StyleSheet.create({
   // 정적 스타일 정의
   alertModalContainer:{
@@ -695,7 +702,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#ccc', // 구분선의 색상을 지정합니다.
     marginVertical: '1%',
   },
-
+ 
   // 저장, 취소 버튼 파트
   saveSpace: {
     flexDirection: 'row',
@@ -708,14 +715,14 @@ const styles = StyleSheet.create({
   saveButton: {
     //backgroundColor: 'yellow',
     borderRadius: 20,
-
+ 
   },
   modalBody: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
-
+ 
   modalButton: {
     width: '100%', // 버튼의 너비를 모달의 너비와 동일하게 설정
     marginVertical: 5, // 버튼 사이의 수직 간격 설정
@@ -733,7 +740,7 @@ const styles = StyleSheet.create({
   },
   // 계정정보 파트
   modalButton1Text: {
-
+ 
     justifyContent: 'center', // 컨텐츠를 세로 방향으로 중앙에 위치시킵니다.
     alignItems: 'center',
   },
@@ -756,7 +763,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: '1%',
   },
-
+ 
   // 수정정보 - 건강정보
   healthbutton: {
     alignItems: 'center',
@@ -776,6 +783,30 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-
+ 
+  customSubscribeModalContent: {
+    //flexDirection: 'row',
+    justifyContent: 'flex-start', // 버튼을 오른쪽으로 정렬합니다.
+    //flhalignItems: 'center',
+    //backgroundColor: 'lightgreen', // 배경색을 변경합니다.
+    padding: 15, // 필요에 따라 패딩을 조정합니다.
+    borderWidth: 0,
+  },
+ 
+  // 구독 모달의 Modal.Footer의 커스텀 스타일
+  // customSubscribeModalFooter: {
+  //   flexDirection: 'row',
+  //   justifyContent: 'flex-end', // 버튼을 오른쪽으로 정렬합니다.
+  //   alignItems: 'center',
+  //   backgroundColor: 'lightgreen', // 배경색을 변경합니다.
+  //   paddingVertical: 15, // 필요에 따라 패딩을 조정합니다.
+  // },
+ 
+  subscribeButton: {
+    alignSelf: 'flex-end',
+    backgroundColor: '#8E86FA',
+    borderRadius: 50,
+  }
+ 
 });
 export default ProfileScreen;

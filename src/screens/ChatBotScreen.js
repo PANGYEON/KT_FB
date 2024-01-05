@@ -43,7 +43,7 @@ const ChatBotScreen = ({onClose}) => {
       const loadedChatHistory = await loadChatHistory();
       setChatHistory(loadedChatHistory);
     };
-
+ 
     fetchChatHistory();
   }, []);
 
@@ -90,6 +90,7 @@ const ChatBotScreen = ({onClose}) => {
   
     } catch (error) {
       console.error('Error:', error);
+      console.error('Error:', error);
     }
   
     // 입력창 초기화
@@ -120,15 +121,15 @@ const ChatBotScreen = ({onClose}) => {
         }}>
         <Text>초기화</Text>
       </TouchableOpacity>
-      <HStack 
-        space={2} 
-        alignItems="start" 
+      <HStack
+        space={2}
+        alignItems="start"
         style={{
-          marginVertical:12, 
-          marginHorizontal:10, 
+          marginVertical:12,
+          marginHorizontal:10,
           paddingVertical:10,
-          fontsize:12, 
-          borderBottomWidth:1, 
+          fontsize:12,
+          borderBottomWidth:1,
           borderBottomColor:'#D9D9D9'}}>
         <View>
           <Image source={ChatBotIcon} style={{width:25, height:25}} />
@@ -162,7 +163,7 @@ const ChatBotScreen = ({onClose}) => {
         </Text>
         ))}
       </ScrollView>
-
+ 
       <VStack space={3} marginBottom="5" style={{borderWidth:0}}>
         <HStack space={2} alignItems="center" style={{margin:10, borderWidth:0, borderTopWidth:1, borderTopColor:'#D9D9D9', paddingTop:15}}>
           <Input
@@ -170,14 +171,15 @@ const ChatBotScreen = ({onClose}) => {
             placeholder="메시지를 입력하세요..."
             value={inputText}
             onChangeText={(value)=>setInputText(value)}
+            onChangeText={(value)=>setInputText(value)}
             onSubmitEditing={handleSendMessage}
-            style={{ 
+            style={{
               backgroundColor: '#fff',
               borderRadius: 11,
             }}
           />
-          <Button onPress={handleSendMessage} 
-                  style={{ 
+          <Button onPress={handleSendMessage}
+                  style={{
                     backgroundColor: '#fff',
                     borderRadius: 11,
                     shadowColor: "#000",
@@ -189,9 +191,9 @@ const ChatBotScreen = ({onClose}) => {
           ><Text style={{ color: 'grey' }}>보내기</Text></Button>
         </HStack>
       </VStack>
-
+ 
     </View>
   );
 };
-
+ 
 export default ChatBotScreen;
