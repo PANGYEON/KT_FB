@@ -598,7 +598,7 @@ const ProfileScreen = () => {
       </View>
     </View>
   </Modal>
-  
+  {/* //merge */}
   </View>
   );
 };
