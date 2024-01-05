@@ -1,87 +1,3 @@
-// import React, { useState, useEffect, useRef } from 'react';
-// import { View, Text } from 'react-native';
-// import Swiper from 'react-native-swiper';
-// import { Calendar } from 'react-native-calendars';
-
-// const MonthScreen = () => {
-//   const [monthsToRender, setMonthsToRender] = useState([
-//     '2023-11-01',
-//     '2023-12-01',
-//     '2024-01-01',
-//     '2024-02-01',
-//   ]);
-//   const [currentMonth, setCurrentMonth] = useState('');
-//   const swiperRef = useRef(null);
-
-//   const initializeCurrentMonth = () => {
-//     const today = new Date();
-//     const currentDateString = today.toISOString().split('T')[0];
-//     const currentYearMonth = currentDateString.substring(0, 7);
-
-//     const foundIndex = monthsToRender.findIndex(month => month.startsWith(currentYearMonth));
-//     if (foundIndex !== -1) {
-//       setCurrentMonth(monthsToRender[foundIndex]);
-//       if (swiperRef.current) {
-//         setTimeout(() => swiperRef.current.scrollTo(foundIndex, false), 0);
-//       }
-//     } else {
-//       // 현재 달을 배열에 추가하는 로직
-//       const newMonths = [...monthsToRender, currentYearMonth];
-//       setMonthsToRender(newMonths);
-//       setCurrentMonth(currentYearMonth);
-//     }
-//   };
-
-//   useEffect(() => {
-//     initializeCurrentMonth();
-//   }, []);
-
-//   const handleIndexChanged = (index) => {
-//     setCurrentMonth(monthsToRender[index]);
-//     if (index === monthsToRender.length - 1) {
-//       const lastMonth = monthsToRender[monthsToRender.length - 1];
-//       const nextMonth = new Date(lastMonth);
-//       nextMonth.setMonth(nextMonth.getMonth() + 1);
-//       const nextMonthString = nextMonth.toISOString().split('T')[0].substring(0, 7);
-//       const newMonths = [...monthsToRender, nextMonthString];
-//       setMonthsToRender(newMonths);
-//     }
-//   };
-
-//   const customHeader = () => {
-//     return (
-//       <View style={{ alignItems: 'center', height: 80 }}>
-//         <Text style={{ fontSize: 34, paddingTop: 30 }}>
-//           {currentMonth.split('-')[0]} {currentMonth.split('-')[1]}
-//         </Text>
-//       </View>
-//     );
-//   };
-
-//   return (
-//     <Swiper
-//       ref={swiperRef}
-//       index={monthsToRender.indexOf(currentMonth)}
-//       loop={false}
-//       showsPagination={false}
-//       onIndexChanged={handleIndexChanged}
-//       horizontalScroll={true}
-//     >
-//       {monthsToRender.map((month, index) => (
-//         <View key={index}>
-//           <Calendar
-//             current={month}
-//             hideArrows={true}
-//             renderHeader={customHeader}
-//             // 다른 Calendar 속성 추가
-//           />
-//         </View>
-//       ))}
-//     </Swiper>
-//   );
-// };
-
-// export default MonthScreen;
 import React, { useState, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
@@ -224,12 +140,12 @@ const MonthScreen = () => {
           <View key={index} style={styles.weekContainer}>
             {week.map((day, dayIndex) => {
               const dateString = `${currentYear}-${currentMonth}-${day}`;
-              const isSelected = selectedDates.includes(dateString);
+              //const isSelected = selectedDates.includes(dateString);
               const isToday = today.getFullYear() === currentYear &&
                             today.getMonth() + 1 === currentMonth &&
                             today.getDate() === day;
  
-              const backgroundColor = isSelected ? 'skyblue' : (isToday ? 'blue' : 'transparent');
+              const backgroundColor = isToday ? 'blue' : 'transparent';
              
               const dayOfWeek = getDayName(new Date(currentYear, currentMonth - 1, day).getDay());
  
@@ -239,7 +155,7 @@ const MonthScreen = () => {
                   style={[
                     styles.dayContainer,
                     {
-                      backgroundColor: backgroundColor !== 'transparent' ? backgroundColor : 'white', // 투명한 부분을 red로 변경
+                      backgroundColor: backgroundColor !== 'transparent' ? backgroundColor : 'transparent', // 투명한 부분을 red로 변경
                     },
                   ]}
                   onPress={() => handleDayPress(currentYear, currentMonth, day)}
@@ -248,12 +164,15 @@ const MonthScreen = () => {
                   <Text style={[
                     styles.dayText,
                     {
-                      color: isSelected || isToday ? 'white' : 'black',
+                      color: isToday ? 'white' : 'black',
                     },
                     dayOfWeek === '토' ? styles.saturday : (dayOfWeek === '일' ? styles.sunday : null),
                   ]}>
                     {day}
                   </Text>
+                  <View style={{backgroundColor: 'lightgreen', borderRadius: 20, width: '90%', alignItems: 'center', justifyContent: 'center'}}>
+                    <Text style={{fontSize: 10, fontWeight: '900'}}>Perfect</Text>
+                  </View>
                 </TouchableOpacity>
               );
             })}
@@ -316,7 +235,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     marginTop: '5%',
     paddingHorizontal: '2%',
-    backgroundColor: 'lightblue',
+    //backgroundColor: 'lightblue',
   },
  
   // 년도와 월표시부분 스타일 조정
@@ -326,14 +245,14 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: '5%',
     paddingHorizontal: '2%',
-    backgroundColor: 'red',
+    //backgroundColor: 'red',
   },
  
   // 년도와 월의 글자스타일 조정
   headerText: {
     fontSize: 7 * FontScale,
     fontWeight: '900',
-    backgroundColor: 'yellow',
+    //backgroundColor: 'yellow',
   },
   weekDays: {
     flexDirection: 'row',
@@ -341,7 +260,7 @@ const styles = StyleSheet.create({
     //width: calWidth,
     //height: calHeight,
     //marginBottom: 10,
-    backgroundColor: '#333',
+    //backgroundColor: '#333',
   },
  
   // 요일텍스트스타일
@@ -349,13 +268,13 @@ const styles = StyleSheet.create({
     fontSize: 5 * FontScale,
     fontWeight: 'bold',
     //width: calWidth,
-    backgroundColor: 'yellow',
+    //backgroundColor: 'yellow',
   },
   weekContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     //marginBottom: 10,
-    backgroundColor: 'lightgreen',
+    //backgroundColor: 'lightgreen',
   },
   dayContainer: {
     //width: 40,
@@ -365,7 +284,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'center',
     // borderRadius: 20,
-    borderWidth : 1,
+    //borderWidth : 1,
   },
   dayText: {
     fontSize: 4 * FontScale,
