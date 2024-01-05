@@ -1,124 +1,46 @@
-// import React, { useState, useEffect, useRef } from 'react';
-// import { View, Text } from 'react-native';
-// import Swiper from 'react-native-swiper';
-// import { Calendar } from 'react-native-calendars';
 
-// const MonthScreen = () => {
-//   const [monthsToRender, setMonthsToRender] = useState([
-//     '2023-11-01',
-//     '2023-12-01',
-//     '2024-01-01',
-//     '2024-02-01',
-//   ]);
-//   const [currentMonth, setCurrentMonth] = useState('');
-//   const swiperRef = useRef(null);
-
-//   const initializeCurrentMonth = () => {
-//     const today = new Date();
-//     const currentDateString = today.toISOString().split('T')[0];
-//     const currentYearMonth = currentDateString.substring(0, 7);
-
-//     const foundIndex = monthsToRender.findIndex(month => month.startsWith(currentYearMonth));
-//     if (foundIndex !== -1) {
-//       setCurrentMonth(monthsToRender[foundIndex]);
-//       if (swiperRef.current) {
-//         setTimeout(() => swiperRef.current.scrollTo(foundIndex, false), 0);
-//       }
-//     } else {
-//       // 현재 달을 배열에 추가하는 로직
-//       const newMonths = [...monthsToRender, currentYearMonth];
-//       setMonthsToRender(newMonths);
-//       setCurrentMonth(currentYearMonth);
-//     }
-//   };
-
-//   useEffect(() => {
-//     initializeCurrentMonth();
-//   }, []);
-
-//   const handleIndexChanged = (index) => {
-//     setCurrentMonth(monthsToRender[index]);
-//     if (index === monthsToRender.length - 1) {
-//       const lastMonth = monthsToRender[monthsToRender.length - 1];
-//       const nextMonth = new Date(lastMonth);
-//       nextMonth.setMonth(nextMonth.getMonth() + 1);
-//       const nextMonthString = nextMonth.toISOString().split('T')[0].substring(0, 7);
-//       const newMonths = [...monthsToRender, nextMonthString];
-//       setMonthsToRender(newMonths);
-//     }
-//   };
-
-//   const customHeader = () => {
-//     return (
-//       <View style={{ alignItems: 'center', height: 80 }}>
-//         <Text style={{ fontSize: 34, paddingTop: 30 }}>
-//           {currentMonth.split('-')[0]} {currentMonth.split('-')[1]}
-//         </Text>
-//       </View>
-//     );
-//   };
-
-//   return (
-//     <Swiper
-//       ref={swiperRef}
-//       index={monthsToRender.indexOf(currentMonth)}
-//       loop={false}
-//       showsPagination={false}
-//       onIndexChanged={handleIndexChanged}
-//       horizontalScroll={true}
-//     >
-//       {monthsToRender.map((month, index) => (
-//         <View key={index}>
-//           <Calendar
-//             current={month}
-//             hideArrows={true}
-//             renderHeader={customHeader}
-//             // 다른 Calendar 속성 추가
-//           />
-//         </View>
-//       ))}
-//     </Swiper>
-//   );
-// };
-
-// export default MonthScreen;
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
- 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
- 
+
 const daysInMonth = (month, year) => {
   return new Date(year, month, 0).getDate();
 };
- 
+
 const getMonthData = (month, year) => {
   const firstDay = new Date(year, month - 1, 1);
   const startingDay = firstDay.getDay();
   const totalDays = daysInMonth(month, year);
   let day = 1;
   let dateData = [];
- 
+
   for (let i = 0; i < 6; i++) {
     let week = [];
     for (let j = 0; j < 7; j++) {
+
       if ((i === 0 && j < startingDay) || day > totalDays) {
-        week.push('');
+        // 이전 달의 날짜인지, 현재 달의 날짜인지, 다음 달의 날짜인지 확인하여 다른 값을 넣어줌
+        week.push('')
       } else {
+        // 현재 달의 날짜
         week.push(day);
         day++;
       }
     }
     dateData.push(week);
     if (day > totalDays) {
-      break;
+      break
     }
   }
- 
+
   return dateData;
 };
- 
+
 const getMonthName = (month) => {
   const monthNames = [
     '1월', '2월', '3월', '4월', '5월', '6월',
@@ -126,23 +48,40 @@ const getMonthName = (month) => {
   ];
   return monthNames[month - 1];
 };
- 
-const getDayName = (day) => {
-  const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
-  return dayNames[day];
-};
- 
+
 const MonthScreen = () => {
   const today = new Date();
+  
   const [selectedDates, setSelectedDates] = useState('');
   const [currentMonth, setCurrentMonth] = useState(today.getMonth() + 1);
   const [currentYear, setCurrentYear] = useState(today.getFullYear());
-  // const currentMonth = today.getMonth() + 1;
-  // const currentYear = today.getFullYear();
-  // const currentDate = today.getDate();
+  const [mealData, setMealData] = useState({});
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const token = await AsyncStorage.getItem('@user_token');
+        let response = await axios.get('http://edm-diet.japaneast.cloudapp.azure.com/user_meal/get_meal/', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        let meals = response.data.user_meals_evaluation;
+        let formattedMeals = {};
+        meals.forEach(meal => {
+          formattedMeals[meal.meal_date] = meal.meal_evaluation;
+        });
+        setMealData(formattedMeals);
+      } catch (error) {
+        console.error('Error fetching meal data:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
   const monthData = getMonthData(currentMonth, currentYear);
   const monthName = getMonthName(currentMonth);
- 
+
   // 화면 포커스가 변경될 때마다 현재 달과 연도를 업데이트
   useFocusEffect(
     React.useCallback(() => {
@@ -151,7 +90,7 @@ const MonthScreen = () => {
       setCurrentYear(date.getFullYear());
     }, [])
   );
- 
+
   const goToPreviousMonth = () => {
     if (currentMonth === 1) {
       setCurrentMonth(12);
@@ -160,7 +99,7 @@ const MonthScreen = () => {
       setCurrentMonth(currentMonth - 1);
     }
   };
- 
+
   const goToNextMonth = () => {
     if (currentMonth === 12) {
       setCurrentMonth(1);
@@ -169,11 +108,65 @@ const MonthScreen = () => {
       setCurrentMonth(currentMonth + 1);
     }
   };
- 
+
+  // const renderCalendar = () => {
+  //   const weekDays = ['일', '월', '화', '수', '목', '금', '토'];
+  //   const monthArray = getMonthData(currentMonth, currentYear);
+
+  //   return (
+  //     <View>
+  //       <View style={styles.weekDays}>
+  //         {weekDays.map((day, index) => (
+  //           <Text key={index} style={[styles.dayLabel, day === '토' ? styles.saturday : (day === '일' ? styles.sunday : null)]}>{day}</Text>
+  //         ))}
+  //       </View>
+
+
+  //       {monthArray.map((week, index) => (
+  //         <View key={index} style={styles.weekContainer}>
+  //           {week.map((day, dayIndex) => {
+  //             // day가 현재 달, 이전 달, 다음 달의 날짜인지 확인
+  //             const isCurrentMonth = day > 0;
+  //             const dateString = isCurrentMonth ? `${currentYear}-${currentMonth}-${day}` : (day > 0 ? `${currentYear}-${currentMonth + 1}-${day}` : `${currentYear}-${currentMonth - 1}-${day}`);
+  //             const isSelected = selectedDates.includes(dateString);
+  //             const isToday = today.getFullYear() === currentYear &&
+  //               today.getMonth() + 1 === currentMonth &&
+  //               today.getDate() === day;
+
+
+  //               const mealDateString = `${currentYear}-${String(currentMonth).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+  //               const mealEvaluation = mealData[mealDateString];
+  //             return (
+
+  //     <TouchableOpacity
+  //             key={dayIndex}
+  //             style={[styles.dayContainer]}
+  //             disabled={day <= 0}
+  //           >
+  //             <Text style={[
+  //               styles.dayText,
+  //               // ... 기존의 스타일
+  //             ]}>
+  //               {day}
+  //             </Text>
+  //             {isCurrentMonth && mealEvaluation && (
+  //               <View style={{ backgroundColor: 'lightgreen', borderRadius: 20, width: '90%', alignItems: 'center', justifyContent: 'center' }}>
+  //                 <Text style={{ fontSize: 10, fontWeight: '900' }}>{mealEvaluation}</Text>
+  //               </View>
+  //             )}
+  //           </TouchableOpacity>
+  //             );
+  //           })}
+  //         </View>
+  //       ))}
+  //     </View>
+  //   );
+  // };
+
   const renderCalendar = () => {
     const weekDays = ['일', '월', '화', '수', '목', '금', '토'];
     const monthArray = getMonthData(currentMonth, currentYear);
- 
+  
     return (
       <View>
         <View style={styles.weekDays}>
@@ -181,79 +174,38 @@ const MonthScreen = () => {
             <Text key={index} style={[styles.dayLabel, day === '토' ? styles.saturday : (day === '일' ? styles.sunday : null)]}>{day}</Text>
           ))}
         </View>
-        {/* {monthArray.map((week, index) => (
-          <View key={index} style={styles.weekContainer}>
-            {week.map((day, dayIndex) => (
-              <TouchableOpacity
-                key={dayIndex}
-                style={[
-                  styles.dayContainer,
-                  {
-                    backgroundColor:
-                      selectedDate === `${currentYear}-${currentMonth}-${day}`
-                        ? 'skyblue'
-                        : today.getFullYear() === currentYear &&
-                          today.getMonth() + 1 === currentMonth &&
-                          today.getDate() === day
-                        ? 'blue'
-                        : 'transparent',
-                  },
-                ]}
-                onPress={() => handleDayPress(currentYear, currentMonth, day)}
-                disabled={day === ''}
-              >
-                <Text style={[
-                  styles.dayText,
-                  {
-                    color:
-                      today.getFullYear() === currentYear &&
-                      today.getMonth() + 1 === currentMonth &&
-                      today.getDate() === day
-                        ? 'white'
-                        : 'black',
-                  },
-                ]}>
-                  {day}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        ))} */}
- 
+  
         {monthArray.map((week, index) => (
           <View key={index} style={styles.weekContainer}>
             {week.map((day, dayIndex) => {
-              const dateString = `${currentYear}-${currentMonth}-${day}`;
-              const isSelected = selectedDates.includes(dateString);
+              const isCurrentMonth = day > 0;
+              const dateString = isCurrentMonth ? `${currentYear}-${String(currentMonth).padStart(2, '0')}-${String(day).padStart(2, '0')}` : '';
               const isToday = today.getFullYear() === currentYear &&
-                            today.getMonth() + 1 === currentMonth &&
-                            today.getDate() === day;
- 
-              const backgroundColor = isSelected ? 'skyblue' : (isToday ? 'blue' : 'transparent');
-             
-              const dayOfWeek = getDayName(new Date(currentYear, currentMonth - 1, day).getDay());
- 
+                today.getMonth() + 1 === currentMonth &&
+                today.getDate() === day;
+  
+              const mealEvaluation = mealData[dateString];
+  
               return (
                 <TouchableOpacity
                   key={dayIndex}
-                  style={[
-                    styles.dayContainer,
-                    {
-                      backgroundColor: backgroundColor !== 'transparent' ? backgroundColor : 'white', // 투명한 부분을 red로 변경
-                    },
-                  ]}
-                  onPress={() => handleDayPress(currentYear, currentMonth, day)}
-                  disabled={day === ''}
+                  style={[styles.dayContainer]}
+                  disabled={!isCurrentMonth}
                 >
-                  <Text style={[
-                    styles.dayText,
-                    {
-                      color: isSelected || isToday ? 'white' : 'black',
-                    },
-                    dayOfWeek === '토' ? styles.saturday : (dayOfWeek === '일' ? styles.sunday : null),
-                  ]}>
-                    {day}
-                  </Text>
+                  <View style={[isToday ? styles.today : null]}>
+                    <Text style={[
+                      styles.dayText,
+                      isToday ? styles.todayText : null,
+                      // 다른 조건부 스타일이 필요하다면 여기에 추가
+                    ]}>
+                      {day}
+                    </Text>
+                  </View>
+                  {isCurrentMonth && mealEvaluation && (
+                    <View style={{ backgroundColor: 'lightgreen', borderRadius: 20, width: '90%', alignItems: 'center', justifyContent: 'center' }}>
+                      <Text style={{ fontSize: 10, fontWeight: '900' }}>{mealEvaluation}</Text>
+                    </View>
+                  )}
                 </TouchableOpacity>
               );
             })}
@@ -262,33 +214,7 @@ const MonthScreen = () => {
       </View>
     );
   };
- 
-  const handleDayPress = (year, month, day) => {
-    // const newSelectedDate = `${year}-${month}-${day}`;
-    // // setSelectedDate(`${year}-${month}-${day}`);
- 
-    // // 이미 선택한 날짜인지 확인 후, 선택한 날짜 배열에 추가
-    // if (!selectedDates.includes(newSelectedDate)) {
-    //   const updatedSelectedDates = [...selectedDates, newSelectedDate];
-    //   setSelectedDates(updatedSelectedDates);
-    // }
- 
-    const selectedDateString = `${year}-${month}-${day}`;
-    const isSelected = selectedDates.includes(selectedDateString);
- 
-    let updatedSelectedDates = [...selectedDates];
- 
-    if (isSelected) {
-      // 선택한 날짜를 다시 누르면 배경색 제거
-      updatedSelectedDates = updatedSelectedDates.filter(date => date !== selectedDateString);
-    } else {
-      // 새로운 날짜를 선택하면 선택한 날짜 배열에 추가
-      updatedSelectedDates.push(selectedDateString);
-    }
- 
-    setSelectedDates(updatedSelectedDates);
-  };
- 
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -304,11 +230,11 @@ const MonthScreen = () => {
     </View>
   );
 };
- 
-const calWidth = windowWidth*0.12;
-const calHeight = windowHeight*0.09;
+
+const calWidth = windowWidth * 0.12;
+const calHeight = windowHeight * 0.09;
 const FontScale = Math.min(windowWidth, windowHeight) / 100;
- 
+
 const styles = StyleSheet.create({
   // 캘린더화면의 내비게이션아래 전체화면 스타일조정
   container: {
@@ -316,9 +242,9 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     marginTop: '5%',
     paddingHorizontal: '2%',
-    backgroundColor: 'lightblue',
+    //backgroundColor: 'lightblue',
   },
- 
+
   // 년도와 월표시부분 스타일 조정
   header: {
     flexDirection: 'row',
@@ -326,14 +252,14 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: '5%',
     paddingHorizontal: '2%',
-    backgroundColor: 'red',
+    //backgroundColor: 'red',
   },
- 
+
   // 년도와 월의 글자스타일 조정
   headerText: {
     fontSize: 7 * FontScale,
     fontWeight: '900',
-    backgroundColor: 'yellow',
+    //backgroundColor: 'yellow',
   },
   weekDays: {
     flexDirection: 'row',
@@ -341,21 +267,21 @@ const styles = StyleSheet.create({
     //width: calWidth,
     //height: calHeight,
     //marginBottom: 10,
-    backgroundColor: '#333',
+    //backgroundColor: '#333',
   },
- 
+
   // 요일텍스트스타일
   dayLabel: {
     fontSize: 5 * FontScale,
     fontWeight: 'bold',
     //width: calWidth,
-    backgroundColor: 'yellow',
+    //backgroundColor: 'yellow',
   },
   weekContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     //marginBottom: 10,
-    backgroundColor: 'lightgreen',
+    //backgroundColor: 'lightgreen',
   },
   dayContainer: {
     //width: 40,
@@ -365,7 +291,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'center',
     // borderRadius: 20,
-    borderWidth : 1,
+    //borderWidth : 1,
   },
   dayText: {
     fontSize: 4 * FontScale,
@@ -380,7 +306,16 @@ const styles = StyleSheet.create({
   saturday: {
     color: '#6488E4', // 토요일 텍스트 색상을 파란색으로 설정
   },
+  today: {
+    backgroundColor: 'blue', // 원하는 색상으로 변경
+    color: 'white', // 텍스트 색상
+    borderRadius: 30 / 2, // 원형 모양을 만들기 위해 반지름 설정
+    width: 30, // 원의 너비
+    height: 30, // 원의 높이
+    textAlign: 'center', // 텍스트 중앙 정렬
+    lineHeight: calHeight, // 텍스트 수직 중앙 정렬
+  }
 });
- 
- 
+
+
 export default MonthScreen;

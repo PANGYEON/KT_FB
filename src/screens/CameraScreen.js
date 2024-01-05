@@ -1,6 +1,6 @@
 
 import React, { useRef } from 'react';
-import { Button, View  } from 'react-native';
+import { Button, View,TouchableOpacity, Text, StyleSheet  } from 'react-native';
 import { Camera, useCameraDevice } from 'react-native-vision-camera';
 import { useNavigation } from '@react-navigation/native';
 import { CameraRoll } from "@react-native-camera-roll/camera-roll";
@@ -52,9 +52,29 @@ function CameraScreen() {
         isActive={true}
         photo={true}
       />
-      <Button title="사진 찍기" onPress={takePhoto} />
+      <TouchableOpacity style={styles.button} onPress={takePhoto}>
+        <Text style={styles.text}>사진 찍기</Text>
+      </TouchableOpacity>
     </View>
   );
 }
-
+const styles = StyleSheet.create({
+  // ... 기존 스타일 ...
+  button: {
+    backgroundColor: '#D7D4FF',
+    width: 130, // 원의 크기
+    height: 130, // 원의 크기
+    borderRadius: 65, // 반원의 크기 (width / 2)
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'absolute', // 화면 하단 중앙에 위치
+    bottom: 20, // 하단에서의 간격
+    alignSelf: 'center' // 가운데 정렬
+  },
+  text: {
+    color: 'white',
+    fontSize: 16
+  }
+  // ... 기존 스타일 ...
+});
 export default CameraScreen;

@@ -97,12 +97,13 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, RefreshControl } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import { useNavigation } from '@react-navigation/native';
 
 const ChatScreen = () => {
   const [friends, setFriends] = useState([]);
   const [selectedFriend, setSelectedFriend] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
-  
+  const navigation = useNavigation();
   const unsubscribeFriend = async (friendName) => {
     const friend = friends.find(f => f.name === friendName);
     if (!friend) {
@@ -169,8 +170,12 @@ const ChatScreen = () => {
   };
 
   useEffect(() => {
-    fetchFriends();
-  }, []);
+    const unsubscribe = navigation.addListener('focus', () => {
+      fetchFriends(); // 페이지에 진입할 때마다 친구 목록을 새로고침
+    });
+  
+    return unsubscribe; // 페이지를 벗어날 때 리스너를 해제
+  }, [navigation]);
 
   const onRefresh = useCallback(() => {
     fetchFriends();

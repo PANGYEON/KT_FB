@@ -31,10 +31,7 @@ async function odApi(imagePath,imgName) {
       });
    
       const responseText = await response.text();
-      // const responseData = JSON.parse(responseText);
-
-      // const food_List = responseData.predict.foodNames;
-      // console.log(food_List)
+      
       return responseText;
     } catch (error) {
       console.error("Error uploading image: ", error);

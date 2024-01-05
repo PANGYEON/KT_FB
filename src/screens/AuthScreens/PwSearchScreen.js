@@ -3,7 +3,9 @@ import React, { useState } from 'react';
 import { Button, View,Input,Text } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
 import { StyleSheet, Alert, Dimensions, KeyboardAvoidingView, ScrollView } from 'react-native';
- 
+import axios from 'axios';
+
+
 const emailRegEx = /^[A-Za-z0-9]([-_.]?[A-Za-z0-9])*@[A-Za-z0-9]([-_.]?[A-Za-z0-9])*\.[A-Za-z]{2,}(\.[A-Za-z]{2,})?$/i;
  
 const emailCheck = (email) => {
@@ -15,7 +17,26 @@ const { width, height } = Dimensions.get('window');
 const RegisterScreen = () => {
   const navigation = useNavigation();
   const [email, setEmail] = useState('');
- 
+
+  
+  const requestPasswordReset = async (email) => {
+    try {
+      const data = JSON.stringify({ "email": email });
+      const config = {
+        method: 'post',
+        url: 'http://edm.japaneast.cloudapp.azure.com/api/password-reset/',
+        headers: { 'Content-Type': 'application/json' },
+        data: data
+      };
+  
+      const response = await axios(config);
+      console.log(response.data); // 응답 데이터 확인
+      return response.data; // 응답 데이터 반환
+    } catch (error) {
+      console.error("Error in password reset request: ", error);
+      return null; // 에러 발생 시 null 반환
+    }
+  };
   const renderEmailError = () => {
     if (email.length > 0 && !emailCheck(email)) {
       return (
@@ -28,12 +49,19 @@ const RegisterScreen = () => {
   };
  
   const handleNextPage = async () => {
-    if (email.length > 0 && !emailCheck(email)) {
-      Alert.alert("오류", "이메일을 입력해주세요.");
+    if (email.length === 0 || !emailCheck(email)) {
+      Alert.alert("오류", "올바른 이메일을 입력해주세요.");
       return;
     }
-    navigation.navigate("Login");
-    Alert.alert("이메일을 확인해주세요");
+  
+    // 비밀번호 재설정 요청
+    const resetResponse = await requestPasswordReset(email);
+    if (resetResponse) {
+      Alert.alert("성공", "비밀번호 재설정 이메일이 발송되었습니다.");
+      navigation.navigate("Login");
+    } else {
+      Alert.alert("오류", "비밀번호 재설정 요청에 실패했습니다.");
+    }
   };
  
   const emailInputContainerStyle = {
