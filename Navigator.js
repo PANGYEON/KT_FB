@@ -27,9 +27,12 @@ import ImageInScreen from './src/screens/ImageInScreen';
 
 
 import CameraScreen from './src/screens/CameraScreen';
+import ChatBotScreen from './src/screens/ChatBotScreen';
 
 import BottomTabNavigator from './BottomTabNavigator';
 import { useNavigation } from '@react-navigation/native';
+
+import { SubscriptionProvider } from './SubscriptionContext';
 
 const Stack = createNativeStackNavigator();
 
@@ -60,6 +63,7 @@ const MyStack = () => {
   return (
     <NativeBaseProvider>
       <NavigationContainer>
+      <SubscriptionProvider>
       <AuthChecker />
         <Stack.Navigator>
           <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
@@ -80,8 +84,10 @@ const MyStack = () => {
           {/* <Stack.Screen name="Gallery" component={GalleryScreen} options={{ headerShown: false }} /> */}
 
           <Stack.Screen name="CameraScreen" component={CameraScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="ChatBotScreen" component={ChatBotScreen} options={{ headerShown: false }} />
 
         </Stack.Navigator>
+        </SubscriptionProvider>
       </NavigationContainer>
     </NativeBaseProvider>
   );

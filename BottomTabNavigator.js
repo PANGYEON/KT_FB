@@ -8,7 +8,7 @@ import ChatScreen from './src/screens/ChatScreen';
 import HomeIcon from './src/icons/HomeIcon.png';
 import ReportIcon from './src/icons/ReportIcon.png';
 import BoardIcon from './src/icons/BoardIcon.png';
-import ChatIcon from './src/icons/ChatIcon.png';
+import FriendIcon from './src/icons/FriendIcon.png';
 import { Image, Text,Dimensions,View, StyleSheet,BackHandler } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
@@ -75,14 +75,14 @@ const BottomTabNavigator = () => {
         }}
       />
       <Tab.Screen
-        name="채팅"
+        name="친구"
         component={ChatScreen}
         options={{
           headerShown: false,
-          tabBarIcon: () => (<Image source={ChatIcon} style={styles.tabIcon} />),
+          tabBarIcon: () => (<Image source={FriendIcon} style={styles.tabIcon} />),
           tabBarLabel: ({ focused }) => (
             <View style={[styles.tabBarLabel, focused && styles.focusedTab]}>
-              <Text style={{ color: focused ? 'black' : 'gray', fontSize: FontScale * 4}}>채팅</Text>
+              <Text style={{ color: focused ? 'black' : 'gray', fontSize: FontScale * 4}}>친구</Text>
             </View>
           )
         }}

@@ -5,13 +5,13 @@ import { Image, ImageComponent, TouchableOpacity } from 'react-native';
 import  ChatBotIcon  from '../icons/ChatBotIcon.png';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
- 
+
 const ChatBotScreen = ({onClose}) => {
   const navigation = useNavigation();
   const [inputText, setInputText] = useState(''); // To store the user input
   const [chatHistory, setChatHistory] = useState([]); // To store the chat history
   const scrollViewRef = useRef();
- 
+
   const saveChatHistory = async (chatHistory) => {
     try {
       const jsonValue = JSON.stringify(chatHistory);
@@ -37,7 +37,7 @@ const ChatBotScreen = ({onClose}) => {
       return [];
     }
   };
- 
+
   useEffect(() => {
     const fetchChatHistory = async () => {
       const loadedChatHistory = await loadChatHistory();
@@ -46,44 +46,40 @@ const ChatBotScreen = ({onClose}) => {
  
     fetchChatHistory();
   }, []);
- 
- 
+
+
   const handleSendMessage = async () => {
     if (inputText.trim() === '') return;
- 
+  
     // 사용자 메시지를 채팅 기록에 추가
     const userMessage = { role: 'user', content: inputText };
     setChatHistory(prevChatHistory => [...prevChatHistory, userMessage]);
- 
+  
     try {
       // 서버에 메시지 전송
-      const token = await AsyncStorage.getItem('@user_token');
+      const data = { "message": inputText };
+      const jsonData = JSON.stringify(data);
+      console.log(data);
 
-      // const data = { "message": inputText };
-      const jsonData = JSON.stringify({"message": inputText});
-      
-      // console.log(data);
- 
       let config = {
         method: 'post',
         // ip주소 : ipconfig ipv4, port 5500
-        url: 'http://edm-diet.japaneast.cloudapp.azure.com/chat_test/chatAPI/',
+        // url: 'http://edm-diet.japaneast.cloudapp.azure.com:5500/chat_test/chatAPI/',
+        url: 'http://192.168.0.2:5500/chatAPI/',
         headers: { 
-          'Content-Type': 'application/json', 
-          'Authorization': `Bearer ${token}`
+          'Content-Type': 'application/json'
         },
         data: jsonData
       };
-      console.log(token);
-      const response = await axios(config);
-      console.log(response)
+      console.log(config);
+
       axios.request(config)
       .then(async (response) => {
         console.log(JSON.stringify(response.data));
- 
+
         const assistantMessage = { role: 'assistant', content: response.data.message };
         setChatHistory(prevChatHistory => [...prevChatHistory, assistantMessage]);
- 
+
         // 채팅 기록을 AsyncStorage에 저장
         await saveChatHistory([...chatHistory, userMessage, assistantMessage]);
       })
@@ -91,11 +87,12 @@ const ChatBotScreen = ({onClose}) => {
         console.error('Error sending message to backend:', error);
         // 에러 처리 로직 추가
       });
- 
+  
     } catch (error) {
       console.error('Error:', error);
+      console.error('Error:', error);
     }
- 
+  
     // 입력창 초기화
     setInputText('');
   };
@@ -173,6 +170,7 @@ const ChatBotScreen = ({onClose}) => {
             flex={1}
             placeholder="메시지를 입력하세요..."
             value={inputText}
+            onChangeText={(value)=>setInputText(value)}
             onChangeText={(value)=>setInputText(value)}
             onSubmitEditing={handleSendMessage}
             style={{
