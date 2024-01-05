@@ -131,7 +131,7 @@ const ChatScreen = () => {
     
     try {
       await axios(config);
-      alert(`${friendName}와의 구독이 취소되었습니다.`);
+      alert(`${friendName} 님과의 구독이 취소되었습니다.`);
       // setAlertMessage(`${friendName}와의 구독이 취소되었습니다.`);
       // setAlertModalVisible(true);
       fetchFriends();

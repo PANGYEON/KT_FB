@@ -311,12 +311,13 @@
 // export default HomeScreen;
 import React, { useEffect, useState,useCallback } from 'react';
 import axios from 'axios';
-import { View, Text, Button, TouchableOpacity, Image, StyleSheet, Modal, Dimensions } from 'react-native';
+import { View, Text, Button, TouchableOpacity, Image, StyleSheet, Modal, Dimensions, ActivityIndicator } from 'react-native';
 import { useNavigation, useRoute,useFocusEffect  } from '@react-navigation/native';
 import ChatBotScreen from './ChatBotScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { odApi } from '../ai_model/BP_Food';
+import BackIcon from '../icons/BackIcon.png';
  
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -325,6 +326,7 @@ const HomeScreen = () => {
   const [isModalVisible, setModalVisible] = useState(false);
   // const [photoUri, setPhotoUri] = useState(null);
   const [photoUri, setPhotoUri] = useState('https://via.placeholder.com/150');
+  const [isLoading, setIsLoading] = useState(false); // 로딩 상태 관리
  
   const { width, height } = Dimensions.get('window');
 
@@ -343,7 +345,20 @@ const HomeScreen = () => {
   useEffect(() => {
     getTokenAndFetchUserInfo();
   }, []);
- 
+
+  useEffect(() => {
+    const updateTabBarVisibility = () => {
+      navigation.setOptions({ tabBarVisible: !isLoading });
+    };
+
+    updateTabBarVisibility();
+  }, [isLoading, navigation]);
+
+
+  const goBack = () => {
+    setIsLoading(false);
+    // 네비게이션 스택에서 이전 화면으로 돌아갑니다.
+  };
  
  
   const openGallery = () => {
@@ -353,9 +368,12 @@ const HomeScreen = () => {
     };
  
     launchImageLibrary(options, async (response) => {
+      setIsLoading(true);
       if (response.didCancel) {
+        setIsLoading(false);
         console.log('User cancelled image picker');
       } else if (response.errorCode) {
+        setIsLoading(false);
         console.log('ImagePicker Error: ', response.errorMessage);
       } else {
         const source = { uri: response.assets[0].uri };
@@ -364,6 +382,7 @@ const HomeScreen = () => {
         await AsyncStorage.setItem('@latest_photo', source.uri);
         const apiResult = await odApi(source.uri,response.assets[0].fileName);
         // ImageInScreen으로 이동하면서 photoUri 전달
+        setIsLoading(false);
         navigation.navigate('ImageIn', { photo: source.uri,apiResult });
       }
     });
@@ -407,8 +426,23 @@ const HomeScreen = () => {
   };
  
  
- 
- 
+  if (isLoading) {
+    // 로딩 중이라면 로딩 화면을 표시
+    return (
+      <View style={{ flex: 1 }}>
+      <View style={styles.loadingContainer}>
+        <TouchableOpacity onPress={goBack}>
+          <Image source={BackIcon} style={{ width: 25, height: 25 }} />
+        </TouchableOpacity>
+      </View>
+      <View style={styles.loadingView}>
+        <ActivityIndicator size="large" color="#8E86FA" />
+        <Text style={{ marginTop: 20, fontSize: 20 }}>사진을 분석중이에요</Text>
+      </View>
+    </View>
+    );
+  }
+
   return (
  
     <View style={styles.container}>
@@ -611,6 +645,18 @@ const styles = StyleSheet.create({
     maxHeight: '80%',
     backgroundColor: '#fff',
     borderRadius: 30,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    paddingTop: 50,
+    paddingLeft: 20,
+  },
+  loadingView: {
+    flex: 9,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
  

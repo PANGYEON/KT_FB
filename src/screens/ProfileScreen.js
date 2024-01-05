@@ -126,6 +126,7 @@ const ProfileScreen = () => {
     }
     await updateSubscriptionList();
     setSubscribeModalVisible(false);
+    setSubscribeEmail('');
   };
 
   const [password, setPassword] = useState('');
@@ -590,6 +591,7 @@ const ProfileScreen = () => {
 
   <Modal isOpen={alertModalVisible}>
     <View style={styles.alertModalContainer}>
+      <Text style={{fontSize:20, fontWeight:'bold'}}>Alert</Text>
       <Text style={styles.alertText}>{alertMessage}</Text>
       <View style={styles.alertButtonContainer}>
       <Button style={styles.alertButton} onPress={() => setAlertModalVisible(false)}>
@@ -619,8 +621,8 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
     fontSize:1,
-    height:150,
-    width:300,
+    height:'15%',
+    width:'80%',
   },
   modalText: {
     fontSize: 16,             // 글자 크기
@@ -643,6 +645,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
+    alignItems:'center',
+    justifyContent: 'center',
   },
 
 
