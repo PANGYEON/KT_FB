@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Button, View, Input, Text } from 'native-base';
-import { StyleSheet, Alert, Dimensions, KeyboardAvoidingView, ScrollView } from 'react-native';
+import { StyleSheet, Alert, Dimensions, KeyboardAvoidingView, ScrollView,Modal, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 
@@ -26,6 +26,8 @@ const RegisterScreen = ({ route }) => {
   const isPasswordsMatch = password === confirmPassword;
   const [isPasswordValid, setIsPasswordValid] = useState(false);
   const { width, height } = Dimensions.get('window');
+  const [alertModalVisible, setAlertModalVisible] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
 
   // 이메일 중복 확인 함수
   const checkEmailExistence = async (email) => {
@@ -41,7 +43,9 @@ const RegisterScreen = ({ route }) => {
       const response = await axios.request(config);
       return response.data; // 서버로부터 받은 응답 반환
     } catch (error) {
-      console.error("이메일 중복 확인 중 오류 발생:", error);
+      setAlertMessage(`이메일 중복 확인 중 오류 발생: ${error}`);
+      setAlertModalVisible(true);
+      //console.error("이메일 중복 확인 중 오류 발생:", error);
       return null; // 오류 발생 시 null 반환
     }
   };
@@ -85,7 +89,9 @@ const RegisterScreen = ({ route }) => {
 
   const handleNextPage = async () => {
     if (!email || !password || !confirmPassword) {
-      Alert.alert("오류", "이메일과 비밀번호를 모두 입력해주세요.");
+      setAlertMessage(`이메일과 비밀번호를 모두 입력해주세요.`);
+      setAlertModalVisible(true);
+      //Alert.alert("오류", "이메일과 비밀번호를 모두 입력해주세요.");
       return;
     }
 
@@ -93,13 +99,17 @@ const RegisterScreen = ({ route }) => {
       // 이메일 중복 확인
       const emailCheckResult = await checkEmailExistence(email);
       if (emailCheckResult && emailCheckResult.message === "이미 사용 중인 이메일입니다.") {
-        Alert.alert("오류", "이메일이 중복입니다. 다시 입력해주세요.");
+        setAlertMessage(`이메일이 중복입니다. 다시 입력해주세요.`);
+        setAlertModalVisible(true);
+        //Alert.alert("오류", "이메일이 중복입니다. 다시 입력해주세요.");
         return;
       }
       // 중복이 아닌 경우 다음 페이지로 네비게이션
       navigation.navigate("RegisterInfo", { email, password });
     } else {
-      Alert.alert("오류", "비밀번호 조건을 확인해주세요.");
+      setAlertMessage(`비밀번호 조건을 확인해주세요.`);
+      setAlertModalVisible(true);
+      //Alert.alert("오류", "비밀번호 조건을 확인해주세요.");
     }
   };
 
@@ -214,6 +224,29 @@ const RegisterScreen = ({ route }) => {
             </View>
           </View>
 
+          <Modal 
+            animationType="fade"
+            transparent={true}
+            visible={alertModalVisible}
+            onRequestClose={() => {
+              setAlertModalVisible(!alertModalVisible);
+            }}>
+            <View style={styles.alertModalView}>
+            <View style={styles.alertModalContainer}>
+              <Text style={{fontSize:20, fontWeight:'bold', color:'#000'}}>Alert</Text>
+              <Text style={styles.alertText}>{alertMessage}</Text>
+              <View style={styles.alertButtonContainer}>
+                <TouchableOpacity
+                  style={styles.alertButton}
+                  onPress={() => setAlertModalVisible(false)}
+                >
+                  <Text style={styles.alertButtonText}>OK</Text>
+              </TouchableOpacity>
+              </View>
+            </View>
+            </View>
+          </Modal>
+
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -250,6 +283,63 @@ const styles = StyleSheet.create({
   MovingButton: {
     borderRadius: 50,
     backgroundColor: '#8E86FA',
+  },
+
+  alertModalView:{
+    flex:1,
+    justifyContent:'center',
+    alignItems:'center',
+    backgroundColor:'rgba(0,0,0,0.5)',
+  },
+  alertModalContainer: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: '5%',
+    alignItems: 'flex-start',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    margin: 20,
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    fontSize: 1,
+    //height: 150,
+    //width: 300,
+    width: '80%',
+    height: '20%',
+  },
+  modalText: {
+    fontSize: 16,             // 글자 크기
+    textAlign: 'flex-start',      // 텍스트 중앙 정렬
+  },
+  alertButtonContainer: {
+    flex: 1,
+    justifyContent: 'flex-end', // 버튼을 하단으로 이동
+    alignItems: 'flex-end', // 버튼을 오른쪽으로 이동
+    width: '100%',
+  },
+  alertButton: {
+    backgroundColor: '#8E86FA',
+    borderRadius: 40,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    paddingVertical: 10, // 버튼 높이 조절
+    paddingHorizontal: 20, // 버튼 너비 조절
+    alignItems: 'center', // 수직 중앙 정렬
+    justifyContent: 'center', // 수평 중앙 정렬
+  },
+  alertButtonText: {
+    color: '#fff',
+    textAlign: 'center', // 텍스트 중앙 정렬
   },
 });
 

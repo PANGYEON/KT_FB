@@ -1,23 +1,25 @@
-
-
 import React, { useState } from 'react';
 
 import { Button, View, Input, Text } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { StyleSheet, Alert } from 'react-native';
+import { StyleSheet, Alert, Modal, TouchableOpacity, Image } from 'react-native';
 
 const LoginScreen = () => {
   const navigation = useNavigation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [alertModalVisible, setAlertModalVisible] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
 
   const storeToken = async (token) => {
     try {
       await AsyncStorage.setItem('@user_token', token);
     } catch (e) {
       console.log('eeeeee')
+      setAlertMessage(`token error`);
+      setAlertModalVisible(true);
     }
   }
 
@@ -55,7 +57,9 @@ const LoginScreen = () => {
         // navigation.navigate('BottomTabNavigator', { token, uuid });
       } else {
         // 서버가 로그인 실패에 대해 다른 상태 코드를 반환하는 경우
-        Alert.alert("로그인 실패", "이메일 또는 비밀번호가 잘못되었습니다.");
+        //Alert.alert("로그인 실패", "이메일 또는 비밀번호가 잘못되었습니다.");
+        setAlertMessage(`이메일 또는 비밀번호가 잘못되었습니다.`);
+        setAlertModalVisible(true);
       }
     } catch (error) {
       console.log(error);
@@ -65,8 +69,10 @@ const LoginScreen = () => {
       if (error.request) {
         console.log("Server No Response", error.request);
       }
-  
-      Alert.alert("오류 발생", "로그인 중 문제가 발생했습니다.");
+
+      setAlertMessage(`이메일 또는 비밀번호가 잘못되었습니다.`);
+      setAlertModalVisible(true);
+      //Alert.alert("오류 발생", "로그인 중 문제가 발생했습니다.");
     }
   };
   
@@ -133,9 +139,90 @@ const LoginScreen = () => {
           <Text onPress={() => navigation.navigate('PwSearch')}>비밀번호 찾기</Text>
         </View>
       </View>
+
+      <Modal 
+        animationType="fade"
+        transparent={true}
+        visible={alertModalVisible}
+        onRequestClose={() => {
+          setAlertModalVisible(!alertModalVisible);
+        }}>
+        <View style={styles.alertModalView}>
+        <View style={styles.alertModalContainer}>
+          <Text style={{fontSize:20, fontWeight:'bold', color:'#000'}}>Alert</Text>
+          <Text style={styles.alertText}>{alertMessage}</Text>
+          <View style={styles.alertButtonContainer}>
+            <TouchableOpacity
+              style={styles.alertButton}
+              onPress={() => setAlertModalVisible(false)}
+            >
+              <Text style={styles.alertButtonText}>OK</Text>
+          </TouchableOpacity>
+          </View>
+        </View>
+        </View>
+      </Modal>
     </View>
+
   );
 };
-
+const styles = StyleSheet.create({
+  alertModalView:{
+    flex:1,
+    justifyContent:'center',
+    alignItems:'center',
+    backgroundColor:'rgba(0,0,0,0.5)',
+  },
+  alertModalContainer: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: '5%',
+    alignItems: 'flex-start',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    margin: 20,
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    fontSize: 1,
+    //height: 150,
+    //width: 300,
+    width: '80%',
+    height: '20%',
+  },
+  modalText: {
+    fontSize: 16,             // 글자 크기
+    textAlign: 'flex-start',      // 텍스트 중앙 정렬
+  },
+  alertButtonContainer: {
+    flex: 1,
+    justifyContent: 'flex-end', // 버튼을 하단으로 이동
+    alignItems: 'flex-end', // 버튼을 오른쪽으로 이동
+    width: '100%',
+  },
+  alertButton: {
+    backgroundColor: '#8E86FA',
+    borderRadius: 40,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    paddingVertical: 10, // 버튼 높이 조절
+    paddingHorizontal: 20, // 버튼 너비 조절
+    alignItems: 'center', // 수직 중앙 정렬
+    justifyContent: 'center', // 수평 중앙 정렬
+  },
+  alertButtonText: {
+    color: '#fff',
+    textAlign: 'center', // 텍스트 중앙 정렬
+  },
+});
 export default LoginScreen;
 

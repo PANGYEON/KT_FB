@@ -2,12 +2,15 @@ import React, { useState } from 'react';
 import { View, Button } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
-import { StyleSheet, Text, Alert } from 'react-native';
+import { StyleSheet, Text, Alert, Modal, TouchableOpacity } from 'react-native';
 
 const DietGoalScreen = ({ route }) => {
   const { email, password, name, birthdate, personheight, personweight, gender, selectedActivityLevel } = route.params;
   const navigation = useNavigation();
   const [goalIndex, setGoalIndex] = useState(-1); // -1 for no selection
+
+  const [alertModalVisible, setAlertModalVisible] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
 
   const goals = ['체중 감량', '체중 유지', '체중 증량'];
   // const handleLevelSelect = (index) => {
@@ -15,7 +18,9 @@ const DietGoalScreen = ({ route }) => {
   // };
   const handleRegister = () => {
     if (goalIndex === -1) {
-      Alert.alert("경고", "목표를 선택해주세요.");
+      setAlertMessage(`목표를 선택해주세요.`);
+      setAlertModalVisible(true);
+      //Alert.alert("경고", "목표를 선택해주세요.");
       return;
     }
 
@@ -101,6 +106,30 @@ const DietGoalScreen = ({ route }) => {
           </Button>
         </View>
       </View>
+
+      <Modal 
+        animationType="fade"
+        transparent={true}
+        visible={alertModalVisible}
+        onRequestClose={() => {
+          setAlertModalVisible(!alertModalVisible);
+        }}>
+        <View style={styles.alertModalView}>
+        <View style={styles.alertModalContainer}>
+          <Text style={{fontSize:20, fontWeight:'bold', color:'#000'}}>Alert</Text>
+          <Text style={styles.alertText}>{alertMessage}</Text>
+          <View style={styles.alertButtonContainer}>
+            <TouchableOpacity
+              style={styles.alertButton}
+              onPress={() => setAlertModalVisible(false)}
+            >
+              <Text style={styles.alertButtonText}>OK</Text>
+          </TouchableOpacity>
+          </View>
+        </View>
+        </View>
+      </Modal>
+
     </View>
   );
 };
@@ -145,7 +174,62 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end', // 하단에 정렬
     marginBottom: -15, // 하단 여백
   },
-  
+  alertModalView:{
+    flex:1,
+    justifyContent:'center',
+    alignItems:'center',
+    backgroundColor:'rgba(0,0,0,0.5)',
+  },
+  alertModalContainer: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: '5%',
+    alignItems: 'flex-start',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    margin: 20,
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    fontSize: 1,
+    //height: 150,
+    //width: 300,
+    width: '80%',
+    height: '20%',
+  },
+  modalText: {
+    fontSize: 16,             // 글자 크기
+    textAlign: 'flex-start',      // 텍스트 중앙 정렬
+  },
+  alertButtonContainer: {
+    flex: 1,
+    justifyContent: 'flex-end', // 버튼을 하단으로 이동
+    alignItems: 'flex-end', // 버튼을 오른쪽으로 이동
+    width: '100%',
+  },
+  alertButton: {
+    backgroundColor: '#8E86FA',
+    borderRadius: 40,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    paddingVertical: 10, // 버튼 높이 조절
+    paddingHorizontal: 20, // 버튼 너비 조절
+    alignItems: 'center', // 수직 중앙 정렬
+    justifyContent: 'center', // 수평 중앙 정렬
+  },
+  alertButtonText: {
+    color: '#fff',
+    textAlign: 'center', // 텍스트 중앙 정렬
+  },
 });
 const edm = StyleSheet.create({
   container: {
