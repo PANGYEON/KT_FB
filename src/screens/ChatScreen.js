@@ -77,10 +77,11 @@ const ChatScreen = () => {
   };
   const unsubscribeFriend = async (friendName) => {
     const friend = friends.find(f => f.name === friendName);
-    if (!friend) {
-      alert('친구 정보를 찾을 수 없습니다.');
-      return;
-    }
+    // 유정님 코드 기준 이부분은 주석처리
+    // if (!friend) {
+    //   alert('친구 정보를 찾을 수 없습니다.');
+    //   return;
+    // }
  
     const token = await AsyncStorage.getItem('@user_token');
     let config = {
@@ -94,11 +95,15 @@ const ChatScreen = () => {
  
     try {
       await axios(config);
-      alert(`${friendName}와의 구독이 취소되었습니다.`);
+      //alert(`${friendName}와의 구독이 취소되었습니다.`);
+      setAlertMessage(`${friendName} 님과의 구독이 취소되었습니다.`);
+      setAlertModalVisible(true);
       fetchFriends();
     } catch (error) {
       console.error('구독 취소 실패:', error);
-      alert('구독 취소에 실패했습니다.');
+      //alert('구독 취소에 실패했습니다.');
+      setAlertMessage('구독 취소에 실패했습니다.');
+      setAlertModalVisible(true);
     }
   };
   const fetchDietData = async (uuid) => {
@@ -224,7 +229,7 @@ const ChatScreen = () => {
                         alignItems: 'center',
                         justifyContent: 'space-between' 
                 }}>
-                  <Text style={styles.unsubscribeText}>{selectedFriend}의 식단 기록</Text>
+                  <Text style={styles.unsubscribeText}>{selectedFriend}님의 식단 기록</Text>
                   <TouchableOpacity onPress={() => unsubscribeFriend(selectedFriend)} style={styles.unsubscribeButton}>
                     <Text style={{ color: '#FFFFFF' }}>구독 취소</Text>
                   </TouchableOpacity>
@@ -309,12 +314,41 @@ const ChatScreen = () => {
           </TouchableOpacity>
         </View>
       )}
+
+      <Modal 
+        animationType="fade"
+        transparent={true}
+        visible={alertModalVisible}
+        onRequestClose={() => {
+          setAlertModalVisible(!alertModalVisible);
+        }}>
+        <View style={styles.alertModalView}>
+        <View style={styles.alertModalContainer}>
+          {/* <Text style={{fontSize:20, fontWeight:'bold', color:'#000'}}>Alert</Text> */}
+          <Text style={styles.alertText}>{alertMessage}</Text>
+          <View style={styles.alertButtonContainer}>
+            <TouchableOpacity
+              style={styles.alertButton}
+              onPress={() => setAlertModalVisible(false)}
+            >
+              <Text style={styles.alertButtonText}>OK</Text>
+          </TouchableOpacity>
+          </View>
+        </View>
+        </View>
+      </Modal>
     </View>
   );
 };
  
  
 const styles = StyleSheet.create({
+  alertModalView:{
+    flex:1,
+    justifyContent:'center',
+    alignItems:'center',
+    backgroundColor:'rgba(0,0,0,0.5)',
+  },
   alertModalContainer: {
     backgroundColor: '#fff',
     borderRadius: 10,
@@ -325,12 +359,15 @@ const styles = StyleSheet.create({
       width: 0,
       height: 2
     },
+    margin: 20,
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
     fontSize: 1,
-    height: 150,
-    width: 300,
+    //height: 150,
+    //width: 300,
+    width: '80%',
+    height: '20%',
   },
   modalText: {
     fontSize: 16,             // 글자 크기
@@ -344,7 +381,7 @@ const styles = StyleSheet.create({
   },
   alertButton: {
     backgroundColor: '#8E86FA',
-    borderRadius: 18,
+    borderRadius: 40,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -353,6 +390,14 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
+    paddingVertical: 10, // 버튼 높이 조절
+    paddingHorizontal: 20, // 버튼 너비 조절
+    alignItems: 'center', // 수직 중앙 정렬
+    justifyContent: 'center', // 수평 중앙 정렬
+  },
+  alertButtonText: {
+    color: '#fff',
+    textAlign: 'center', // 텍스트 중앙 정렬
   },
  
   titleBar: {
