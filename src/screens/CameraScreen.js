@@ -1,11 +1,12 @@
 
 import React, { useRef, useState } from 'react';
-import { Button, View,TouchableOpacity, Text, StyleSheet, ActivityIndicator  } from 'react-native';
+import { Button, View,TouchableOpacity, Text, StyleSheet, ActivityIndicator, Image  } from 'react-native';
 import { Camera, useCameraDevice } from 'react-native-vision-camera';
 import { useNavigation } from '@react-navigation/native';
 import { CameraRoll } from "@react-native-camera-roll/camera-roll";
 import { odApi } from '../ai_model/BP_Food';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import BackIcon from '../icons/BackIcon.png';
 
 function CameraScreen() {
   const device = useCameraDevice('back');
@@ -16,6 +17,10 @@ function CameraScreen() {
 
   if (device == null) return <View />;
 
+  const goBack = () => {
+    setIsLoading(false);
+    // 네비게이션 스택에서 이전 화면으로 돌아갑니다.
+  };
   
   const takePhoto = async () => {
     if (cameraRef.current) {
@@ -55,10 +60,17 @@ function CameraScreen() {
   if (isLoading) {
     // 로딩 중이라면 로딩 화면을 표시
     return (
-      <View style={styles.loadingView}>
-        <ActivityIndicator size="large" color="#0000ff" />
-        <Text style={{marginTop:20}}>사진을 분석중이에요</Text>
+      <View style={{ flex: 1 }}>
+      <View style={styles.loadingContainer}>
+        <TouchableOpacity onPress={goBack}>
+          <Image source={BackIcon} style={{ width: 25, height: 25 }} />
+        </TouchableOpacity>
       </View>
+      <View style={styles.loadingView}>
+        <ActivityIndicator size="large" color="#8E86FA" />
+        <Text style={{ marginTop: 20, fontSize: 20 }}>사진을 분석중이에요</Text>
+      </View>
+    </View>
     );
   }
 
@@ -94,10 +106,17 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16
   },
-  loadingView:{
+  loadingContainer: {
     flex: 1,
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    paddingTop: 30,
+    paddingLeft: 20,
+  },
+  loadingView: {
+    flex: 9,
     justifyContent: 'center',
     alignItems: 'center',
-  }
+  },
 });
 export default CameraScreen;

@@ -532,10 +532,10 @@ const ProfileScreen = () => {
           </Modal.Body>
           <Modal.Footer>
             <Button.Group space={2}>
-              <Button style={styles.subscribeButton} variant="ghost" onPress={() => setLogoutModalVisible(false)}>
-                아니요
+              <Button variant="ghost" onPress={() => setLogoutModalVisible(false)}>
+                <Text style={{color:'#8E96FA'}}>아니요</Text>
               </Button>
-              <Button style={styles.subscribeButton} onPress={logout}>
+              <Button backgroundColor='#8E86FA' borderRadius='15' onPress={logout}>
                 네
               </Button>
             </Button.Group>
@@ -560,11 +560,11 @@ const ProfileScreen = () => {
           </Modal.Body>
           <Modal.Footer>
             <Button.Group space={2}>
-              <Button style={styles.subscribeButton} variant="ghost" onPress={() => setDeleteModalVisible(false)}>
-                아니요
+              <Button variant="ghost" onPress={() => setDeleteModalVisible(false)}>
+                <Text style={{color:'#8E96FA'}}>취소</Text>
               </Button>
-              <Button style={styles.subscribeButton} onPress={deleteuser}>
-                네
+              <Button backgroundColor='#8E86FA' borderRadius='15' onPress={deleteuser}>
+                확인
               </Button>
             </Button.Group>
           </Modal.Footer>
@@ -594,13 +594,15 @@ const ProfileScreen = () => {
       <Text style={{fontSize:20, fontWeight:'bold'}}>Alert</Text>
       <Text style={styles.alertText}>{alertMessage}</Text>
       <View style={styles.alertButtonContainer}>
-      <Button style={styles.alertButton} onPress={() => setAlertModalVisible(false)}>
-        <Text style={{color:'#fff'}}>OK</Text>
-      </Button>
+        <TouchableOpacity
+          style={styles.alertButton}
+          onPress={() => setAlertModalVisible(false)}
+        >
+          <Text style={styles.alertButtonText}>OK</Text>
+        </TouchableOpacity>
       </View>
     </View>
   </Modal>
-  {/* //merge */}
   </View>
   );
 };
@@ -621,7 +623,7 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
     fontSize:1,
-    height:'15%',
+    height:'18%',
     width:'80%',
   },
   modalText: {
@@ -636,7 +638,7 @@ const styles = StyleSheet.create({
   },
   alertButton:{
     backgroundColor: '#8E86FA',
-    borderRadius: 18,
+    borderRadius: 40,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -645,8 +647,14 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
-    alignItems:'center',
-    justifyContent: 'center',
+    paddingVertical: 10, // 버튼 높이 조절
+    paddingHorizontal: 20, // 버튼 너비 조절
+    alignItems: 'center', // 수직 중앙 정렬
+    justifyContent: 'center', // 수평 중앙 정렬
+  },
+  alertButtonText: {
+    color: '#fff',
+    textAlign: 'center', // 텍스트 중앙 정렬
   },
 
 

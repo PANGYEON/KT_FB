@@ -11,6 +11,7 @@ const ChatBotScreen = ({onClose}) => {
   const [inputText, setInputText] = useState(''); // To store the user input
   const [chatHistory, setChatHistory] = useState([]); // To store the chat history
   const scrollViewRef = useRef();
+  const [isLoading, setIsLoading] = useState(false); // 로딩 상태 추가
  
   const saveChatHistory = async (chatHistory) => {
     try {
@@ -77,6 +78,9 @@ const ChatBotScreen = ({onClose}) => {
       console.log(token);
       const response = await axios(config);
       console.log(response)
+
+      setIsLoading(true); // 로딩 시작
+
       axios.request(config)
       .then(async (response) => {
         console.log(JSON.stringify(response.data));
@@ -95,10 +99,20 @@ const ChatBotScreen = ({onClose}) => {
     } catch (error) {
       console.error('Error:', error);
     }
- 
-    // 입력창 초기화
+    setIsLoading(false);
     setInputText('');
   };
+
+  if (isLoading) {
+    // 로딩 중이라면 로딩 화면을 표시
+    return (
+      <View style={styles.loadingView}>
+        <ActivityIndicator size="large" color="#8E86FA" />
+        <Text style={{marginTop:20, fontSize:20}}>열심히 답변중이에요</Text>
+      </View>
+    );
+  }
+
   return (
     <View flex={1}>
       {/*닫기 버튼*/}
