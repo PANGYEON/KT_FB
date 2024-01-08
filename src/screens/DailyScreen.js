@@ -181,6 +181,7 @@ const DailyScreen = () => {
           나트륨: response.data.nat.toFixed(1),
           콜레스테롤: response.data.col.toFixed(1),
           imagelink:response.data.imagelink,
+          un_food_name:response.data.un_food_name
         }
       }));
     } catch (error) {
@@ -191,6 +192,7 @@ const DailyScreen = () => {
 
 
   useEffect(() => {
+     console.log(mealData['간식'].food_name)
     if (route.params?.selectedMeal && route.params?.photoUri && route.params?.mealDataList) {
       const updatedMealInfo = {
         ...mealData[route.params.selectedMeal],
@@ -224,6 +226,7 @@ const DailyScreen = () => {
       콜레스테롤: '',
       //... 아침 식사에 대한 다른 영양소나 식사 정보
       imagelink: '', // 실제 아침 식사 이미지 URL로 변경하세요
+      un_food_name:''
     },
     점심: {
       // //점심 식사에 대한 정보
@@ -238,7 +241,8 @@ const DailyScreen = () => {
       나트륨: '',
       콜레스테롤: '',
       // //... 아침 식사에 대한 다른 영양소나 식사 정보
-      imagelink: '' // 실제 아침 식사 이미지 URL로 변경하세요
+      imagelink: '', // 실제 아침 식사 이미지 URL로 변경하세요
+      un_food_name:''
     },
     저녁: {
       // 저녁 식사에 대한 정보
@@ -254,6 +258,7 @@ const DailyScreen = () => {
       콜레스테롤: '',
       //... 아침 식사에 대한 다른 영양소나 식사 정보
       imagelink: '', // 실제 아침 식사 이미지 URL로 변경하세요
+      un_food_name:''
     },
     간식: {
       // 간식 식사에 대한 정보
@@ -269,6 +274,7 @@ const DailyScreen = () => {
       콜레스테롤: '',
       //... 아침 식사에 대한 다른 영양소나 식사 정보
       imagelink: '', // 실제 아침 식사 이미지 URL로 변경하세요
+      un_food_name:''
     },
   });
   
@@ -409,16 +415,40 @@ const DailyScreen = () => {
     {'< '}{selectedMeal ? `${selectedMeal} 메뉴` : ''}{' >'}
   </Text>
   <ScrollView contentContainerStyle={styles.TodayIs} style={{ height: 200 }}>
-    {/* 메뉴 리스트를 안전하게 렌더링 */}
-    {mealData[selectedMeal] && Array.isArray(mealData[selectedMeal].food_name) &&
+    {/* 기존 메뉴 리스트 렌더링 (메뉴가 있는 경우에만) */}
+    {/* {Array.isArray(mealData[selectedMeal].food_name) && mealData[selectedMeal].food_name.length > 0 ? (
       mealData[selectedMeal].food_name.map((food, index) => (
         <View key={index} style={{ flexDirection: 'column', marginBottom: 5 }}>
           <Text>{food} : {mealData[selectedMeal].meal_serving && mealData[selectedMeal].meal_serving[index]} 인분</Text>
         </View>
       ))
+    ) : null} */}
+{Array.isArray(mealData[selectedMeal].food_name) && mealData[selectedMeal].food_name.length > 0 ? (
+  mealData[selectedMeal].food_name.map((food, index) => {
+    if (food.trim() !== '' && mealData[selectedMeal].meal_serving && mealData[selectedMeal].meal_serving[index] > 0) {
+      return (
+        <View key={index} style={{ flexDirection: 'column', marginBottom: 5 }}>
+          <Text>{food} : {mealData[selectedMeal].meal_serving[index]} 인분</Text>
+        </View>
+      );
     }
+    return null;
+  })
+) : null}
+    {/* un_food_name이 있는 경우 추가 텍스트 렌더링 */}
+    {/* {mealData[selectedMeal].un_food_name && mealData[selectedMeal].un_food_name !== '' ? (
+      <Text style={{ marginTop: 10, fontWeight: 'bold' }}>
+        없는 이미지 : {mealData[selectedMeal].un_food_name}
+      </Text>
+    ) : null} */}
+    {Array.isArray(mealData[selectedMeal].un_food_name) && mealData[selectedMeal].un_food_name.filter(name => name.trim() !== '').length > 0 && (
+  <Text style={{ marginTop: 10, fontWeight: 'bold' }}>
+    없는 이미지 : {mealData[selectedMeal].un_food_name.filter(name => name.trim() !== '').join(', ')}
+  </Text>
+)}
   </ScrollView>
 </View>
+
 
         </View>
         <View style={styles.selectedMealInfo_2}>

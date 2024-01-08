@@ -57,7 +57,9 @@ const ImageInScreen = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [currentFoodForPortion, setCurrentFoodForPortion] = useState(null);
   const [inferResult, setinferResult] = useState();
-
+  const isAnyFoodChecked = () => {
+    return Object.values(checkedFoods).some(isChecked => isChecked);
+  };
   useEffect(() => {
     // console.log(route.params.selectDay) 오늘 날짜
     // console.log('ii', route.params.image)
@@ -112,7 +114,7 @@ const ImageInScreen = () => {
   });
 
   const handleImagePress = () => {
-    navigation.navigate('CameraScreen');
+    // navigation.navigate('CameraScreen');
   };
 
   // 이미지 업로드 함수
@@ -222,11 +224,12 @@ const ImageInScreen = () => {
         </View>
 
         {/* <Text>식품 목록</Text> */}
-        <ScrollView
-          style={{ maxHeight: 200 }}
-          contentContainerStyle={{ flexGrow: 1 }}
-          showsVerticalScrollIndicator={true}
-        >
+        {foodNames.length > 0 ? (
+  <ScrollView
+    style={{ maxHeight: 200 }}
+    contentContainerStyle={{ flexGrow: 1 }}
+    showsVerticalScrollIndicator={true}
+  >
           {foodNames.map((foodName, index) => (
             <HStack key={index} alignItems="center" style={{ marginVertical: 5 }}>
               <CheckBox
@@ -241,9 +244,26 @@ const ImageInScreen = () => {
             </HStack>
           ))}
         </ScrollView>
+) : (
+  <View style={{ alignItems: 'center' }}>
+    <Text style={{ textAlign: 'center', marginTop: 20 }}>
+      죄송합니다 탐지된 음식이 없습니다. 이미지를 눌러 다시 선택해주세요
+    </Text>
+    <Button
+      onPress={() => navigation.navigate('BottomTabNavigator', { screen: '홈' })}
+      style={{
+        marginTop: 20,
+        backgroundColor: '#8E86FA',
+        borderRadius: 15,
+      }}
+    >
+      <Text style={{ color: 'white' }}>처음으로</Text>
+    </Button>
+  </View>
+)}
 
         <Button
-          isDisabled={!selectedMeal}
+          isDisabled={!selectedMeal || !isAnyFoodChecked()}
           onPress={registerMeal}
           style={{
             backgroundColor: '#8E86FA',

@@ -69,14 +69,19 @@ const MonthScreen = () => {
         let meals = response.data.user_meals_evaluation;
         let formattedMeals = {};
         meals.forEach(meal => {
-          formattedMeals[meal.meal_date] = meal.meal_evaluation;
+          // sum_carb와 sum_protein도 저장
+          formattedMeals[meal.meal_date] = {
+            evaluation: meal.meal_evaluation,
+            sumCarb: meal.sum_carb,
+            sumProtein: meal.sum_protein
+          };
         });
         setMealData(formattedMeals);
       } catch (error) {
         console.error('Error fetching meal data:', error);
       }
     };
-
+  
     fetchData();
   }, []);
   const monthData = getMonthData(currentMonth, currentYear);
@@ -134,7 +139,8 @@ const MonthScreen = () => {
                 today.getDate() === day;
   
               const mealEvaluation = mealData[dateString];
-  
+              const mealInfo = mealData[dateString];
+
               return (
                 <TouchableOpacity
                   key={dayIndex}
@@ -150,11 +156,11 @@ const MonthScreen = () => {
                       {day}
                     </Text>
                   </View>
-                  {isCurrentMonth && mealEvaluation && (
-                    <View style={{ backgroundColor: 'lightgreen', borderRadius: 20, width: '90%', alignItems: 'center', justifyContent: 'center' }}>
-                      <Text style={{ fontSize: 10, fontWeight: '900' }}>{mealEvaluation}</Text>
-                    </View>
-                  )}
+                  {isCurrentMonth && mealInfo && mealInfo.sumCarb !== 0 && mealInfo.sumProtein !== 0 && (
+              <View style={{ backgroundColor: 'lightgreen', borderRadius: 20, width: '90%', alignItems: 'center', justifyContent: 'center' }}>
+                <Text style={{ fontSize: 10, fontWeight: '900' }}>{mealInfo.evaluation}</Text>
+              </View>
+            )}
                 </TouchableOpacity>
               );
             })}
