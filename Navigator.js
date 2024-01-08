@@ -17,7 +17,7 @@ import DietGoalScreen from './src/screens/AuthScreens/DietGoalScreen';
 import PwSearchScreen from './src/screens/AuthScreens/PwSearchScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
 import QuestionScreen from './src/screens/QuestionScreen';
-
+import PrivacyScreen from './src/screens/AuthScreens/PrivacyScreen';
 
 
 import ImageInScreen from './src/screens/ImageInScreen';
@@ -59,34 +59,34 @@ const AuthChecker = () => {
   return null; // 또는 로딩 화면을 표시할 수 있습니다.
 };
 const MyStack = () => {
-  
+
   return (
     <NativeBaseProvider>
       <NavigationContainer>
-      <SubscriptionProvider>
-      <AuthChecker />
-        <Stack.Navigator>
-          <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
+        <SubscriptionProvider>
+          <AuthChecker />
+          <Stack.Navigator>
+            <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
 
-          <Stack.Screen name="BottomTabNavigator" component={BottomTabNavigator} options={{ headerShown: false }} />
+            <Stack.Screen name="BottomTabNavigator" component={BottomTabNavigator} options={{ headerShown: false }} />
+            <Stack.Screen name="Privacy" component={PrivacyScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="Register" component={RegisterScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="RegisterInfo" component={RegisterInfoScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="ActivityLevel" component={ActivityLevelScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="DietGoal" component={DietGoalScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="PwSearch" component={PwSearchScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="Profile" component={ProfileScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="Question" component={QuestionScreen} options={{ headerShown: false }} />
 
-          <Stack.Screen name="Register" component={RegisterScreen} options={{ headerShown: false }} />
-          <Stack.Screen name="RegisterInfo" component={RegisterInfoScreen} options={{ headerShown: false }} />
-          <Stack.Screen name="ActivityLevel" component={ActivityLevelScreen} options={{ headerShown: false }} />
-          <Stack.Screen name="DietGoal" component={DietGoalScreen} options={{ headerShown: false }} />
-          <Stack.Screen name="PwSearch" component={PwSearchScreen} options={{ headerShown: false }} />
-          <Stack.Screen name="Profile" component={ProfileScreen} options={{ headerShown: false }} />
-          <Stack.Screen name="Question" component={QuestionScreen} options={{ headerShown: false }} />
 
 
-          
-          <Stack.Screen name="ImageIn" component={ImageInScreen} options={{ headerShown: false }} />
-          {/* <Stack.Screen name="Gallery" component={GalleryScreen} options={{ headerShown: false }} /> */}
+            <Stack.Screen name="ImageIn" component={ImageInScreen} options={{ headerShown: false }} />
+            {/* <Stack.Screen name="Gallery" component={GalleryScreen} options={{ headerShown: false }} /> */}
 
-          <Stack.Screen name="CameraScreen" component={CameraScreen} options={{ headerShown: false }} />
-          <Stack.Screen name="ChatBotScreen" component={ChatBotScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="CameraScreen" component={CameraScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="ChatBotScreen" component={ChatBotScreen} options={{ headerShown: false }} />
 
-        </Stack.Navigator>
+          </Stack.Navigator>
         </SubscriptionProvider>
       </NavigationContainer>
     </NativeBaseProvider>

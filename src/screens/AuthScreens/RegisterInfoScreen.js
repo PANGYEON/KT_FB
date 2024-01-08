@@ -63,7 +63,13 @@ const RegisterInfoScreen = ({ route }) => {
   };
   const navigateToNextPage = () => {
     if (!name || !birthdate || !personheight || !personweight || !gender) {
-      Alert.alert("경고", "모두 입력해주세요");
+      Alert.alert("경고", "모든 필드를 채워주세요.");
+    } else if (name.length > 10) {
+      Alert.alert("경고", "이름은 10자 이내여야 합니다.");
+    } else if (personheight <= 0 || personheight > 250) {
+      Alert.alert("경고", "키는 0에서 250 사이여야 합니다.");
+    } else if (personweight <= 0 || personweight > 250) {
+      Alert.alert("경고", "몸무게는 0에서 250 사이여야 합니다.");
     } else {
       navigation.navigate("ActivityLevel", { 
         email, 

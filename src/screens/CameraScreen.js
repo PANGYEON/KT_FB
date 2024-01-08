@@ -13,6 +13,11 @@ function CameraScreen() {
   const cameraRef = useRef(null); // 카메라 참조 생성
   if (device == null) return <View />;
 
+  const getTodayDate = () => {
+    const today = new Date();
+    return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+  };
+  
   
   const takePhoto = async () => {
     if (cameraRef.current) {
@@ -35,7 +40,8 @@ function CameraScreen() {
         // console.log(data)
         // 변환된 blob 데이터를 다음 화면으로 넘김
         // navigation.navigate('홈', { photo: file.path });
-        navigation.navigate('ImageIn', { photo: `file://${file.path}`, apiResult });
+        const todayDate = getTodayDate();
+        navigation.navigate('ImageIn', { photo: `file://${file.path}`, apiResult,selectDay: todayDate  });
         // navigation.navigate('ImageIn', { photo: file.path });
 
       } catch (error) {

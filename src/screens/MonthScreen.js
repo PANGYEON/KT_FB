@@ -109,59 +109,8 @@ const MonthScreen = () => {
     }
   };
 
-  // const renderCalendar = () => {
-  //   const weekDays = ['일', '월', '화', '수', '목', '금', '토'];
-  //   const monthArray = getMonthData(currentMonth, currentYear);
-
-  //   return (
-  //     <View>
-  //       <View style={styles.weekDays}>
-  //         {weekDays.map((day, index) => (
-  //           <Text key={index} style={[styles.dayLabel, day === '토' ? styles.saturday : (day === '일' ? styles.sunday : null)]}>{day}</Text>
-  //         ))}
-  //       </View>
-
-
-  //       {monthArray.map((week, index) => (
-  //         <View key={index} style={styles.weekContainer}>
-  //           {week.map((day, dayIndex) => {
-  //             // day가 현재 달, 이전 달, 다음 달의 날짜인지 확인
-  //             const isCurrentMonth = day > 0;
-  //             const dateString = isCurrentMonth ? `${currentYear}-${currentMonth}-${day}` : (day > 0 ? `${currentYear}-${currentMonth + 1}-${day}` : `${currentYear}-${currentMonth - 1}-${day}`);
-  //             const isSelected = selectedDates.includes(dateString);
-  //             const isToday = today.getFullYear() === currentYear &&
-  //               today.getMonth() + 1 === currentMonth &&
-  //               today.getDate() === day;
-
-
-  //               const mealDateString = `${currentYear}-${String(currentMonth).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-  //               const mealEvaluation = mealData[mealDateString];
-  //             return (
-
-  //     <TouchableOpacity
-  //             key={dayIndex}
-  //             style={[styles.dayContainer]}
-  //             disabled={day <= 0}
-  //           >
-  //             <Text style={[
-  //               styles.dayText,
-  //               // ... 기존의 스타일
-  //             ]}>
-  //               {day}
-  //             </Text>
-  //             {isCurrentMonth && mealEvaluation && (
-  //               <View style={{ backgroundColor: 'lightgreen', borderRadius: 20, width: '90%', alignItems: 'center', justifyContent: 'center' }}>
-  //                 <Text style={{ fontSize: 10, fontWeight: '900' }}>{mealEvaluation}</Text>
-  //               </View>
-  //             )}
-  //           </TouchableOpacity>
-  //             );
-  //           })}
-  //         </View>
-  //       ))}
-  //     </View>
-  //   );
-  // };
+  
+  
 
   const renderCalendar = () => {
     const weekDays = ['일', '월', '화', '수', '목', '금', '토'];
@@ -307,14 +256,20 @@ const styles = StyleSheet.create({
     color: '#6488E4', // 토요일 텍스트 색상을 파란색으로 설정
   },
   today: {
-    backgroundColor: 'blue', // 원하는 색상으로 변경
-    color: 'white', // 텍스트 색상
-    borderRadius: 30 / 2, // 원형 모양을 만들기 위해 반지름 설정
-    width: 30, // 원의 너비
-    height: 30, // 원의 높이
-    textAlign: 'center', // 텍스트 중앙 정렬
-    lineHeight: calHeight, // 텍스트 수직 중앙 정렬
-  }
+    backgroundColor: '#D7D4FF', // 배경색을 #D7D4FF로 변경
+    borderRadius: 30 / 2, // 원형 모양 유지
+    width: 30, // 원의 너비 유지
+    height: 30, // 원의 높이 유지
+    alignItems: 'center', // 가로 방향으로 중앙 정렬
+    justifyContent: 'center', // 세로 방향으로 중앙 정렬
+  },
+  dayText: {
+    fontSize: 5 * FontScale,
+    // color: 'white', // 텍스트 색상을 흰색으로 변경 (오늘 날짜에만 적용되도록 이 부분을 수정)
+  },
+  todayText: {
+    color: 'white', // 오늘 날짜의 텍스트 색상을 흰색으로 설정 (기존에 있던 스타일에서 이 부분을 분리)
+  },
 });
 
 
