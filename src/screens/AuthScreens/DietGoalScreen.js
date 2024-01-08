@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { View, Button } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
-import axios from 'axios';
 import { StyleSheet, Text, Alert, Modal, TouchableOpacity } from 'react-native';
 
 const DietGoalScreen = ({ route }) => {
@@ -11,81 +10,19 @@ const DietGoalScreen = ({ route }) => {
 
   const [alertModalVisible, setAlertModalVisible] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
-  const [alertSuccess, setAlertSuccess] = useState('');
 
   const goals = ['체중 감량', '체중 유지', '체중 증량'];
-  // const handleLevelSelect = (index) => {
-  //   setGoalIndex(index + 1); // 인덱스에 1을 더함
-  // };
+
   const handleRegister = () => {
     if (goalIndex === -1) {
-      setAlertSuccess(`오류!`);
       setAlertMessage(`목표를 선택해주세요.`);
       setAlertModalVisible(true);
-      //Alert.alert("경고", "목표를 선택해주세요.");
-      return;
-    }
-    else {
-      setAlertSuccess(`회원가입성공!`);
-      setAlertMessage(`로그인페이지로 돌아갑니다`);
-      setAlertModalVisible(true);
-    }
-
-    const adjustedGoalIndex = goalIndex + 1;
-    const data = {
-      "email": email,
-      "name": name,
-      "birthdate": birthdate,
-      "active_level": selectedActivityLevel, //levelIndex.toString(),
-      "height": parseInt(personheight, 10),
-      "weight": parseInt(personweight, 10),
-      "diet_purpose": adjustedGoalIndex >= 0 ? goals[adjustedGoalIndex - 1] : null, // 인덱스 1 증가
-      "password": password,
-      "gender": gender,
-      "agreed_to_privacy_policy": true
-    };
-
-    console.log("Register data:", data);
-    const jsonData = JSON.stringify(data);
-
-    let config = {
-      method: 'post',
-      maxBodyLength: Infinity,
-      url: 'http://edm.japaneast.cloudapp.azure.com/api/user/',
-      headers: { 
-        'Content-Type': 'application/json'
-      },
-      data : jsonData
-    };
-
-    axios.request(config)
-      .then((response) => {
-        console.log(JSON.stringify(response.data));
-        navigation.navigate('Login');
-      })
-      .catch((error) => {
-        // 에러 메시지 자세히 출력
-        console.log('Error object:', error);
-
-        if (error.response) {
-          console.log('Error response:', error.response);
-          if (error.response.data) {
-            console.log('Error response data:', error.response.data);
-            if (error.response.data.display_message) {
-              console.log('Display message:', error.response.data.display_message);
-              Alert.alert('회원가입 오류', error.response.data.display_message);
-            }
-          }
-        } else if (error.request) {
-          console.log('Error request:', error.request);
-        } else {
-          console.log('Error message:', error.message);
-        }
-
-        Alert.alert('회원가입 실패', '회원가입 중 오류가 발생했습니다.');
+    } else {
+      navigation.navigate('Privacy', { 
+        email, password, name, birthdate, personheight, personweight, gender, selectedActivityLevel, goalIndex
       });
-
-  }
+    }
+  };
 
   return (
     <View style={edm.container}>
@@ -110,11 +47,11 @@ const DietGoalScreen = ({ route }) => {
           </View>
         ))}
         <View style={styles.buttonContainer}>
-          <Button style={styles.MovingButton} onPress={() => navigation.navigate('ActivityLevel', { email, password, name, birthdate, personheight, personweight, gender, levelIndex })}>
+          <Button style={styles.MovingButton} onPress={() => navigation.navigate('ActivityLevel', { email, password, name, birthdate, personheight, personweight, gender, selectedActivityLevel })}>
             이전
           </Button>
           <Button style={styles.MovingButton} onPress={handleRegister}>
-            완료
+            다음
           </Button>
         </View>
       </View>
@@ -128,7 +65,7 @@ const DietGoalScreen = ({ route }) => {
         }}>
         <View style={styles.alertModalView}>
         <View style={styles.alertModalContainer}>
-          <Text style={{fontSize:20, fontWeight:'bold', color:'#000', padding: '1%'}}>{alertSuccess}</Text>
+          <Text style={{fontSize:20, fontWeight:'bold', color:'#000', padding: '1%'}}>오류!</Text>
           <Text style={styles.alertText}>{alertMessage}</Text>
           <View style={styles.alertButtonContainer}>
             <TouchableOpacity
@@ -207,8 +144,6 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
     fontSize: 1,
-    //height: 150,
-    //width: 300,
     width: '80%',
     height: '20%',
   },

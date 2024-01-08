@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Button, View, Input, Text, Box } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
-import { StyleSheet, Alert, ScrollView, Dimensions, KeyboardAvoidingView, TouchableOpacity } from 'react-native';
+import { StyleSheet, Alert, ScrollView, Dimensions, KeyboardAvoidingView, TouchableOpacity, Modal } from 'react-native';
 import DatePicker from 'react-native-date-picker'
 
 
@@ -21,6 +21,10 @@ const RegisterInfoScreen = ({ route }) => {
   const [gender, setGender] = useState(null); //성별
   const [selectedButton, setSelectedButton] = useState(null);
   const { width, height } = Dimensions.get('window'); // 화면의 너비와 높이
+
+  const [alertModalVisible, setAlertModalVisible] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+
   const contentContainerStyle = {
     ...styles.contentContainer,
     height: height * 0.75, // 화면 높이의 75%
@@ -28,11 +32,9 @@ const RegisterInfoScreen = ({ route }) => {
 
   const buttonContainerStyle = {
     ...styles.buttonContainer,
-    // justifyContent: 'center', // 수평축 중앙 정렬
     alignItems: 'center',     // 수직축 중앙 정렬
     position: 'absolute',
     bottom: height * 0.08,    // 화면 아래쪽에서부터 8% 높이 위치
-    // width: '100%',            // 너비를 화면의 100%로 설정
   };
 
   const prevButtonStyle = {
@@ -63,7 +65,8 @@ const RegisterInfoScreen = ({ route }) => {
   };
   const navigateToNextPage = () => {
     if (!name || !birthdate || !personheight || !personweight || !gender) {
-      Alert.alert("경고", "모두 입력해주세요");
+      setAlertMessage(`모든 정보를 입력해주세요.`);
+      setAlertModalVisible(true);
     } else {
       navigation.navigate("ActivityLevel", { 
         email, 
@@ -88,6 +91,9 @@ const RegisterInfoScreen = ({ route }) => {
     <KeyboardAvoidingView behavior="height" style={{ flex: 1 }}>
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View style={styles.container}>
+          <View >
+            <Text style={{alignSelf: 'center', marginBottom: '10%', fontSize: 20, fontWeight: '900', padding: '1%'}}>회원정보를 입력해주세요</Text>
+          </View>
           <View style={contentContainerStyle}>
             <View style={inputContainerStyle}>
               <View><Text style={{ marginLeft: width * 0.02, fontSize: 16 }} >이름</Text></View>
@@ -174,6 +180,30 @@ const RegisterInfoScreen = ({ route }) => {
               </Button>
             </View>
           </View>
+
+          {/* 모달창 */}
+          <Modal 
+            animationType="fade"
+            transparent={true}
+            visible={alertModalVisible}
+            onRequestClose={() => {
+              setAlertModalVisible(!alertModalVisible);
+            }}>
+            <View style={styles.alertModalView}>
+            <View style={styles.alertModalContainer}>
+              <Text style={{fontSize:20, fontWeight:'bold', color:'#000', padding: '1%'}}>오류!</Text>
+              <Text style={styles.alertText}>{alertMessage}</Text>
+              <View style={styles.alertButtonContainer}>
+                <TouchableOpacity
+                  style={styles.alertButton}
+                  onPress={() => setAlertModalVisible(false)}
+                >
+                  <Text style={styles.alertButtonText}>OK</Text>
+              </TouchableOpacity>
+              </View>
+            </View>
+            </View>
+          </Modal>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -245,12 +275,66 @@ const styles = StyleSheet.create({
   MovingButton: {
     borderRadius: 50,
     backgroundColor: '#8E86FA',
-
-    // width: '35%', // 너비를 35%로 증가
-    // height: '61%', // 높이 설정
   },
   buttonText: {
     color: 'black',
+  },
+
+  // 모달창 스타일
+
+  alertModalView:{
+    flex:1,
+    justifyContent:'center',
+    alignItems:'center',
+    backgroundColor:'rgba(0,0,0,0.5)',
+  },
+  alertModalContainer: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: '5%',
+    alignItems: 'flex-start',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    margin: 20,
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    fontSize: 1,
+    width: '80%',
+    height: '20%',
+  },
+  modalText: {
+    fontSize: 16,             // 글자 크기
+    textAlign: 'flex-start',      // 텍스트 중앙 정렬
+  },
+  alertButtonContainer: {
+    flex: 1,
+    justifyContent: 'flex-end', // 버튼을 하단으로 이동
+    alignItems: 'flex-end', // 버튼을 오른쪽으로 이동
+    width: '100%',
+  },
+  alertButton: {
+    backgroundColor: '#8E86FA',
+    borderRadius: 40,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    paddingVertical: 10, // 버튼 높이 조절
+    paddingHorizontal: 20, // 버튼 너비 조절
+    alignItems: 'center', // 수직 중앙 정렬
+    justifyContent: 'center', // 수평 중앙 정렬
+  },
+  alertButtonText: {
+    color: '#fff',
+    textAlign: 'center', // 텍스트 중앙 정렬
   },
 
 });

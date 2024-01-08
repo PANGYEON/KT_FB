@@ -80,9 +80,6 @@ const RegisterScreen = () => {
     position: 'absolute',  // 절대 위치 사용
     bottom: height * 0.4, // 화면 아래쪽에서부터 5% 높이 위치
     width: '100%',         // 컨테이너의 너비를 전체 화면 너비로 설정
-    // paddingHorizontal: 20, // 좌우 패딩 추가 (필요에 따라 조절)
-    // justifyContent: 'center' // 버튼들을 수평 방향으로 가운데 정렬
- 
   };
   const movingButtonStyle = {
     ...styles.MovingButton,
@@ -103,7 +100,6 @@ const RegisterScreen = () => {
         <View style={styles.container}>
           <View style={contentContainerStyle}>
             <View style={emailInputContainerStyle}>
-              {/* <View style={{ marginTop: '6%' }} /> */}
               <Text style={{ marginLeft: 5, fontSize: 16 }} >가입하신 이메일을 입력해주세요</Text>
               <View style={styles.inputContainer}>
                 <Input

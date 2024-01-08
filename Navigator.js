@@ -33,6 +33,7 @@ import BottomTabNavigator from './BottomTabNavigator';
 import { useNavigation } from '@react-navigation/native';
 
 import { SubscriptionProvider } from './SubscriptionContext';
+import PrivacyScreen from './src/screens/AuthScreens/PrivacyScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -77,6 +78,7 @@ const MyStack = () => {
           <Stack.Screen name="PwSearch" component={PwSearchScreen} options={{ headerShown: false }} />
           <Stack.Screen name="Profile" component={ProfileScreen} options={{ headerShown: false }} />
           <Stack.Screen name="Question" component={QuestionScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="Privacy" component={PrivacyScreen} options={{ headerShown: false }} />
 
 
           
