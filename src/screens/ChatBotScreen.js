@@ -152,7 +152,7 @@ const ChatBotScreen = ({onClose}) => {
         <View>
           <Image source={ChatBotIcon} style={{width:25, height:25}} />
         </View>
-        <Text>chatBot과의 대화</Text>
+        <Text>chatBot과의 대화 </Text>
       </HStack>
 
       {/* 채팅영역 */}
