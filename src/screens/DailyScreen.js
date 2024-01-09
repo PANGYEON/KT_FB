@@ -483,7 +483,7 @@ const DailyScreen = () => {
           ) : (
             <TouchableOpacity style={styles.selectPhotoButton} onPress={openGallery}>
               <Image
-                source={require('../icons/A.png')}
+                source={require('../icons/GalleryIcon.png')}
                 style={styles.photoIcon}
               />
               <Text style={styles.selectPhotoButtonText}>사진 선택</Text>
@@ -746,8 +746,8 @@ const styles = StyleSheet.create({
   },
 
   photoIcon: {
-    width: '20%', // 원하는 크기로 조정
-    height: '20%', // 원하는 크기로 조정
+    width: '30%', // 원하는 크기로 조정
+    height: '30%', // 원하는 크기로 조정
     marginBottom: 10, // 이미지 아래 간격 조정
   },
 

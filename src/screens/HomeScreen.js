@@ -179,15 +179,17 @@ const HomeScreen = () => {
         <TouchableOpacity
           style={styles.takePhoto} onPress={() => navigation.navigate('CameraScreen')}
         //</View>onPress={() => navigation.navigate('CameraScreen')}
-        >
-          <Image source={require('../icons/A.png')} style={{ width: 30, height: 30 }} />
+        >                
+
+          <Image source={require('../icons/CameraLineIcon.png')} style={{ width: 30, height: 30 }} />
           <Text style={{ color: 'black', fontSize: 15, fontWeight: 'bold', marginTop: '2%' }}>사진촬영</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.galleryButton}
           onPress={openGallery}
         >
-          <Text style={{ color: 'black', fontSize: 15, fontWeight: 'bold' }}>갤러리</Text>
+          <Image source={require('../icons/GalleryIcon.png')} style={{ width: 30, height: 30 }} />
+          <Text style={{ color: 'black', fontSize: 15, fontWeight: 'bold',marginTop: '2%' }}>갤러리</Text>
         </TouchableOpacity>
       </View>
 
