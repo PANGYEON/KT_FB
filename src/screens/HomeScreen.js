@@ -52,7 +52,10 @@ const HomeScreen = () => {
 
   useEffect(() => {
     const updateTabBarVisibility = () => {
-      navigation.setOptions({ tabBarVisible: !isLoading });
+      navigation.setOptions({ tabBarStyle: isLoading ? { display: 'none' } : {
+        height: height * 0.1,
+        paddingBottom: '1%',
+      }, });
     };
 
     updateTabBarVisibility();
