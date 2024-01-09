@@ -13,6 +13,7 @@ const ChatScreen = () => {
   const [refreshing, setRefreshing] = useState(false);
   const navigation = useNavigation();
   const { subscriptionList } = useSubscription();
+  const { subscriptionList } = useSubscription();
   const [alertModalVisible, setAlertModalVisible] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [selectedDate, setSelectedDate] = useState(null);
@@ -40,11 +41,22 @@ const ChatScreen = () => {
       onSelectDate(date);
     }
   };
+
+  const getFullImageUrl = (imageLink) => {
+    // 이미지 URL이 상대 경로인지 확인
+    if (imageLink.startsWith('/media/http%3A/')) {
+      // '/media/http%3A/' 부분을 'http://'로 변경
+      return 'http://' + imageLink.substring('/media/http%3A/'.length);
+    }
+    // 이미 전체 URL이면 그대로 반환
+    return imageUrl;
+  };
+
   const renderMealImages = (mealDate, meals) => {
     const dailyMeals = meals.filter(meal => meal.mealdate === mealDate);
     const mealTypes = ['아침', '점심', '저녁', '간식'];
     const availableMeals = mealTypes.map(type => dailyMeals.find(m => m.mealType === type)).filter(Boolean);
- 
+    console.log(availableMeals)
     // 이미지를 2x2 격자에 배치
     const grid = Array(2).fill(null).map(() => Array(2).fill(null));
  
@@ -64,7 +76,9 @@ const ChatScreen = () => {
                 <View key={colIndex} style={{ alignItems: 'center', margin: 5 }}>
                   <Text>{meal.mealType}</Text>
                   <Image
-                    source={{ uri: `http://edm-diet.japaneast.cloudapp.azure.com/${meal.imagelink}` }}
+                    source={{ uri: getFullImageUrl(meal.imagelink )}}
+                    // source={{ uri: meal.imagelink }}
+
                     style={{ width: 100, height: 100 }}
                   />
                 </View>
@@ -83,18 +97,30 @@ const ChatScreen = () => {
     //   return;
     // }
  
+    // 유정님 코드 기준 이부분은 주석처리
+    // if (!friend) {
+    //   alert('친구 정보를 찾을 수 없습니다.');
+    //   return;
+    // }
+ 
     const token = await AsyncStorage.getItem('@user_token');
     let config = {
       method: 'delete',
       url: `http://edm.japaneast.cloudapp.azure.com/api/unsubscribe/${friend.uuid}/`,
+      headers: {
       headers: {
         'Authorization': `Bearer ${token}`
       }
     };
  
  
+ 
+ 
     try {
       await axios(config);
+      //alert(`${friendName}와의 구독이 취소되었습니다.`);
+      setAlertMessage(`${friendName} 님과의 구독이 취소되었습니다.`);
+      setAlertModalVisible(true);
       //alert(`${friendName}와의 구독이 취소되었습니다.`);
       setAlertMessage(`${friendName} 님과의 구독이 취소되었습니다.`);
       setAlertModalVisible(true);
@@ -104,6 +130,24 @@ const ChatScreen = () => {
       //alert('구독 취소에 실패했습니다.');
       setAlertMessage('구독 취소에 실패했습니다.');
       setAlertModalVisible(true);
+      //alert('구독 취소에 실패했습니다.');
+      setAlertMessage('구독 취소에 실패했습니다.');
+      setAlertModalVisible(true);
+    }
+  };
+  const fetchDietData = async (uuid) => {
+    const token = await AsyncStorage.getItem('@user_token');
+    let config = {
+      method: 'get',
+      url: `http://edm-diet.japaneast.cloudapp.azure.com/user_meal/subscribe/?uuid=${uuid}`,
+      headers: { 'Authorization': `Bearer ${token}` }
+    };
+ 
+    try {
+      const response = await axios(config);
+      setDietData(response.data); // 식단 데이터 상태 업데이트
+    } catch (error) {
+      console.error('식단 데이터 불러오기 실패:', error);
     }
   };
   const fetchDietData = async (uuid) => {
@@ -129,9 +173,11 @@ const ChatScreen = () => {
       maxBodyLength: Infinity,
       url: 'http://edm.japaneast.cloudapp.azure.com/api/subscribe/',
       headers: {
+      headers: {
         'Authorization': `Bearer ${token}`
       }
     };
+ 
  
     try {
       const uuidResponse = await axios(config);
@@ -139,6 +185,7 @@ const ChatScreen = () => {
       const friendInfo = await Promise.all(uuids.map(async (uuid) => {
         try {
           const response = await axios.get(`http://edm.japaneast.cloudapp.azure.com/api/subscribe/info/${uuid}/`, {
+            headers: {
             headers: {
               'Authorization': `Bearer ${token}`
             }
@@ -151,21 +198,26 @@ const ChatScreen = () => {
       }));
  
       setFriends(friendInfo);
+ 
+      setFriends(friendInfo);
     } catch (error) {
       console.error('UUID 목록 불러오기 실패:', error);
     }
     setRefreshing(false); // 새로고침 종료
   };
  
+ 
   useEffect(() => {
     fetchFriends();
   }, [subscriptionList]);
+ 
  
   useEffect(() => {
     if (friends.length > 0) {
       selectFriend(friends[0].name);
     }
   }, [friends]);
+ 
  
   const onRefresh = useCallback(() => {
     fetchFriends();
@@ -177,11 +229,20 @@ const ChatScreen = () => {
       setSelectedFriend(friendName);
       await fetchDietData(friend.uuid); // 선택된 친구의 UUID로 식단 데이터 가져오기
     }
+ 
+  const selectFriend = async (friendName) => {
+    const friend = friends.find(f => f.name === friendName);
+    if (friend) {
+      setSelectedFriend(friendName);
+      await fetchDietData(friend.uuid); // 선택된 친구의 UUID로 식단 데이터 가져오기
+    }
   };
+ 
  
   const navigateToProfile = () => {
     navigation.navigate('Profile');
   };
+ 
  
   return (
     <View style={{ flex: 1 }}>
@@ -189,6 +250,7 @@ const ChatScreen = () => {
       <View style={styles.titleBar}>
         <Text style={styles.titleText}>친구 식단</Text>
       </View>
+ 
  
       {friends.length > 0 ? (
         <View style={{ flex: 1, flexDirection: 'row' }}>
@@ -237,7 +299,10 @@ const ChatScreen = () => {
  
                 <ScrollView style={{ flex: 1 }}>
                   {dietData ? (
-                    dietData.user_meals_evaluation.map((item, index) => (
+                    dietData.user_meals_evaluation
+                    .filter(item => item.sum_carb !== 0 || item.sum_protein !== 0) // 탄수화물과 단백질이 모두 0이 아닌 항목만 필터링
+
+                    .map((item, index) => (
                       <View key={index}>
                         <TouchableOpacity onPress={() => 
                                                     toggleDate(item.meal_date)
@@ -247,7 +312,7 @@ const ChatScreen = () => {
                         >
                           <Text 
                             style={{...styles.DateText, 
-                                    backgroundColor: selectedDate === item.meal_date ? '#8E86FA' : '#fff',
+                                    backgroundColor: selectedDate === item.meal_date ? '#8E86FA' : '#DFD8F7',
                                     color: selectedDate === item.meal_date ? 'white' : '#8E86FA',
                                   }}>
                               {item.meal_date}
@@ -333,16 +398,52 @@ const ChatScreen = () => {
             >
               <Text style={styles.alertButtonText}>OK</Text>
           </TouchableOpacity>
+
+      <Modal 
+        animationType="fade"
+        transparent={true}
+        visible={alertModalVisible}
+        onRequestClose={() => {
+          setAlertModalVisible(!alertModalVisible);
+        }}>
+        <View style={styles.alertModalView}>
+        <View style={styles.alertModalContainer}>
+          {/* <Text style={{fontSize:20, fontWeight:'bold', color:'#000'}}>Alert</Text> */}
+          <Text style={styles.alertText}>{alertMessage}</Text>
+          <View style={styles.alertButtonContainer}>
+            <TouchableOpacity
+              style={styles.alertButton}
+              onPress={() => setAlertModalVisible(false)}
+            >
+              <Text style={styles.alertButtonText}>OK</Text>
+          </TouchableOpacity>
           </View>
+        </View>
+        </View>
+      </Modal>
         </View>
         </View>
       </Modal>
     </View>
   );
+  );
 };
  
  
+ 
+ 
 const styles = StyleSheet.create({
+  alertModalView:{
+    flex:1,
+    justifyContent:'center',
+    alignItems:'center',
+    backgroundColor:'rgba(0,0,0,0.5)',
+  },
+  alertModalContainer: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: '5%',
+    alignItems: 'flex-start',
   alertModalView:{
     flex:1,
     justifyContent:'center',
@@ -360,9 +461,15 @@ const styles = StyleSheet.create({
       height: 2
     },
     margin: 20,
+    margin: 20,
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
+    fontSize: 1,
+    //height: 150,
+    //width: 300,
+    width: '80%',
+    height: '20%',
     fontSize: 1,
     //height: 150,
     //width: 300,
@@ -374,13 +481,17 @@ const styles = StyleSheet.create({
     textAlign: 'flex-start',      // 텍스트 중앙 정렬
   },
   alertButtonContainer: {
+  alertButtonContainer: {
     flex: 1,
     justifyContent: 'flex-end', // 버튼을 하단으로 이동
     alignItems: 'flex-end', // 버튼을 오른쪽으로 이동
     width: '100%',
+    width: '100%',
   },
   alertButton: {
+  alertButton: {
     backgroundColor: '#8E86FA',
+    borderRadius: 40,
     borderRadius: 40,
     shadowColor: '#000',
     shadowOffset: {
@@ -398,7 +509,16 @@ const styles = StyleSheet.create({
   alertButtonText: {
     color: '#fff',
     textAlign: 'center', // 텍스트 중앙 정렬
+    paddingVertical: 10, // 버튼 높이 조절
+    paddingHorizontal: 20, // 버튼 너비 조절
+    alignItems: 'center', // 수직 중앙 정렬
+    justifyContent: 'center', // 수평 중앙 정렬
   },
+  alertButtonText: {
+    color: '#fff',
+    textAlign: 'center', // 텍스트 중앙 정렬
+  },
+ 
  
   titleBar: {
     padding: '4%',
@@ -431,6 +551,7 @@ const styles = StyleSheet.create({
     borderRadius: 40
   },
  
+ 
   friendDietRecord: {
     flex: 1,
     flexDirection: 'row',
@@ -438,6 +559,8 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     padding: 10,
   },
+ 
+  unsubscribeText: {
  
   unsubscribeText: {
     fontSize: 15,
@@ -499,5 +622,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   }
 });
+ 
  
 export default ChatScreen;

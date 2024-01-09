@@ -1,17 +1,21 @@
+// export default DietGoalScreen;
 import React, { useState } from 'react';
 import { View, Button } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
-import axios from 'axios';
+//import axios from 'axios';
 import { StyleSheet, Text, Alert, Modal, TouchableOpacity } from 'react-native';
-
+ 
 const DietGoalScreen = ({ route }) => {
   const { email, password, name, birthdate, personheight, personweight, gender, selectedActivityLevel } = route.params;
   const navigation = useNavigation();
   const [goalIndex, setGoalIndex] = useState(-1); // -1 for no selection
-
+ 
   const [alertModalVisible, setAlertModalVisible] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
-
+  //const [alertSuccess, setAlertSuccess] = useState(''); // 삭제예정
+ 
+  //const [showOkButton, setShowOkButton] = useState(true); // OK 버튼 표시 여부 상태
+ 
   const goals = ['체중 감량', '체중 유지', '체중 증량'];
   // const handleLevelSelect = (index) => {
   //   setGoalIndex(index + 1); // 인덱스에 1을 더함
@@ -21,67 +25,20 @@ const DietGoalScreen = ({ route }) => {
       setAlertMessage(`목표를 선택해주세요.`);
       setAlertModalVisible(true);
       //Alert.alert("경고", "목표를 선택해주세요.");
-      return;
-    }
-
-    const adjustedGoalIndex = goalIndex + 1;
-    const data = {
-      "email": email,
-      "name": name,
-      "birthdate": birthdate,
-      "active_level": selectedActivityLevel, //levelIndex.toString(),
-      "height": parseInt(personheight, 10),
-      "weight": parseInt(personweight, 10),
-      "diet_purpose": adjustedGoalIndex >= 0 ? goals[adjustedGoalIndex - 1] : null, // 인덱스 1 증가
-      "password": password,
-      "gender": gender,
-      "agreed_to_privacy_policy": true
-    };
-
-    console.log("Register data:", data);
-    const jsonData = JSON.stringify(data);
-
-    let config = {
-      method: 'post',
-      maxBodyLength: Infinity,
-      url: 'http://edm.japaneast.cloudapp.azure.com/api/user/',
-      headers: { 
-        'Content-Type': 'application/json'
-      },
-      data : jsonData
-    };
-
-    axios.request(config)
-      .then((response) => {
-        console.log(JSON.stringify(response.data));
-        navigation.navigate('Login');
-      })
-      .catch((error) => {
-        // 에러 메시지 자세히 출력
-        console.log('Error object:', error);
-
-        if (error.response) {
-          console.log('Error response:', error.response);
-          if (error.response.data) {
-            console.log('Error response data:', error.response.data);
-            if (error.response.data.display_message) {
-              console.log('Display message:', error.response.data.display_message);
-              Alert.alert('회원가입 오류', error.response.data.display_message);
-            }
-          }
-        } else if (error.request) {
-          console.log('Error request:', error.request);
-        } else {
-          console.log('Error message:', error.message);
-        }
-
-        Alert.alert('회원가입 실패', '회원가입 중 오류가 발생했습니다.');
+    } else {
+      navigation.navigate('Privacy', {
+        email, password, name, birthdate, personheight, personweight, gender, selectedActivityLevel, goalIndex
       });
-
-  }
-
+    }
+  };
+ 
   return (
     <View style={edm.container}>
+      <View >
+        <Text style={{alignSelf: 'center', marginBottom: '10%', fontSize: 20, color: 'black', fontWeight: '900', padding: '1%'}}>
+          식단목적을 선택해주세요
+        </Text>
+      </View>
       <View style={edm.contentContainer}>
       <View style={styles.goalTextView}>
           <Text style={styles.goalTextText}>목적</Text>
@@ -98,11 +55,11 @@ const DietGoalScreen = ({ route }) => {
           </View>
         ))}
         <View style={styles.buttonContainer}>
-          <Button style={styles.MovingButton} onPress={() => navigation.navigate('ActivityLevel', { email, password, name, birthdate, personheight, personweight, gender, levelIndex })}>
+          <Button style={styles.MovingButton} onPress={() => navigation.navigate('ActivityLevel', { email, password, name, birthdate, personheight, personweight, gender, selectedActivityLevel })}>
             이전
           </Button>
           <Button style={styles.MovingButton} onPress={handleRegister}>
-            완료
+            다음
           </Button>
         </View>
       </View>
@@ -133,6 +90,7 @@ const DietGoalScreen = ({ route }) => {
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   goalTextView: {
     alignItems: 'center', // 가로축 기준 가운데 정렬
@@ -158,7 +116,7 @@ const styles = StyleSheet.create({
     color: 'white', // 눌러진 버튼의 글자색 (흰색)
   },
   inactiveGoalButtonText: {
-    
+   
     color: 'black', // 기본 버튼의 글자색 (검은색)
   },
   MovingButton: {
@@ -231,6 +189,7 @@ const styles = StyleSheet.create({
     textAlign: 'center', // 텍스트 중앙 정렬
   },
 });
+
 const edm = StyleSheet.create({
   container: {
     flex: 1,
@@ -247,5 +206,5 @@ const edm = StyleSheet.create({
     height: '70%',
   },
 });
-
+ 
 export default DietGoalScreen;

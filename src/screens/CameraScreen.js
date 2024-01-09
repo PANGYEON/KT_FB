@@ -21,6 +21,11 @@ function CameraScreen() {
     setIsLoading(false);
     // 네비게이션 스택에서 이전 화면으로 돌아갑니다.
   };
+  const getTodayDate = () => {
+    const today = new Date();
+    return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+  };
+  
   
   const takePhoto = async () => {
     if (cameraRef.current) {
@@ -44,8 +49,9 @@ function CameraScreen() {
         // console.log(data)
         // 변환된 blob 데이터를 다음 화면으로 넘김
         // navigation.navigate('홈', { photo: file.path });
+        const todayDate = getTodayDate();
         setIsLoading(false);
-        navigation.navigate('ImageIn', { photo: `file://${file.path}`, apiResult });
+        navigation.navigate('ImageIn', { photo: `file://${file.path}`, apiResult,selectDay: todayDate  });
         // navigation.navigate('ImageIn', { photo: file.path });
 
       } catch (error) {
