@@ -68,9 +68,9 @@ function CameraScreen() {
     return (
       <View style={{ flex: 1 }}>
       <View style={styles.loadingContainer}>
-        <TouchableOpacity onPress={goBack}>
+        {/* <TouchableOpacity onPress={goBack}>
           <Image source={BackIcon} style={{ width: 25, height: 25 }} />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
       <View style={styles.loadingView}>
         <ActivityIndicator size="large" color="#8E86FA" />

@@ -1,9 +1,9 @@
 
 import React, { useState, useEffect, Component } from 'react';
-import { View, Text, Modal, TouchableOpacity, Image, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, Modal, TouchableOpacity, Image, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
 import { Button } from 'native-base';
 import ChatBotScreen from './ChatBotScreen';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
 import { Calendar } from 'react-native-calendars';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -17,10 +17,17 @@ const DailyScreen = () => {
   const tempImageUrl = 'https://via.placeholder.com/150';
 
   const [photoUri, setPhotoUri] = useState('https://via.placeholder.com/150');
+  const [isLoading, setIsLoading] = useState(false); // 로딩 상태 관리
 
-  
+  const mealDate = route.params?.mealDate || '';
   const [isCalendarVisible, setCalendarVisible] = useState(false);
   const [selectedDate, setSelectedDate] = useState('');
+
+  const fetchDataAndRender = async () => {
+    // Fetch data based on selectedDate and selectedMeal
+    await fetchMealData(selectedDate, selectedMeal);
+  };
+
   const getCurrentDate = () => {
     const today = new Date();
     return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
@@ -57,13 +64,16 @@ const DailyScreen = () => {
           type: response.assets[0].type,
           name: response.assets[0].fileName
         });
+
+        setIsLoading(true);
+
         await AsyncStorage.setItem('@latest_photo', source.uri);
-        console.log(source.uri)
+        console.log(source.uri);
         await processAndSendData(source.uri, response.assets[0].fileName);
         const apiResult = await odApi(source.uri, response.assets[0].fileName);
 
         // ImageInScreen으로 이동하면서 photoUri 전달
-
+        setIsLoading(false);
         navigation.navigate('ImageIn', { photo: source.uri, apiResult, selectDay: selectedDate, image });
       }
     });
@@ -192,7 +202,6 @@ const DailyScreen = () => {
 
 
   useEffect(() => {
-     console.log(mealData['간식'].food_name)
     if (route.params?.selectedMeal && route.params?.photoUri && route.params?.mealDataList) {
       const updatedMealInfo = {
         ...mealData[route.params.selectedMeal],
@@ -207,10 +216,23 @@ const DailyScreen = () => {
     }
   }, [route.params]);
   useEffect(() => {
+    if(mealDate){
+      setSelectedDate(mealDate);
+      fetchMealData(mealDate, selectedMeal);
+    }
+    else{
     const today = getCurrentDate();
     setSelectedDate(today);
     fetchMealData(today, selectedMeal);
+    }
   }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchDataAndRender();
+    }, [selectedDate, selectedMeal]) // Run the function when selectedDate or selectedMeal changes
+  );
+
   // 각 식사 시간별 식사 정보
   const [mealData, setMealData] = useState({
     아침: {
@@ -302,6 +324,35 @@ const DailyScreen = () => {
     setModalVisible(!isModalVisible);
   };
 
+  const getBackgroundColor = () => {
+    switch (mealNutrients.diet_rating) {
+      case 'Bad':
+        return 'red';
+      case 'Not Bad':
+        return 'orange';
+      case 'Good':
+        return 'yellow';
+      case 'Very Good':
+        return 'blue';
+      case 'Perfect':
+        return 'lightgreen';
+      default:
+        return 'lightgray'; // Default color if no match is found
+    }
+  };
+
+  if (isLoading) {
+    // 로딩 중이라면 로딩 화면을 표시
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <View style={styles.loadingView}>
+        <ActivityIndicator size="large" color="#8E86FA" />
+        <Text style={{ marginTop: 20, fontSize: 20 }}>사진을 분석중이에요</Text>
+      </View>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={toggleCalendarModal}>
@@ -346,7 +397,7 @@ const DailyScreen = () => {
       </View>
     </Modal>
       {/* // perfectText에 결과 할당 및 testbox 스타일 설정(test) */}
-      <View style={[styles.testbox]}>
+      <View style={[styles.testbox, { backgroundColor: getBackgroundColor() }]}>
         <Text style={styles.perfectText}>{mealNutrients.diet_rating}</Text>
       </View>
       <View style={styles.contentContainer}>
@@ -536,7 +587,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignSelf: 'center',
     marginTop: '1%',
-    backgroundColor: 'lightgreen',
     borderRadius: 10,
     width: '50%',
     height: 30,
@@ -681,7 +731,19 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: 'white',
   },
-  
+
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    paddingTop: 50,
+    paddingLeft: 20,
+  },
+  loadingView: {
+    flex: 9,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 
 });
 

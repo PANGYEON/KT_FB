@@ -10,7 +10,6 @@ import { odApi, processAndSendData } from '../ai_model/BP_Food';
 
 //폭죽 코드
 import Animation from '../animation/Animation';
-import BackIcon from '../icons/BackIcon.png';
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -25,14 +24,14 @@ const HomeScreen = () => {
     // 여기에 navigation.navigate('Profile')도 포함할 수 있습니다.
   };
 
-
-
   const [photoUri, setPhotoUri] = useState('https://via.placeholder.com/150');
   const [isLoading, setIsLoading] = useState(false); // 로딩 상태 관리
+
   const getTodayDate = () => {
     const today = new Date();
     return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
   };
+
   const { width, height } = Dimensions.get('window');
 
   const loadLatestPhoto = async () => {
@@ -59,13 +58,6 @@ const HomeScreen = () => {
     updateTabBarVisibility();
   }, [isLoading, navigation]);
 
-
-  const goBack = () => {
-    setIsLoading(false);
-    // 네비게이션 스택에서 이전 화면으로 돌아갑니다.
-  };
- 
- 
   const openGallery = () => {
     const options = {
       mediaType: 'photo',
@@ -73,14 +65,13 @@ const HomeScreen = () => {
     };
     const todayDate = getTodayDate();
     launchImageLibrary(options, async (response) => {
-      setIsLoading(true);
       if (response.didCancel) {
-        setIsLoading(false);
         console.log('User cancelled image picker');
       } else if (response.errorCode) {
         setIsLoading(false);
         console.log('ImagePicker Error: ', response.errorMessage);
       } else {
+        setIsLoading(true);
         const source = { uri: response.assets[0].uri };
         const image = new FormData();
         image.append('file', {
@@ -95,7 +86,7 @@ const HomeScreen = () => {
 
         // ImageInScreen으로 이동하면서 photoUri 전달
         setIsLoading(false);
-        navigation.navigate('ImageIn', { photo: source.uri,apiResult });
+        navigation.navigate('ImageIn', { photo: source.uri, apiResult, selectDay: todayDate, image });
       }
     });
   };
@@ -136,29 +127,35 @@ const HomeScreen = () => {
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
   };
+
+  if (isLoading) {
+    // 로딩 중이라면 로딩 화면을 표시
+    return (
+      <View style={{ flex: 1 }}>
+      <View style={styles.loadingContainer}>
+        {/* <TouchableOpacity onPress={goBack}>
+          <Image source={BackIcon} style={{ width: 25, height: 25 }} />
+        </TouchableOpacity> */}
+      </View>
+      <View style={styles.loadingView}>
+        <ActivityIndicator size="large" color="#8E86FA" />
+        <Text style={{ marginTop: 20, fontSize: 20 }}>사진을 분석중이에요</Text>
+      </View>
+    </View>
+    );
+  }
  
- 
- 
+
  
   return (
-
-    <View style={styles.container}>
-      {/* 프로필 페이지 버튼 */}
+      // 프로필 페이지 버튼
+      <View style={styles.container}>
       <TouchableOpacity
         style={styles.profileButton}
         onPress={() => navigation.navigate('Profile')}>
 
         <Text style={{ color: 'black', fontSize: 20 }}>프로필</Text>
       </TouchableOpacity>
-
-      {/* <View>
-        <TouchableOpacity
-          style={styles.profileButton}
-          onPress={handlePress}>
-          <Text style={{ color: 'black', fontSize: 20 }}>프로필</Text>
-        </TouchableOpacity>
-
-      </View> */}
 
       {/* 인사말과 식단 안내 메시지 */}
       <View style={styles.greetingContainer}>
@@ -234,7 +231,6 @@ const HomeScreen = () => {
       </Modal>
       {showAnimation && <Animation onFinish={() => setShowAnimation(false)} />}
     </View>
-
   );
 };
 

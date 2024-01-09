@@ -196,7 +196,8 @@ const ImageInScreen = () => {
         params: {
           selectedMeal: selectedMeal,
           photoUri: photoUri,
-          mealDataList: mealDataList // Passing the list of menu and portions
+          mealDataList: mealDataList, // Passing the list of menu and portions
+          mealDate: mealDate,
         }
       }
     });
