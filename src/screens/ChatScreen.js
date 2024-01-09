@@ -262,7 +262,7 @@ const ChatScreen = () => {
                         >
                           <Text 
                             style={{...styles.DateText, 
-                                    backgroundColor: selectedDate === item.meal_date ? '#8E86FA' : '#DFD8F7',
+                                    backgroundColor: selectedDate === item.meal_date ? '#8E86FA' : '#fff',
                                     color: selectedDate === item.meal_date ? 'white' : '#8E86FA',
                                   }}>
                               {item.meal_date}
@@ -480,9 +480,8 @@ const styles = StyleSheet.create({
   DateText: {
     //backgroundColor: '#8E86FA',
     textAlign: 'center',
-    width: '60%',
+    width: '100%',
     //color: 'white',
-    fontSize: 20,
     fontWeight: '900',
     margin: '1%',
     padding: '5%',
