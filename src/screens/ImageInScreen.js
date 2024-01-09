@@ -20,30 +20,25 @@ const PortionSizeModal = ({ isVisible, onClose, onSelect, initialSize }) => {
       visible={isVisible}
       onRequestClose={onClose}
     >
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <View style={{ backgroundColor: 'white', padding: 20, borderRadius: 10 }}>
-          <Text>인분을 선택해주세요</Text>
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: '5%', marginBottom: '5%' }}>
+          <Text>Select Portion Size</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <ScrollPicker
               dataSource={[0, 1, 2, 3]}
               selectedIndex={integerPart}
-              wrapperBackground={'transparent'}
               renderItem={(data, index, isSelected) => <Text>{data}</Text>}
               onValueChange={(data, selectedIndex) => setIntegerPart(selectedIndex)}
             />
-            <Text style={{fontSize: 30}}>.</Text>
+            <Text>.</Text>
             <ScrollPicker
-            style={{backgroundColor:'#D7D4FF'}}
-            wrapperBackground={'transparent'}
               dataSource={[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]}
               selectedIndex={fractionPart}
               renderItem={(data, index, isSelected) => <Text>{data}</Text>}
               onValueChange={(data, selectedIndex) => setFractionPart(selectedIndex)}
             />
           </View>
-          <TouchableOpacity title="Confirm" onPress={() => onSelect(integerPart + fractionPart / 10)} style={{alignItems: 'center', justifyContent: 'center'}} >
-            <Text style={{backgroundColor: '#8E86FA', padding: '5%', width: '50%', textAlign: 'center', borderRadius: 10, color: 'white'}}>확인</Text>
-          </TouchableOpacity>
+          <Button title="Confirm" onPress={() => onSelect(integerPart + fractionPart / 10)} >확인</Button>
         </View>
       </View>
     </Modal>
@@ -62,11 +57,9 @@ const ImageInScreen = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [currentFoodForPortion, setCurrentFoodForPortion] = useState(null);
   const [inferResult, setinferResult] = useState();
-
   const isAnyFoodChecked = () => {
     return Object.values(checkedFoods).some(isChecked => isChecked);
   };
-
   useEffect(() => {
     // console.log(route.params.selectDay) 오늘 날짜
     // console.log('ii', route.params.image)
@@ -203,15 +196,14 @@ const ImageInScreen = () => {
         params: {
           selectedMeal: selectedMeal,
           photoUri: photoUri,
-          mealDataList: mealDataList, // Passing the list of menu and portions
-          mealDate: mealDate,
+          mealDataList: mealDataList // Passing the list of menu and portions
         }
       }
     });
   };
 
 
-   return (
+  return (
     <View flex={1}>
       <TouchableOpacity style={{ padding: 20, justifyContent: 'center', alignItems: 'center' }} onPress={handleImagePress}>
         {photoUri && (
@@ -232,11 +224,12 @@ const ImageInScreen = () => {
         </View>
 
         {/* <Text>식품 목록</Text> */}
-        <ScrollView
-          style={{ maxHeight: 200 }}
-          contentContainerStyle={{ flexGrow: 1 }}
-          showsVerticalScrollIndicator={true}
-        >
+        {foodNames.length > 0 ? (
+  <ScrollView
+    style={{ maxHeight: 200 }}
+    contentContainerStyle={{ flexGrow: 1 }}
+    showsVerticalScrollIndicator={true}
+  >
           {foodNames.map((foodName, index) => (
             <HStack key={index} alignItems="center" style={{ marginVertical: 5 }}>
               <CheckBox
@@ -244,19 +237,33 @@ const ImageInScreen = () => {
                 onValueChange={(isChecked) => handleFoodCheck(foodName, isChecked)}
                 tintColors={{ true: '#8E86FA', false: '#8E86FA' }}
               />
-              <Text style={{ marginLeft: 1, marginTop: '-1%',marginRight: '5%' }}>{foodName}</Text>
+              <Text style={{ marginLeft: 1, marginTop: '-1%' }}>{foodName}</Text>
               <TouchableOpacity onPress={() => openPortionModal(foodName)}>
-                <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                  <Text style={{borderColor: '#ccc', borderWidth: 1, padding: '1%', borderRadius: 5}}>{portionSizes[foodName]}</Text>
-                  <Text>인분</Text>
-                </View>
+                <Text>{portionSizes[foodName]} 인분</Text>
               </TouchableOpacity>
             </HStack>
           ))}
         </ScrollView>
+) : (
+  <View style={{ alignItems: 'center' }}>
+    <Text style={{ textAlign: 'center', marginTop: 20 }}>
+      죄송합니다 탐지된 음식이 없습니다. 이미지를 눌러 다시 선택해주세요
+    </Text>
+    <Button
+      onPress={() => navigation.navigate('BottomTabNavigator', { screen: '홈' })}
+      style={{
+        marginTop: 20,
+        backgroundColor: '#8E86FA',
+        borderRadius: 15,
+      }}
+    >
+      <Text style={{ color: 'white' }}>처음으로</Text>
+    </Button>
+  </View>
+)}
 
         <Button
-          isDisabled={!selectedMeal}
+          isDisabled={!selectedMeal || !isAnyFoodChecked()}
           onPress={registerMeal}
           style={{
             backgroundColor: '#8E86FA',
