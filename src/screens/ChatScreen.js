@@ -194,6 +194,23 @@ const ChatScreen = () => {
   const navigateToProfile = () => {
     navigation.navigate('Profile');
   };
+
+  const getBackgroundColor = () => {
+    switch (dietDetails.meal_evaluation) {
+      case 'Bad':
+        return '#FA6565';
+      case 'Not Bad':
+        return 'FA9B65';
+      case 'Good':
+        return '#EEE064';
+      case 'Very Good':
+        return '#96CCF3';
+      case 'Perfect':
+        return '#2FFF9B';
+      default:
+        return 'lightgray'; // Default color if no match is found
+    }
+  };
  
   return (
     <View style={{ flex: 1 }}>
@@ -277,7 +294,7 @@ const ChatScreen = () => {
                             {/* 해당 날짜의 식단 세부 정보 표시 */}
                               <View style={{...styles.DateContent, justifyContent: 'center', alignItems: 'center'}}>
                                 <Text style={{color: 'black', fontSize: 20, marginRight: '5%'}}>식단결과</Text>
-                                <Text style={{paddingVertical: '3%', paddingHorizontal: '5%', backgroundColor: 'lightgreen', textAlign: 'center', borderRadius: 10}}>{dietDetails.meal_evaluation}</Text>
+                                <Text style={{paddingVertical: '3%', paddingHorizontal: '5%', backgroundColor: getBackgroundColor(), textAlign: 'center', borderRadius: 10}}>{dietDetails.meal_evaluation}</Text>
                               </View>
                               <View style={styles.DateContent}>
                                 <Text style={{color: 'black'}}>탄수화물</Text>
