@@ -67,8 +67,9 @@ const BoardScreen = () => {
  
   const getButtonStyle = (category) => ({
     width: '45%',
-    backgroundColor: selectedCategory === category ? '#D7D4FF' : 'transparent',
-    borderColor: selectedCategory === category ? '#D7D4FF' : 'transparent',
+    backgroundColor: selectedCategory === category ? '#8E86FA' : 'transparent',
+    borderColor: selectedCategory === category ? '#8E86FA' : 'transparent',
+    borderRadius: 10
   });
  
   const getButtonTextStyle = (category) => ({
@@ -158,7 +159,12 @@ const BoardScreen = () => {
  
       <View style={{ borderTopWidth: 1, borderTopColor: 'gray', marginVertical: height * 0.013 }} />
  
-      <View style={{ flexDirection: 'row', justifyContent: 'space-around', padding: 10 }}>
+      <View style={{ 
+                flexDirection: 'row', 
+                justifyContent: 'space-around', 
+                padding: 10, 
+                //backgroundColor: '#D7D4FF'
+                }}>
         {categories.map(category => (
           <Button
             key={category}
@@ -170,7 +176,7 @@ const BoardScreen = () => {
         ))}
       </View>
  
-      <View style={{ backgroundColor: '#EBEBEB', padding: 10, borderRadius: 10, margin: 10, height: height * 0.45 }}>
+      <View style={{ backgroundColor: '#ebebeb', padding: 10, borderRadius: 10, margin: 10, height: height * 0.45 }}>
         {renderContent()}
       </View>
       <TouchableOpacity
