@@ -298,7 +298,7 @@ const ProfileScreen = () => {
         </View>
         <View style={styles.userText}>
           <Text>이메일</Text>
-          <Text>{userInfo.email}</Text>
+          <Text>{userInfo.email} </Text>
         </View>
         <View style={styles.userText}>
           <Text>생년월일</Text>

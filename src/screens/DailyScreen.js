@@ -403,38 +403,36 @@ const DailyScreen = () => {
       <View style={styles.contentContainer}>
         {/* 여기에 다른 컨텐츠가 추가될 수 있습니다#F3EFEF */}
         <View style={styles.contentstext}>
-        <View style={{ ...styles.PersonalRegions, marginBottom: '5%' }}>
+          <View style={{ ...styles.PersonalRegions, marginBottom: '5%' }}>
             <Text style={{ fontSize: 16, color: 'black', }}>섭취 칼로리</Text>
-            <Text style={{ fontSize: 16, color: 'black', }}>{mealNutrients.kcal.toFixed(1)}kcal</Text>
+            <Text style={{ fontSize: 16, color: 'black', }}>{mealNutrients.kcal.toFixed(1)}kcal </Text>
           </View>
           <View style={styles.PersonalRegions}>
             <Text style={styles.nutrient}>탄수화물</Text>
-            <Text style={styles.kcal}>{mealNutrients.carbs.toFixed(1)}g</Text>
+            <Text style={styles.kcal}>{mealNutrients.carbs.toFixed(1)}g </Text>
           </View>
           <View style={styles.PersonalRegions}>
             <Text style={styles.nutrient}> - 당류</Text>
-            <Text style={styles.kcal}>{mealNutrients.sugar.toFixed(1)}g</Text>
+            <Text style={styles.kcal}>{mealNutrients.sugar.toFixed(1)}g </Text>
           </View>
           <View style={styles.PersonalRegions}>
             <Text style={styles.nutrient}>지방</Text>
-            <Text style={styles.kcal}>{mealNutrients.fat.toFixed(1)}g</Text>
+            <Text style={styles.kcal}>{mealNutrients.fat.toFixed(1)}g </Text>
           </View>
           <View style={styles.PersonalRegions}>
             <Text style={styles.nutrient}>단백질</Text>
-            <Text style={styles.kcal}>{mealNutrients.protein.toFixed(1)}g</Text>
+            <Text style={styles.kcal}>{mealNutrients.protein.toFixed(1)}g </Text>
           </View>
           <View style={styles.PersonalRegions}>
             <Text style={styles.nutrient}>나트륨</Text>
-            <Text style={styles.kcal}>{mealNutrients.nat.toFixed(1)}mg</Text>
+            <Text style={styles.kcal}>{mealNutrients.nat.toFixed(1)}mg </Text>
           </View>
           <View style={styles.PersonalRegions}>
             <Text style={styles.nutrient}>콜레스테롤</Text>
-            <Text style={styles.kcal}>{mealNutrients.col.toFixed(1)}mg</Text>
+            <Text style={styles.kcal}>{mealNutrients.col.toFixed(1)}mg </Text>
           </View>
         </View>
-        {/* <View style={styles.contentsImg}>
-          <Text>이미지부분</Text>
-        </View> */}
+        
       </View>
 
       <View style={styles.mealsContainer}>
@@ -461,46 +459,44 @@ const DailyScreen = () => {
             </TouchableOpacity>
           )}
 
-<View style={styles.MealMenu}>
-  <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: '3%', marginTop: '3%' }}>
-    {'< '}{selectedMeal ? `${selectedMeal} 메뉴` : ''}{' >'}
-  </Text>
-  <ScrollView contentContainerStyle={styles.TodayIs} style={{ height: 200 }}>
-    {/* 기존 메뉴 리스트 렌더링 (메뉴가 있는 경우에만) */}
-    {/* {Array.isArray(mealData[selectedMeal].food_name) && mealData[selectedMeal].food_name.length > 0 ? (
-      mealData[selectedMeal].food_name.map((food, index) => (
-        <View key={index} style={{ flexDirection: 'column', marginBottom: 5 }}>
-          <Text>{food} : {mealData[selectedMeal].meal_serving && mealData[selectedMeal].meal_serving[index]} 인분</Text>
-        </View>
-      ))
-    ) : null} */}
-{Array.isArray(mealData[selectedMeal].food_name) && mealData[selectedMeal].food_name.length > 0 ? (
-  mealData[selectedMeal].food_name.map((food, index) => {
-    if (food.trim() !== '' && mealData[selectedMeal].meal_serving && mealData[selectedMeal].meal_serving[index] > 0) {
-      return (
-        <View key={index} style={{ flexDirection: 'column', marginBottom: 5 }}>
-          <Text>{food} : {mealData[selectedMeal].meal_serving[index]} 인분</Text>
-        </View>
-      );
-    }
-    return null;
-  })
-) : null}
-    {/* un_food_name이 있는 경우 추가 텍스트 렌더링 */}
-    {/* {mealData[selectedMeal].un_food_name && mealData[selectedMeal].un_food_name !== '' ? (
-      <Text style={{ marginTop: 10, fontWeight: 'bold' }}>
-        없는 이미지 : {mealData[selectedMeal].un_food_name}
-      </Text>
-    ) : null} */}
-    {Array.isArray(mealData[selectedMeal].un_food_name) && mealData[selectedMeal].un_food_name.filter(name => name.trim() !== '').length > 0 && (
-  <Text style={{ marginTop: 10, fontWeight: 'bold' }}>
-    없는 이미지 : {mealData[selectedMeal].un_food_name.filter(name => name.trim() !== '').join(', ')}
-  </Text>
-)}
-  </ScrollView>
-</View>
-
-
+          <View style={styles.MealMenu}>
+            <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: '3%', marginTop: '3%' }}>
+              {'< '}{selectedMeal ? `${selectedMeal} 메뉴` : ''}{' >'}
+            </Text>
+            <ScrollView contentContainerStyle={styles.TodayIs} style={{ height: 200 }}>
+              {/* 기존 메뉴 리스트 렌더링 (메뉴가 있는 경우에만) */}
+              {/* {Array.isArray(mealData[selectedMeal].food_name) && mealData[selectedMeal].food_name.length > 0 ? (
+                mealData[selectedMeal].food_name.map((food, index) => (
+                  <View key={index} style={{ flexDirection: 'column', marginBottom: 5 }}>
+                    <Text>{food} : {mealData[selectedMeal].meal_serving && mealData[selectedMeal].meal_serving[index]} 인분</Text>
+                  </View>
+                ))
+              ) : null} */}
+              {Array.isArray(mealData[selectedMeal].food_name) && mealData[selectedMeal].food_name.length > 0 ? (
+                mealData[selectedMeal].food_name.map((food, index) => {
+                  if (food.trim() !== '' && mealData[selectedMeal].meal_serving && mealData[selectedMeal].meal_serving[index] > 0) {
+                    return (
+                      <View key={index} style={{ flexDirection: 'column', marginBottom: 5 }}>
+                        <Text>{food} : {mealData[selectedMeal].meal_serving[index]} 인분</Text>
+                      </View>
+                    );
+                  }
+                  return null;
+                })
+              ) : null}
+                  {/* un_food_name이 있는 경우 추가 텍스트 렌더링 */}
+                  {/* {mealData[selectedMeal].un_food_name && mealData[selectedMeal].un_food_name !== '' ? (
+                    <Text style={{ marginTop: 10, fontWeight: 'bold' }}>
+                      없는 이미지 : {mealData[selectedMeal].un_food_name}
+                    </Text>
+                  ) : null} */}
+              {Array.isArray(mealData[selectedMeal].un_food_name) && mealData[selectedMeal].un_food_name.filter(name => name.trim() !== '').length > 0 && (
+                <Text style={{ marginTop: 10, fontWeight: 'bold' }}>
+                  없는 이미지 : {mealData[selectedMeal].un_food_name.filter(name => name.trim() !== '').join(', ')}
+                </Text>
+              )}
+            </ScrollView>
+          </View>
         </View>
         <View style={styles.selectedMealInfo_2}>
           <View style={{
@@ -511,15 +507,11 @@ const DailyScreen = () => {
           }}>
             <View style={styles.PersonalRegions}>
               <Text style={styles.nutrient}>탄수화물</Text>
-              <Text style={styles.kcal}>{mealData[selectedMeal].탄수화물}</Text>
+              <Text style={styles.kcal}>{mealData[selectedMeal].탄수화물}g </Text>
             </View>
             <View style={{ ...styles.PersonalRegions, marginLeft: '10%', }}>
               <Text style={{ fontSize: 13 }}>- 당류</Text>
-              <Text style={{ fontSize: 13 }}>{mealData[selectedMeal].당류}</Text>
-            </View>
-            <View style={{ ...styles.PersonalRegions, marginLeft: '10%' }}>
-              <Text style={{ fontSize: 13 }}>- 식이섬유</Text>
-              <Text style={{ fontSize: 13 }}>{mealData[selectedMeal].식이섬유}</Text>
+              <Text style={{ fontSize: 13 }}>{mealData[selectedMeal].당류}g </Text>
             </View>
           </View>
 
@@ -529,19 +521,19 @@ const DailyScreen = () => {
           }}>
             <View style={styles.PersonalRegions}>
               <Text style={styles.nutrient}>단백질</Text>
-              <Text style={styles.kcal}>{mealData[selectedMeal].단백질}</Text>
+              <Text style={styles.kcal}>{mealData[selectedMeal].단백질}g </Text>
             </View>
             <View style={styles.PersonalRegions}>
               <Text style={styles.nutrient}>지방</Text>
-              <Text style={styles.kcal}>{mealData[selectedMeal].지방}</Text>
+              <Text style={styles.kcal}>{mealData[selectedMeal].지방}g </Text>
             </View>
             <View style={styles.PersonalRegions}>
               <Text style={styles.nutrient}>나트륨</Text>
-              <Text style={styles.kcal}>{mealData[selectedMeal].나트륨}</Text>
+              <Text style={styles.kcal}>{mealData[selectedMeal].나트륨}mg </Text>
             </View>
             <View style={styles.PersonalRegions}>
               <Text style={styles.nutrient}>콜레스테롤</Text>
-              <Text style={styles.kcal}>{mealData[selectedMeal].콜레스테롤}</Text>
+              <Text style={styles.kcal}>{mealData[selectedMeal].콜레스테롤}mg </Text>
             </View>
           </View>
         </View>
@@ -610,13 +602,14 @@ const styles = StyleSheet.create({
 
   //통계부분 글 영역
   contentstext: {
-    width: '50%',
+    //width: '50%',
   },
 
   //글 안의 영양소 별 줄 맞추기
   PersonalRegions: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    padding: '1%'
   },
 
   // 영양소 텍스트 조절

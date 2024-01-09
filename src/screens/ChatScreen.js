@@ -234,7 +234,10 @@ const ChatScreen = () => {
           {/* 채팅방 */}
           <View style={{ flex: 1 }}>
             {selectedFriend && (
-              <View style={{ flex: 1, paddingHorizontal: 10 }}>
+              <View style={{ flex: 1, 
+                             paddingHorizontal: '5%',
+                             //alignItems: 'center' 
+                            }}>
                 <View style={{ 
                         flexDirection: 'row', 
                         paddingBottom: 10,
@@ -272,33 +275,33 @@ const ChatScreen = () => {
                           <View style={styles.DateAll}>
                           <View>
                             {/* 해당 날짜의 식단 세부 정보 표시 */}
-                              <View style={styles.DateContent}>
-                                <Text style={{color: 'black', fontSize: 20}}>식단결과</Text>
-                                <Text>{dietDetails.meal_evaluation}</Text>
+                              <View style={{...styles.DateContent, justifyContent: 'center', alignItems: 'center'}}>
+                                <Text style={{color: 'black', fontSize: 20, marginRight: '5%'}}>식단결과</Text>
+                                <Text style={{paddingVertical: '3%', paddingHorizontal: '5%', backgroundColor: 'lightgreen', textAlign: 'center', borderRadius: 10}}>{dietDetails.meal_evaluation}</Text>
                               </View>
                               <View style={styles.DateContent}>
                                 <Text style={{color: 'black'}}>탄수화물</Text>
-                                <Text>{dietDetails.sum_carb.toFixed(1)}</Text>
+                                <Text style={{paddingRight: '1%'}}>{dietDetails.sum_carb.toFixed(1)}g </Text>
                               </View>
                               <View style={styles.DateContent}>
                                 <Text style={{color: 'black'}}>당류</Text>
-                                <Text>{dietDetails.sum_sugar.toFixed(1)}</Text>
+                                <Text style={{paddingRight: '1%'}}>{dietDetails.sum_sugar.toFixed(1)}g </Text>
                               </View>
                               <View style={styles.DateContent}>
                                 <Text style={{color: 'black'}}>단백질</Text>
-                                <Text>{dietDetails.sum_protein.toFixed(1)}</Text>
+                                <Text style={{paddingRight: '1%'}}>{dietDetails.sum_protein.toFixed(1)}g </Text>
                               </View>
                               <View style={styles.DateContent}>
                                 <Text style={{color: 'black'}}>지방</Text>
-                                <Text>{dietDetails.sum_fat.toFixed(1)}</Text>
+                                <Text style={{paddingRight: '1%'}}>{dietDetails.sum_fat.toFixed(1)}g </Text>
                               </View>
                               <View style={styles.DateContent}>
                                 <Text style={{color: 'black'}}>나트륨</Text>
-                                <Text>{dietDetails.sum_fat.toFixed(1)}</Text>
+                                <Text style={{paddingRight: '1%'}}>{dietDetails.sum_fat.toFixed(1)}mg </Text>
                               </View>
                               <View style={styles.DateContent}>
                                 <Text style={{color: 'black'}}>콜레스테롤</Text>
-                                <Text>{dietDetails.sum_col.toFixed(1)}</Text>
+                                <Text style={{paddingRight: '1%'}}>{dietDetails.sum_col.toFixed(1)}mg </Text>
                               </View> 
                             {/* 아침 저녁 간식 점심*/}  
                           </View>
@@ -483,8 +486,8 @@ const styles = StyleSheet.create({
     width: '100%',
     //color: 'white',
     fontWeight: '900',
-    margin: '1%',
-    padding: '5%',
+    //margin: '1%',
+    paddingVertical: '5%',
     borderRadius: 10,
   },
 
@@ -494,13 +497,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: '5%',
-    width: '50%'
+    //width: '50%'
   },
 
   DateAll: {
     backgroundColor: '#ccc',
     padding: '5%',
     borderRadius: 20,
+    marginBottom: '5%'
   }
 });
  
