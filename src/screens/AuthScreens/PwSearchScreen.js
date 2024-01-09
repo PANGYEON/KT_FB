@@ -17,6 +17,7 @@ const { width, height } = Dimensions.get('window');
 const RegisterScreen = () => {
   const navigation = useNavigation();
   const [email, setEmail] = useState('');
+  const [alertMessage, setAlertMessage] = useState('');
 
   
   const requestPasswordReset = async (email) => {
@@ -50,17 +51,23 @@ const RegisterScreen = () => {
  
   const handleNextPage = async () => {
     if (email.length === 0 || !emailCheck(email)) {
-      Alert.alert("오류", "올바른 이메일을 입력해주세요.");
+      setAlertMessage(`올바른 이메일을 입력해주세요.`);
+      setAlertModalVisible(true);
+      //Alert.alert("오류", "올바른 이메일을 입력해주세요.");
       return;
     }
   
     // 비밀번호 재설정 요청
     const resetResponse = await requestPasswordReset(email);
     if (resetResponse) {
-      Alert.alert("성공", "비밀번호 재설정 이메일이 발송되었습니다.");
+      //Alert.alert("성공", "비밀번호 재설정 이메일이 발송되었습니다.");
+      setAlertMessage(`비밀번호 재설정 이메일이 발송되었습니다.`);
+      setAlertModalVisible(true);
       navigation.navigate("Login");
     } else {
-      Alert.alert("오류", "비밀번호 재설정 요청에 실패했습니다.");
+      //Alert.alert("오류", "비밀번호 재설정 요청에 실패했습니다.");
+      setAlertMessage(`비밀번호 재설정 요청에 실패했습니다.`);
+      setAlertModalVisible(true);
     }
   };
  
