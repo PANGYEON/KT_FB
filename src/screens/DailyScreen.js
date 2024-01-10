@@ -353,17 +353,17 @@ const DailyScreen = () => {
   };
 
   const getBackgroundColor = () => {
-    switch (mealNutrients.diet_rating) {
+    switch (mealInfo.evaluation) {
       case 'Bad':
-        return 'red';
+        return '#FA6565';
       case 'Not Bad':
-        return 'orange';
+        return 'FA9B65';
       case 'Good':
-        return 'yellow';
+        return '#EEE064';
       case 'Very Good':
-        return 'blue';
+        return '#96CCF3';
       case 'Perfect':
-        return 'lightgreen';
+        return '#2FFF9B';
       default:
         return 'lightgray'; // Default color if no match is found
     }
