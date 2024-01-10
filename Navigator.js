@@ -1,6 +1,6 @@
 
 import * as React from 'react';
-import { useEffect } from 'react';
+import { useEffect,useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { NavigationContainer } from '@react-navigation/native';
@@ -18,7 +18,7 @@ import PwSearchScreen from './src/screens/AuthScreens/PwSearchScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
 import QuestionScreen from './src/screens/QuestionScreen';
 import PrivacyScreen from './src/screens/AuthScreens/PrivacyScreen';
-
+import SplashScreen from './src/screens/SplashScreen';
 
 import ImageInScreen from './src/screens/ImageInScreen';
 
@@ -59,9 +59,13 @@ const AuthChecker = () => {
   return null; // 또는 로딩 화면을 표시할 수 있습니다.
 };
 const MyStack = () => {
-
+  const [splash, setSplash] = useState(true);
+  useEffect(() => {
+    setTimeout(() => { setSplash(false) }, 3000);
+  }, []);
   return (
     <NativeBaseProvider>
+      {splash ? <SplashScreen /> :
       <NavigationContainer>
         <SubscriptionProvider>
           <AuthChecker />
@@ -78,10 +82,10 @@ const MyStack = () => {
             <Stack.Screen name="Profile" component={ProfileScreen} options={{ headerShown: false }} />
             <Stack.Screen name="Question" component={QuestionScreen} options={{ headerShown: false }} />
 
+            <Stack.Screen name="SplashScreen" component={SplashScreen} options={{ headerShown: false }} />
 
 
             <Stack.Screen name="ImageIn" component={ImageInScreen} options={{ headerShown: false }} />
-            {/* <Stack.Screen name="Gallery" component={GalleryScreen} options={{ headerShown: false }} /> */}
 
             <Stack.Screen name="CameraScreen" component={CameraScreen} options={{ headerShown: false }} />
             <Stack.Screen name="ChatBotScreen" component={ChatBotScreen} options={{ headerShown: false }} />
@@ -89,6 +93,7 @@ const MyStack = () => {
           </Stack.Navigator>
         </SubscriptionProvider>
       </NavigationContainer>
+}
     </NativeBaseProvider>
   );
 };
