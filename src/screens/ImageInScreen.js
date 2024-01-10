@@ -559,7 +559,6 @@ const ImageInScreen = () => {
  
         <Button
           isDisabled={!selectedMeal || !isAnyFoodChecked()}
-          isDisabled={!selectedMeal || !isAnyFoodChecked()}
           onPress={registerMeal}
           style={{
             backgroundColor: '#8E86FA',
