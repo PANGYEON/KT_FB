@@ -42,12 +42,14 @@ const HomeScreen = () => {
   };
 
   useFocusEffect(
+    
     useCallback(() => {
       loadLatestPhoto();
     }, [])
   );
   useEffect(() => {
     getTokenAndFetchUserInfo();
+    getTodayDate();
   }, []);
 
   useEffect(() => {
