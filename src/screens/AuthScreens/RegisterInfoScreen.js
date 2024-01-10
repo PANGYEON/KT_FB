@@ -68,13 +68,21 @@ const RegisterInfoScreen = ({ route }) => {
   };
   const navigateToNextPage = () => {
     if (!name || !birthdate || !personheight || !personweight || !gender) {
-      Alert.alert("경고", "모든 필드를 채워주세요.");
+      //Alert.alert("경고", "모든 필드를 채워주세요.");
+      setAlertMessage(`모든 필드를 채워주세요.`);
+      setAlertModalVisible(true);
     } else if (name.length > 10) {
-      Alert.alert("경고", "이름은 10자 이내여야 합니다.");
+      //Alert.alert("경고", "이름은 10자 이내여야 합니다.");
+      setAlertMessage(`이름은 10자 이내여야 합니다.`);
+      setAlertModalVisible(true);
     } else if (personheight <= 0 || personheight > 250) {
-      Alert.alert("경고", "키는 0에서 250 사이여야 합니다.");
+      //Alert.alert("경고", "키는 0에서 250 사이여야 합니다.");
+      setAlertMessage(`키는 0에서 250 사이여야 합니다.`);
+      setAlertModalVisible(true);
     } else if (personweight <= 0 || personweight > 250) {
-      Alert.alert("경고", "몸무게는 0에서 250 사이여야 합니다.");
+      //Alert.alert("경고", "몸무게는 0에서 250 사이여야 합니다.");
+      setAlertMessage(`몸무게는 0에서 250 사이여야 합니다.`);
+      setAlertModalVisible(true);
     } else {
       navigation.navigate("ActivityLevel", { 
         email, 
@@ -195,7 +203,6 @@ const RegisterInfoScreen = ({ route }) => {
             }}>
             <View style={styles.alertModalView}>
             <View style={styles.alertModalContainer}>
-              <Text style={{fontSize:20, fontWeight:'bold', color:'#000'}}>Alert</Text>
               <Text style={styles.alertText}>{alertMessage}</Text>
               <View style={styles.alertButtonContainer}>
                 <TouchableOpacity

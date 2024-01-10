@@ -141,6 +141,23 @@ const MonthScreen = () => {
               const mealEvaluation = mealData[dateString];
               const mealInfo = mealData[dateString];
 
+              const getBackgroundColor = () => {
+                switch (mealInfo.evaluation) {
+                  case 'Bad':
+                    return '#FA6565';
+                  case 'Not Bad':
+                    return 'FA9B65';
+                  case 'Good':
+                    return '#EEE064';
+                  case 'Very Good':
+                    return '#96CCF3';
+                  case 'Perfect':
+                    return '#2FFF9B';
+                  default:
+                    return 'lightgray'; // Default color if no match is found
+                }
+              };
+
               return (
                 <TouchableOpacity
                   key={dayIndex}
@@ -157,7 +174,7 @@ const MonthScreen = () => {
                     </Text>
                   </View>
                   {isCurrentMonth && mealInfo && mealInfo.sumCarb !== 0 && mealInfo.sumProtein !== 0 && (
-              <View style={{ backgroundColor: 'lightgreen', borderRadius: 20, width: '90%', alignItems: 'center', justifyContent: 'center' }}>
+              <View style={{ backgroundColor: getBackgroundColor(), borderRadius: 20, width: '90%', alignItems: 'center', justifyContent: 'center' }}>
                 <Text style={{ fontSize: 10, fontWeight: '900' }}>{mealInfo.evaluation}</Text>
               </View>
             )}
@@ -169,6 +186,8 @@ const MonthScreen = () => {
       </View>
     );
   };
+
+  
 
   return (
     <View style={styles.container}>

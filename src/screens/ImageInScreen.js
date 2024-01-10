@@ -313,8 +313,10 @@ const PortionSizeModal = ({ isVisible, onClose, onSelect, initialSize }) => {
       visible={isVisible}
       onRequestClose={onClose}
     >
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <View style={{ backgroundColor: 'white', padding: 20, borderRadius: 10 }}>
+          <Text>Select Portion Size</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Text>Select Portion Size</Text>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <ScrollPicker
@@ -323,6 +325,7 @@ const PortionSizeModal = ({ isVisible, onClose, onSelect, initialSize }) => {
               renderItem={(data, index, isSelected) => <Text>{data}</Text>}
               onValueChange={(data, selectedIndex) => setIntegerPart(selectedIndex)}
             />
+            <Text>.</Text>
             <Text>.</Text>
             <ScrollPicker
               dataSource={[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]}
@@ -350,7 +353,7 @@ const ImageInScreen = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [currentFoodForPortion, setCurrentFoodForPortion] = useState(null);
   const [inferResult, setinferResult] = useState();
- 
+
   const isAnyFoodChecked = () => {
     return Object.values(checkedFoods).some(isChecked => isChecked);
   };
@@ -492,6 +495,7 @@ const ImageInScreen = () => {
           selectedMeal: selectedMeal,
           photoUri: photoUri,
           mealDataList: mealDataList // Passing the list of menu and portions
+          mealDataList: mealDataList // Passing the list of menu and portions
         }
       }
     });
@@ -533,7 +537,9 @@ const ImageInScreen = () => {
                 tintColors={{ true: '#8E86FA', false: '#8E86FA' }}
               />
               <Text style={{ marginLeft: 1, marginTop: '-1%' }}>{foodName}</Text>
+              <Text style={{ marginLeft: 1, marginTop: '-1%' }}>{foodName}</Text>
               <TouchableOpacity onPress={() => openPortionModal(foodName)}>
+                <Text>{portionSizes[foodName]} 인분</Text>
                 <Text>{portionSizes[foodName]} 인분</Text>
               </TouchableOpacity>
             </HStack>
@@ -558,6 +564,7 @@ const ImageInScreen = () => {
 )}
  
         <Button
+          isDisabled={!selectedMeal || !isAnyFoodChecked()}
           isDisabled={!selectedMeal || !isAnyFoodChecked()}
           onPress={registerMeal}
           style={{

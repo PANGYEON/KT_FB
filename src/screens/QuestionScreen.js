@@ -335,7 +335,7 @@ const QuestionScreen = () => {
         style={styles.createButton}
         onPress={() => setShowQuestionModal(true)}
       >
-        <Text style={{color:'#fff'}}> 문의하기 </Text>
+        <Text>문의하기</Text>
       </TouchableOpacity>
 
       {renderQuestionModal()}
@@ -405,72 +405,6 @@ const styles = StyleSheet.create({
     width:'80%',
   },
   closeButton: {
-    marginTop:20,
-    backgroundColor: '#8E86FA',
-    borderRadius: 40,
-    padding: 10,
-    marginHorizontal: 10,
-    shadowColor: '#000', // Shadow color
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  createButton:{
-    marginTop:20,
-    backgroundColor: '#8E86FA',
-    borderRadius: 40,
-    padding: 10,
-    marginHorizontal: 10,
-    shadowColor: '#000', // Shadow color
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  submitButton:{
-    marginTop:20,
-    backgroundColor: '#8E86FA',
-    borderRadius: 40,
-    padding: 10,
-    marginHorizontal: 10,
-    shadowColor: '#000', // Shadow color
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-
-  separator: {
-    height: 1,
-    backgroundColor: '#ccc',
-    width: '100%',
-    marginVertical: 10,
-  },
-
-  input: {
-    width: '100%', // 폭 조정
-    padding: 10,
-    marginVertical: 5,
-    backgroundColor: '#eee', // 배경색 어둡게 조정
-  },
-
-  deleteButton:{
-    marginTop:30,
-    backgroundColor: 'red',
-    borderRadius: 40,
-    padding: 10,
-    marginHorizontal: 10,
-    shadowColor: '#000', // Shadow color
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
     marginTop: 20,
     width:'100%',
   },

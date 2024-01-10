@@ -298,7 +298,7 @@ const ProfileScreen = () => {
         </View>
         <View style={styles.userText}>
           <Text>이메일</Text>
-          <Text>{userInfo.email}</Text>
+          <Text>{userInfo.email} </Text>
         </View>
         <View style={styles.userText}>
           <Text>생년월일</Text>
@@ -591,7 +591,6 @@ const ProfileScreen = () => {
 
   <Modal isOpen={alertModalVisible}>
     <View style={styles.alertModalContainer}>
-      <Text style={{fontSize:20, fontWeight:'bold'}}>Alert</Text>
       <Text style={styles.alertText}>{alertMessage}</Text>
       <View style={styles.alertButtonContainer}>
         <TouchableOpacity

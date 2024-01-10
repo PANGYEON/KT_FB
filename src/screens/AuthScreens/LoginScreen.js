@@ -149,7 +149,6 @@ const LoginScreen = () => {
         }}>
         <View style={styles.alertModalView}>
         <View style={styles.alertModalContainer}>
-          <Text style={{fontSize:20, fontWeight:'bold', color:'#000'}}>Alert</Text>
           <Text style={styles.alertText}>{alertMessage}</Text>
           <View style={styles.alertButtonContainer}>
             <TouchableOpacity

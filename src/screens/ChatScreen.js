@@ -18,7 +18,11 @@ const ChatScreen = () => {
   const [dietDetails, setDietDetails] = useState(null);
   const [dietData, setDietData] = useState(null);
   const [expandedDate, setExpandedDate] = useState(null);
- 
+
+  //취소 확인 상태 관리
+  const [showUnsubscribeConfirmModal, setShowUnsubscribeConfirmModal] = useState(false);
+  const [friendToUnsubscribe, setFriendToUnsubscribe] = useState(null); 
+  
   const onSelectDate = (date) => {
     // 선택된 날짜 업데이트
     setSelectedDate(date);
@@ -87,8 +91,17 @@ const ChatScreen = () => {
       </View>
     );
   };
-  const unsubscribeFriend = async (friendName) => {
-    const friend = friends.find(f => f.name === friendName);
+
+  //구독 취소
+  const unsubscribeFriend = (friendName) => {
+    setFriendToUnsubscribe(friendName);
+    setShowUnsubscribeConfirmModal(true);
+  };
+
+  const confirmUnsubscribe = async () => {
+    if (!friendToUnsubscribe) return;
+    
+    const friend = friends.find(f => f.name === friendToUnsubscribe);
     // 유정님 코드 기준 이부분은 주석처리
     // if (!friend) {
     //   alert('친구 정보를 찾을 수 없습니다.');
@@ -108,7 +121,7 @@ const ChatScreen = () => {
     try {
       await axios(config);
       //alert(`${friendName}와의 구독이 취소되었습니다.`);
-      setAlertMessage(`${friendName} 님과의 구독이 취소되었습니다.`);
+      setAlertMessage(`${friendToUnsubscribe} 님과의 구독이 취소되었습니다.`);
       setAlertModalVisible(true);
       fetchFriends();
     } catch (error) {
@@ -116,8 +129,45 @@ const ChatScreen = () => {
       //alert('구독 취소에 실패했습니다.');
       setAlertMessage('구독 취소에 실패했습니다.');
       setAlertModalVisible(true);
+    } finally {
+      setShowUnsubscribeConfirmModal(false);
+      setFriendToUnsubscribe(null);
     }
   };
+
+  // 취소확인 Modal
+  const renderUnsubscribeConfirmModal = () => (
+    <Modal
+      animationType="fade"
+      transparent={true}
+      visible={showUnsubscribeConfirmModal}
+      onRequestClose={() => setShowUnsubscribeConfirmModal(false)}
+    >
+      <View style={styles.modalOverlay}>
+        <View style={styles.modalView}>
+        <View style={{ alignSelf: 'flex-start' }}> 
+            <Text style={{textAlign:'left', fontSize:16, color:'black'}}> 정말 취소하시겠습니까? </Text>
+          </View>
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity
+              style={[styles.button, styles.buttonNo]}
+              onPress={() => setShowUnsubscribeConfirmModal(false)}
+            >
+              <Text style={{ color: '#8E96FA' }}>아니요</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.button, styles.buttonYes]}
+              onPress={confirmUnsubscribe}
+            >
+              <Text style={{ color: '#FFF' }}>네</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );  
+
+  // 구독한 친구의 식단 가져오기
   const fetchDietData = async (uuid) => {
     const token = await AsyncStorage.getItem('@user_token');
     let config = {
@@ -194,6 +244,23 @@ const ChatScreen = () => {
   const navigateToProfile = () => {
     navigation.navigate('Profile');
   };
+
+  const getBackgroundColor = () => {
+    switch (dietDetails.meal_evaluation) {
+      case 'Bad':
+        return '#FA6565';
+      case 'Not Bad':
+        return 'FA9B65';
+      case 'Good':
+        return '#EEE064';
+      case 'Very Good':
+        return '#96CCF3';
+      case 'Perfect':
+        return '#2FFF9B';
+      default:
+        return 'lightgray'; // Default color if no match is found
+    }
+  };
  
   return (
     <View style={{ flex: 1 }}>
@@ -234,7 +301,10 @@ const ChatScreen = () => {
           {/* 채팅방 */}
           <View style={{ flex: 1 }}>
             {selectedFriend && (
-              <View style={{ flex: 1, paddingHorizontal: 10 }}>
+              <View style={{ flex: 1, 
+                             paddingHorizontal: '5%',
+                             //alignItems: 'center' 
+                            }}>
                 <View style={{ 
                         flexDirection: 'row', 
                         paddingBottom: 10,
@@ -272,33 +342,33 @@ const ChatScreen = () => {
                           <View style={styles.DateAll}>
                           <View>
                             {/* 해당 날짜의 식단 세부 정보 표시 */}
-                              <View style={styles.DateContent}>
-                                <Text style={{color: 'black', fontSize: 20}}>식단결과</Text>
-                                <Text>{dietDetails.meal_evaluation}</Text>
+                              <View style={{...styles.DateContent, justifyContent: 'center', alignItems: 'center'}}>
+                                <Text style={{color: 'black', fontSize: 20, marginRight: '5%'}}>식단결과</Text>
+                                <Text style={{paddingVertical: '3%', paddingHorizontal: '5%', backgroundColor: getBackgroundColor(), textAlign: 'center', borderRadius: 10}}>{dietDetails.meal_evaluation}</Text>
                               </View>
                               <View style={styles.DateContent}>
                                 <Text style={{color: 'black'}}>탄수화물</Text>
-                                <Text>{dietDetails.sum_carb.toFixed(1)}</Text>
+                                <Text style={{paddingRight: '1%'}}>{dietDetails.sum_carb.toFixed(1)}g </Text>
                               </View>
                               <View style={styles.DateContent}>
                                 <Text style={{color: 'black'}}>당류</Text>
-                                <Text>{dietDetails.sum_sugar.toFixed(1)}</Text>
+                                <Text style={{paddingRight: '1%'}}>{dietDetails.sum_sugar.toFixed(1)}g </Text>
                               </View>
                               <View style={styles.DateContent}>
                                 <Text style={{color: 'black'}}>단백질</Text>
-                                <Text>{dietDetails.sum_protein.toFixed(1)}</Text>
+                                <Text style={{paddingRight: '1%'}}>{dietDetails.sum_protein.toFixed(1)}g </Text>
                               </View>
                               <View style={styles.DateContent}>
                                 <Text style={{color: 'black'}}>지방</Text>
-                                <Text>{dietDetails.sum_fat.toFixed(1)}</Text>
+                                <Text style={{paddingRight: '1%'}}>{dietDetails.sum_fat.toFixed(1)}g </Text>
                               </View>
                               <View style={styles.DateContent}>
                                 <Text style={{color: 'black'}}>나트륨</Text>
-                                <Text>{dietDetails.sum_fat.toFixed(1)}</Text>
+                                <Text style={{paddingRight: '1%'}}>{dietDetails.sum_fat.toFixed(1)}mg </Text>
                               </View>
                               <View style={styles.DateContent}>
                                 <Text style={{color: 'black'}}>콜레스테롤</Text>
-                                <Text>{dietDetails.sum_col.toFixed(1)}</Text>
+                                <Text style={{paddingRight: '1%'}}>{dietDetails.sum_col.toFixed(1)}mg </Text>
                               </View> 
                             {/* 아침 저녁 간식 점심*/}  
                           </View>
@@ -352,6 +422,7 @@ const ChatScreen = () => {
         </View>
         </View>
       </Modal>
+      {renderUnsubscribeConfirmModal()}
     </View>
   );
 };
@@ -386,7 +457,7 @@ const styles = StyleSheet.create({
   },
   modalText: {
     fontSize: 16,             // 글자 크기
-    textAlign: 'flex-start',      // 텍스트 중앙 정렬
+    textAlign: 'flex-start',  
   },
   alertButtonContainer: {
     flex: 1,
@@ -414,7 +485,12 @@ const styles = StyleSheet.create({
     color: '#fff',
     textAlign: 'center', // 텍스트 중앙 정렬
   },
- 
+  alertText:{
+    fontSize:16,
+    color:'black',
+    marginTop:10,
+  },
+
   titleBar: {
     padding: '4%',
     alignItems: 'center',
@@ -483,8 +559,8 @@ const styles = StyleSheet.create({
     width: '100%',
     //color: 'white',
     fontWeight: '900',
-    margin: '1%',
-    padding: '5%',
+    //margin: '1%',
+    paddingVertical: '5%',
     borderRadius: 10,
   },
 
@@ -494,14 +570,57 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: '5%',
-    width: '50%'
+    //width: '50%'
   },
 
   DateAll: {
     backgroundColor: '#ccc',
     padding: '5%',
     borderRadius: 20,
-  }
+    marginBottom: '5%'
+  },
+
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+    width:'80%',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginTop: 20,
+    width:'100%',
+  },
+  button: {
+    padding: 10,
+    margin: 5,
+    borderRadius: 10,
+  },
+  buttonNo: {
+    backgroundColor: '#FFF',
+    // 추가적인 스타일링
+  },
+  buttonYes: {
+    backgroundColor: '#8E86FA',
+    // 추가적인 스타일링
+  },
 });
  
 export default ChatScreen;
