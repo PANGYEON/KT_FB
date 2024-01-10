@@ -18,7 +18,11 @@ const ChatScreen = () => {
   const [dietDetails, setDietDetails] = useState(null);
   const [dietData, setDietData] = useState(null);
   const [expandedDate, setExpandedDate] = useState(null);
- 
+
+  //취소 확인 상태 관리
+  const [showUnsubscribeConfirmModal, setShowUnsubscribeConfirmModal] = useState(false);
+  const [friendToUnsubscribe, setFriendToUnsubscribe] = useState(null); 
+  
   const onSelectDate = (date) => {
     // 선택된 날짜 업데이트
     setSelectedDate(date);
@@ -87,8 +91,17 @@ const ChatScreen = () => {
       </View>
     );
   };
-  const unsubscribeFriend = async (friendName) => {
-    const friend = friends.find(f => f.name === friendName);
+
+  //구독 취소
+  const unsubscribeFriend = (friendName) => {
+    setFriendToUnsubscribe(friendName);
+    setShowUnsubscribeConfirmModal(true);
+  };
+
+  const confirmUnsubscribe = async () => {
+    if (!friendToUnsubscribe) return;
+    
+    const friend = friends.find(f => f.name === friendToUnsubscribe);
     // 유정님 코드 기준 이부분은 주석처리
     // if (!friend) {
     //   alert('친구 정보를 찾을 수 없습니다.');
@@ -108,7 +121,7 @@ const ChatScreen = () => {
     try {
       await axios(config);
       //alert(`${friendName}와의 구독이 취소되었습니다.`);
-      setAlertMessage(`${friendName} 님과의 구독이 취소되었습니다.`);
+      setAlertMessage(`${friendToUnsubscribe} 님과의 구독이 취소되었습니다.`);
       setAlertModalVisible(true);
       fetchFriends();
     } catch (error) {
@@ -116,8 +129,45 @@ const ChatScreen = () => {
       //alert('구독 취소에 실패했습니다.');
       setAlertMessage('구독 취소에 실패했습니다.');
       setAlertModalVisible(true);
+    } finally {
+      setShowUnsubscribeConfirmModal(false);
+      setFriendToUnsubscribe(null);
     }
   };
+
+  // 취소확인 Modal
+  const renderUnsubscribeConfirmModal = () => (
+    <Modal
+      animationType="fade"
+      transparent={true}
+      visible={showUnsubscribeConfirmModal}
+      onRequestClose={() => setShowUnsubscribeConfirmModal(false)}
+    >
+      <View style={styles.modalOverlay}>
+        <View style={styles.modalView}>
+        <View style={{ alignSelf: 'flex-start' }}> 
+            <Text style={{textAlign:'left', fontSize:16, color:'black'}}> 정말 취소하시겠습니까? </Text>
+          </View>
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity
+              style={[styles.button, styles.buttonNo]}
+              onPress={() => setShowUnsubscribeConfirmModal(false)}
+            >
+              <Text style={{ color: '#8E96FA' }}>아니요</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.button, styles.buttonYes]}
+              onPress={confirmUnsubscribe}
+            >
+              <Text style={{ color: '#FFF' }}>네</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );  
+
+  // 구독한 친구의 식단 가져오기
   const fetchDietData = async (uuid) => {
     const token = await AsyncStorage.getItem('@user_token');
     let config = {
@@ -372,6 +422,7 @@ const ChatScreen = () => {
         </View>
         </View>
       </Modal>
+      {renderUnsubscribeConfirmModal()}
     </View>
   );
 };
@@ -406,7 +457,7 @@ const styles = StyleSheet.create({
   },
   modalText: {
     fontSize: 16,             // 글자 크기
-    textAlign: 'flex-start',      // 텍스트 중앙 정렬
+    textAlign: 'flex-start',  
   },
   alertButtonContainer: {
     flex: 1,
@@ -434,7 +485,12 @@ const styles = StyleSheet.create({
     color: '#fff',
     textAlign: 'center', // 텍스트 중앙 정렬
   },
- 
+  alertText:{
+    fontSize:16,
+    color:'black',
+    marginTop:10,
+  },
+
   titleBar: {
     padding: '4%',
     alignItems: 'center',
@@ -522,7 +578,49 @@ const styles = StyleSheet.create({
     padding: '5%',
     borderRadius: 20,
     marginBottom: '5%'
-  }
+  },
+
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+    width:'80%',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginTop: 20,
+    width:'100%',
+  },
+  button: {
+    padding: 10,
+    margin: 5,
+    borderRadius: 10,
+  },
+  buttonNo: {
+    backgroundColor: '#FFF',
+    // 추가적인 스타일링
+  },
+  buttonYes: {
+    backgroundColor: '#8E86FA',
+    // 추가적인 스타일링
+  },
 });
  
 export default ChatScreen;

@@ -463,7 +463,7 @@ const DailyScreen = () => {
             <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: '3%', marginTop: '3%' }}>
               {'< '}{selectedMeal ? `${selectedMeal} 메뉴` : ''}{' >'}
             </Text>
-            <ScrollView contentContainerStyle={styles.TodayIs} style={{ height: 200 }}>
+            <ScrollView contentContainerStyle={styles.TodayIs} style={{ height: 100 }}>
               {/* 기존 메뉴 리스트 렌더링 (메뉴가 있는 경우에만) */}
               {/* {Array.isArray(mealData[selectedMeal].food_name) && mealData[selectedMeal].food_name.length > 0 ? (
                 mealData[selectedMeal].food_name.map((food, index) => (
@@ -491,10 +491,16 @@ const DailyScreen = () => {
                     </Text>
                   ) : null} */}
               {Array.isArray(mealData[selectedMeal].un_food_name) && mealData[selectedMeal].un_food_name.filter(name => name.trim() !== '').length > 0 && (
-                <Text style={{ marginTop: 10, fontWeight: 'bold' }}>
-                  없는 이미지 : {mealData[selectedMeal].un_food_name.filter(name => name.trim() !== '').join(', ')}
-                </Text>
-              )}
+      <View>
+                      <Text style={{ marginTop: 10, fontWeight: 'bold' }}>
+                        없는 이미지
+                      </Text>
+        {/* <Text>{mealData[selectedMeal].un_food_name.filter(name => name.trim() !== '').join(', ')}</Text> */}
+        {mealData[selectedMeal].un_food_name.filter(name => name.trim() !== '').map((name, index) => (
+          <Text key={index}>- {name}</Text>
+        ))}
+      </View>
+                  )}
             </ScrollView>
           </View>
         </View>

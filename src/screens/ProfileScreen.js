@@ -591,7 +591,6 @@ const ProfileScreen = () => {
 
   <Modal isOpen={alertModalVisible}>
     <View style={styles.alertModalContainer}>
-      <Text style={{fontSize:20, fontWeight:'bold'}}>Alert</Text>
       <Text style={styles.alertText}>{alertMessage}</Text>
       <View style={styles.alertButtonContainer}>
         <TouchableOpacity
