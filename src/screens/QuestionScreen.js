@@ -74,9 +74,11 @@ const QuestionScreen = () => {
           }}>
           <Text>X</Text>
         </TouchableOpacity>
-        <Text style={{fontSize:20}}> 문의 제목 : {selectedQuestion.title} </Text>
-          <Text style={{fontSize:17}}> 문의 내용 : {selectedQuestion.content} </Text>
-
+        <View style={styles.questionContainer}>
+          <Text style={{fontSize:20}}> 문의 제목 : {selectedQuestion.title} </Text>
+          <Text style={{fontSize:17, marginTop:5}}> 문의 내용</Text>
+          <Text style={{backgroundColor:'#eee', padding:10, borderRadius:10, marginTop:5}}> {selectedQuestion.content} </Text>
+        </View>
           <View style={styles.separator} />
           
           {selectedQuestion.answers.length > 0 ? (
@@ -99,12 +101,17 @@ const QuestionScreen = () => {
   };
 
   const handleCreateQuestion = () => {
+    if (!newQuestionTitle && !newQuestionContent){
+      setAlertMessage('문의 제목과 내용을 입력해주세요.');
+      return;
+    }
+
     if (!newQuestionTitle) {
-      setAlertMessage('제목을 입력해주세요');
+      setAlertMessage('문의 제목을 입력해주세요');
       return;
     }
     if (!newQuestionContent) {
-      setAlertMessage('내용을 입력해주세요');
+      setAlertMessage('문의 내용을 입력해주세요');
       return;
     }
     setShowConfirmModal(true);
@@ -152,13 +159,17 @@ const QuestionScreen = () => {
     >
       <View style={styles.modalOverlay}>
         <View style={styles.modalView}>
-          <Text>{alertMessage}</Text>
+        <View style={{ alignSelf: 'flex-start' }}> 
+          <Text style={{fontSize:16, color:'black'}}>{alertMessage}</Text>
+        </View>
+        <View style={styles.buttonContainer}>
           <TouchableOpacity
             style={styles.closeButton}
             onPress={() => setAlertMessage('')}
           >
             <Text style={{color: '#fff'}}>닫기</Text>
           </TouchableOpacity>
+          </View>
         </View>
       </View>
     </Modal>
@@ -317,14 +328,14 @@ const QuestionScreen = () => {
       <View style={styles.content}>
         {/* Title "내 문의 내역" */}
         <Text style={styles.title}>
-          내 문의 내역
+          1:1 문의 내역
         </Text>
         {/* '문의하기' 버튼 */}
       <TouchableOpacity
         style={styles.createButton}
         onPress={() => setShowQuestionModal(true)}
       >
-        <Text style={{color:'#fff'}}>문의하기</Text>
+        <Text style={{color:'#fff'}}> 문의하기 </Text>
       </TouchableOpacity>
 
       {renderQuestionModal()}
@@ -445,7 +456,7 @@ const styles = StyleSheet.create({
   },
 
   deleteButton:{
-    marginTop:20,
+    marginTop:30,
     backgroundColor: 'red',
     borderRadius: 40,
     padding: 10,
@@ -476,6 +487,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#8E86FA',
     // 추가적인 스타일링
   },
+
+  questionContainer:{
+    justifyContent: 'flex-start',
+    marginTop: 20,
+    width:'100%',
+  }
 });
 
 export default QuestionScreen;
