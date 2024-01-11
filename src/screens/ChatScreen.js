@@ -417,7 +417,7 @@ const ChatScreen = () => {
               style={styles.alertButton}
               onPress={() => setAlertModalVisible(false)}
             >
-              <Text style={styles.alertButtonText}>OK</Text>
+              <Text style={styles.alertButtonText}>OK </Text>
           </TouchableOpacity>
           </View>
         </View>

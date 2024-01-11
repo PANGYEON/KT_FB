@@ -183,7 +183,7 @@ const RegisterScreen = ({ route }) => {
  
             {/* 비밀번호 입력 필드 */}
             <View style={passwordInputContainerStyle}>
-              <Text style={{ marginLeft: 5, fontSize: 16 }}>비밀번호</Text>
+              <Text style={{ marginLeft: 5, fontSize: 16 }}>비밀번호 </Text>
               <View style={styles.inputContainer}>
                 <Input
                   placeholder="비밀번호를 입력해주세요"
@@ -202,7 +202,7 @@ const RegisterScreen = ({ route }) => {
  
             {/* 비밀번호 확인 입력 필드 */}
             <View style={passwordconfirmInputContainerStyle}>
-              <Text style={{ marginLeft: 5, fontSize: 16 }}>비밀번호 확인</Text>
+              <Text style={{ marginLeft: 5, fontSize: 16 }}>비밀번호 확인 </Text>
               <View style={styles.inputContainer}>
                 <Input
                   placeholder="비밀번호를 다시 입력해주세요"
@@ -242,13 +242,13 @@ const RegisterScreen = ({ route }) => {
             }}>
             <View style={styles.alertModalView}>
             <View style={styles.alertModalContainer}>
-              <Text style={styles.alertText}>{alertMessage}</Text>
+              <Text style={styles.alertText}>{alertMessage} </Text>
               <View style={styles.alertButtonContainer}>
                 <TouchableOpacity
                   style={styles.alertButton}
                   onPress={() => setAlertModalVisible(false)}
                 >
-                  <Text style={styles.alertButtonText}>OK</Text>
+                  <Text style={styles.alertButtonText}>OK </Text>
               </TouchableOpacity>
               </View>
             </View>

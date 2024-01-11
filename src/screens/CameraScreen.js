@@ -6,7 +6,6 @@ import { useNavigation } from '@react-navigation/native';
 import { CameraRoll } from "@react-native-camera-roll/camera-roll";
 import { odApi } from '../ai_model/BP_Food'; // AI모델에서 가져온 odApi함수
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import BackIcon from '../icons/BackIcon.png';
 
 function CameraScreen() {
   const device = useCameraDevice('back'); // 후면카메라 디바이스
@@ -17,12 +16,7 @@ function CameraScreen() {
 
   if (device == null) return <View />;
 
-  //뒤로가기
-  const goBack = () => {
-    setIsLoading(false);
-  };
 
-  // 오늘날짜
   const getTodayDate = () => {
     const today = new Date();
     return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
@@ -59,12 +53,12 @@ function CameraScreen() {
     // 로딩 중이라면 로딩 화면을 표시
     return (
       <View style={{ flex: 1 }}>
-        <View style={styles.loadingContainer}>
-        </View>
-        <View style={styles.loadingView}>
-          <ActivityIndicator size="large" color="#8E86FA" />
-          <Text style={{ marginTop: 20, fontSize: 20 }}>사진을 분석중이에요</Text>
-        </View>
+      <View style={styles.loadingContainer}>
+      </View>
+      <View style={styles.loadingView}>
+        <ActivityIndicator size="large" color="#8E86FA" />
+        <Text style={{ marginTop: 20, fontSize: 20 }}>사진을 분석중이에요</Text>
+      </View>
     </View>
     );
   }

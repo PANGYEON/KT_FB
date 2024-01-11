@@ -356,7 +356,7 @@ const DailyScreen = () => {
 
   // 식단 평가 색상 설정
   const getBackgroundColor = () => {
-    switch (mealInfo.evaluation) {
+    switch (mealNutrients.diet_rating) {
       case 'Bad':
         return '#FA6565';
       case 'Not Bad':
@@ -466,24 +466,22 @@ const DailyScreen = () => {
       <View style={styles.selectedMealContainer}>
         {/* 사진과 메뉴를 표시해주는 부분 */}
         <View style={styles.selectedMealInfo_1}>
-          {/* 이미지표시부분 */}
-          {mealData[selectedMeal]?.imagelink ? (
-            // 사진이 있을 경우
-            <Image
-              source={{ uri: mealData[selectedMeal].imagelink }}
-              style={styles.MealImg}
-            />
-          ) : (
-            // 사진이 없을 경우
-            <TouchableOpacity style={styles.selectPhotoButton} onPress={openGallery}>
+          <TouchableOpacity style={styles.selectPhotoButton} onPress={openGallery}>
+            {mealData[selectedMeal]?.imagelink ? (
               <Image
-                source={require('../icons/GalleryIcon.png')}
-                style={styles.photoIcon}
+                source={{ uri: mealData[selectedMeal].imagelink }}
+                style={styles.MealImg}
               />
-              <Text style={styles.selectPhotoButtonText}>사진 선택</Text>
-            </TouchableOpacity>
-          )}
-
+            ) : (
+              <>
+                <Image
+                  source={require('../icons/GalleryIcon.png')}
+                  style={styles.photoIcon}
+                />
+                <Text style={styles.selectPhotoButtonText}>사진 선택</Text>
+              </>
+            )}
+          </TouchableOpacity>
           <View style={styles.MealMenu}>
             <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: '3%', marginTop: '3%' }}>
               {'< '}{selectedMeal ? `${selectedMeal} 메뉴` : ''}{' >'}

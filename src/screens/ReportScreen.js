@@ -72,7 +72,6 @@ const ReportScreen = () => {
   return (
     <TopTab.Navigator
       initialRouteName="Calendar"
-      swipeEnabled={false}
       tabBar={(props) => <CustomTabBar {...props} />}
     >
       <TopTab.Screen name="Calendar" component={MonthScreen} />

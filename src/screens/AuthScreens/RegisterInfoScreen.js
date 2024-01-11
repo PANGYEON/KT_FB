@@ -110,7 +110,7 @@ const RegisterInfoScreen = ({ route }) => {
             {/* 사용자 정보 입력 필드 */}
             {/* 이름 */}
             <View style={inputContainerStyle}>
-              <View><Text style={{ marginLeft: width * 0.02, fontSize: 16 }} >이름</Text></View>
+              <View><Text style={{ marginLeft: width * 0.02, fontSize: 16 }} >이름 </Text></View>
               <View style={styles.inputContainer}>
                 <Input
                   placeholder="이름을 입력해주세요"
@@ -120,7 +120,7 @@ const RegisterInfoScreen = ({ route }) => {
             </View>
             {/* 생년월일 */}
             <View style={inputContainerStyle}>
-              <View><Text style={{ marginLeft: width * 0.02, fontSize: 16 }} >생년월일</Text></View>
+              <View><Text style={{ marginLeft: width * 0.02, fontSize: 16 }} >생년월일 </Text></View>
               <TouchableOpacity style={styles.inputContainer} onPress={() => setOpen(true)}>
                 <Text style={{ marginTop:'3%', marginBottom:'3%',borderRadius: 50,backgroundColor: 'white',color: 'grey',marginLeft:'4%' }}>
                   {birthdate instanceof Date && birthdate != new Date()
@@ -151,7 +151,7 @@ const RegisterInfoScreen = ({ route }) => {
  
             {/* 키 */}
             <View style={inputContainerStyle}>
-              <View><Text style={{ marginLeft: width * 0.02, fontSize: 16 }} >키</Text></View>
+              <View><Text style={{ marginLeft: width * 0.02, fontSize: 16 }} >키 </Text></View>
               <View style={styles.inputContainer}>
                 <Input
                   placeholder="키를 입력해주세요"
@@ -164,7 +164,7 @@ const RegisterInfoScreen = ({ route }) => {
  
             {/* 몸무게 */}
             <View style={inputContainerStyle}>
-              <View><Text style={{ marginLeft: width * 0.02, fontSize: 16 }} >몸무게</Text></View>
+              <View><Text style={{ marginLeft: width * 0.02, fontSize: 16 }} >몸무게 </Text></View>
               <View style={styles.inputContainer}>
                 <Input
                   placeholder="몸무게를 입력해주세요"
@@ -177,7 +177,7 @@ const RegisterInfoScreen = ({ route }) => {
  
             {/* 성별 */}
             <View style={inputContainerStyle}>
-              <View><Text style={{ marginLeft: width * 0.02, fontSize: 16 }} >성별</Text></View>
+              <View><Text style={{ marginLeft: width * 0.02, fontSize: 16 }} >성별 </Text></View>
               <Box direction="row" mb="2.5" mt="1.5">
                 <Button.Group isAttached>
                   <Button style={[styles.sexButton, selectedButton === '남자' ? styles.sexButtonSelected : {}]}
@@ -213,13 +213,13 @@ const RegisterInfoScreen = ({ route }) => {
             }}>
             <View style={styles.alertModalView}>
             <View style={styles.alertModalContainer}>
-              <Text style={styles.alertText}>{alertMessage}</Text>
+              <Text style={styles.alertText}>{alertMessage} </Text>
               <View style={styles.alertButtonContainer}>
                 <TouchableOpacity
                   style={styles.alertButton}
                   onPress={() => setAlertModalVisible(false)}
                 >
-                  <Text style={styles.alertButtonText}>OK</Text>
+                  <Text style={styles.alertButtonText}>OK </Text>
               </TouchableOpacity>
               </View>
             </View>
