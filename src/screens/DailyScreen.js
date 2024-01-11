@@ -11,23 +11,24 @@ import { launchImageLibrary } from 'react-native-image-picker';
 import { odApi, processAndSendData } from '../ai_model/BP_Food';
 
 const DailyScreen = () => {
+  // 상태변수 설정
   const navigation = useNavigation();
   const route = useRoute();
-  const [selectedMeal, setSelectedMeal] = useState('아침');
-  const [isModalVisible, setModalVisible] = useState(false);
-  const tempImageUrl = 'https://via.placeholder.com/150';
+  const [selectedMeal, setSelectedMeal] = useState('아침'); // 식사시간대 상태
+  const [isModalVisible, setModalVisible] = useState(false); // 모달창 상태
+  const [isLoading, setIsLoading] = useState(false); // 로딩 상태
 
-  const [photoUri, setPhotoUri] = useState('https://via.placeholder.com/150');
-  const [isLoading, setIsLoading] = useState(false); // 로딩 상태 관리
-
-  const mealDate = route.params?.mealDate || '';
-  const [isCalendarVisible, setCalendarVisible] = useState(false);
-  const [selectedDate, setSelectedDate] = useState('');
+  const mealDate = route.params?.mealDate || ''; // 날짜 가져오는 변수
+  const [isCalendarVisible, setCalendarVisible] = useState(false); // 캘린더 상태
+  const [selectedDate, setSelectedDate] = useState(''); // 날짜 선택 상태
   const { width, height } = Dimensions.get('window');
+
+  // 날짜선택과 선택날짜에 대한 식사데이터 렌더링 
   const fetchDataAndRender = async () => {
-    // Fetch data based on selectedDate and selectedMeal
     await fetchMealData(selectedDate, selectedMeal);
   };
+
+  // 로딩상태 모달창 
   const LoadingModal = ({ isVisible }) => {
     if (!isVisible) return null;
 
@@ -45,13 +46,18 @@ const DailyScreen = () => {
     );
   };
 
+  // 현재 날짜 체크
   const getCurrentDate = () => {
     const today = new Date();
     return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
   };
+
+  // 캘린더 모달창 토글
   const toggleCalendarModal = () => {
     setCalendarVisible(!isCalendarVisible);
   };
+
+  // 식사 영양소 데이터 초기상태
   const [mealNutrients, setMealNutrients] = useState({
     carbs: 0,
     col: 0,
@@ -63,19 +69,25 @@ const DailyScreen = () => {
     diet_rating: ''
   });
 
+  // 갤러리에서 이미지 선택해주는 함수
   const openGallery = () => {
+
+    // launchImageLibrary에 전달되는 설정 옵션 
     const options = {
-      mediaType: 'photo',
-      quality: 1,
+      mediaType: 'photo', // 미디어타입을 사진으로 제한
+      quality: 1, // 이미지 품질 최상
     };
+
+    // 갤러리에서 이미지 선택하는 기능 
     launchImageLibrary(options, async (response) => {
-      if (response.didCancel) {
+      if (response.didCancel) { // 이미지 선택을 취소한 경우  
         console.log('User cancelled image picker');
-      } else if (response.errorCode) {
+      } else if (response.errorCode) { // 이미지 선택 중 오류가 발생
         console.log('ImagePicker Error: ', response.errorMessage);
-      } else {
-        const source = { uri: response.assets[0].uri };
-        const image = new FormData();
+      } else { // 정상적인 작업 
+        const source = { uri: response.assets[0].uri }; // 선택한 이미지 정보 저장
+        // 이미지를 서버로 전송
+        const image = new FormData(); 
         image.append('file', {
           uri: source.uri,
           type: response.assets[0].type,
@@ -84,30 +96,31 @@ const DailyScreen = () => {
 
         setIsLoading(true);
 
+        // 이미지 uri 저장
         await AsyncStorage.setItem('@latest_photo', source.uri);
         console.log(source.uri);
+        // 이미지 분석
         await processAndSendData(source.uri, response.assets[0].fileName);
         const apiResult = await odApi(source.uri, response.assets[0].fileName);
 
         // ImageInScreen으로 이동하면서 photoUri 전달
-        setIsLoading(false);
+        setIsLoading(false); // 로딩해제
         navigation.navigate('ImageIn', { photo: source.uri, apiResult, selectDay: selectedDate, image });
       }
     });
   };
-  // const handleDateSelect = (day) => {
-  //   setSelectedDate(day.dateString);
-  //   setCalendarVisible(false);
-  //   fetchMealData(day.dateString); // 선택된 날짜에 대한 식사 데이터 요청
-  // };
+
+  // 캘린더에서 날짜를 선택했을 때 호출해주는 함수
   const handleDateSelect = async (day) => {
-    setSelectedDate(day.dateString);
-    setCalendarVisible(false);
+    setSelectedDate(day.dateString); // 선택날짜 저장
+    setCalendarVisible(false); // 캘린더 숨김
+
 
     const mealTypes = ['아침', '점심', '저녁', '간식'];
-    const newData = {};
-    let totalData = null;
-
+    const newData = {}; // 식사정보
+    let totalData = null; // 전체영양소 정보
+ 
+    // 서버에서 식사데이터를 가져옴
     for (const mealType of mealTypes) {
       try {
         const token = await AsyncStorage.getItem('@user_token');
@@ -151,27 +164,13 @@ const DailyScreen = () => {
     setMealNutrients(totalData); // 전체 영양소 정보를 상태에 저장
   };
 
+  // 식사시간대를 선택했을 때 호출
   const handleMealSelect = async (mealType) => {
     setSelectedMeal(mealType);
     await fetchMealData(selectedDate, mealType);
   };
 
-  // const fetchMealData = async (date) => {
-  //   try {
-  //     const token = await AsyncStorage.getItem('@user_token');
-  //     const response = await axios.get(`http://edm-diet.japaneast.cloudapp.azure.com/Meal_Date/api/Meal/?meal_date=${date}`, {
-  //       headers: {
-  //         'Authorization': `Bearer ${token}`
-  //       }
-  //     });
-  //     // 여기에서 응답 데이터를 처리합니다.
-  //     // console.log(response.data); // 데이터 로깅
-  //     setMealNutrients(response.data); 
-  //     // setMealData(response.data); // 상태 업데이트
-  //   } catch (error) {
-  //     console.error('Error fetching meal data:', error);
-  //   }
-  // };
+  // 시간대를 선택했을 때 그에 해당하는 식사데이터 업데이트
   const fetchMealData = async (date, mealType) => {
     try {
       const token = await AsyncStorage.getItem('@user_token');
@@ -180,8 +179,8 @@ const DailyScreen = () => {
           'Authorization': `Bearer ${token}`
         }
       });
-      // console.log(response.data.imagelink)
-      // 전체 영양소 정보를 mealNutrients에 저장합니다.
+
+      // 영양소정보 업데이트
       setMealNutrients({
         carbs: response.data.total_carbs,
         protein: response.data.total_protein,
@@ -192,8 +191,8 @@ const DailyScreen = () => {
         col: response.data.total_col,
         diet_rating: response.data.diet_rating
       });
-      // setPhotoUri(response.data.imagelink);
-      // 선택된 식사 유형에 해당하는 영양소 정보를 mealData에 저장합니다.
+
+      //식사데이터 출력
       setMealData(prevMealData => ({
         ...prevMealData,
         [mealType]: {
@@ -216,13 +215,11 @@ const DailyScreen = () => {
     }
   };
 
-
-
+  // 
   useEffect(() => {
     if (route.params?.selectedMeal && route.params?.photoUri && route.params?.mealDataList) {
       const updatedMealInfo = {
         ...mealData[route.params.selectedMeal],
-        // image: route.params.photoUri,
         menu: route.params.mealDataList.map(item => `${item.menu} - ${item.portion} 인분`).join(', ')
       };
       setSelectedMeal(route.params.selectedMeal);
@@ -232,6 +229,8 @@ const DailyScreen = () => {
       }));
     }
   }, [route.params]);
+
+  //
   useEffect(() => {
     if (mealDate) {
       setSelectedDate(mealDate);
@@ -244,11 +243,14 @@ const DailyScreen = () => {
     }
   }, []);
 
+  //
   useFocusEffect(
     React.useCallback(() => {
       fetchDataAndRender();
-    }, [selectedDate, selectedMeal]) // Run the function when selectedDate or selectedMeal changes
+    }, [selectedDate, selectedMeal])
   );
+
+  //
   useEffect(() => {
     const updateTabBarVisibility = () => {
       navigation.setOptions({
@@ -261,6 +263,7 @@ const DailyScreen = () => {
 
     updateTabBarVisibility();
   }, [isLoading, navigation]);
+
   // 각 식사 시간별 식사 정보
   const [mealData, setMealData] = useState({
     아침: {
@@ -274,8 +277,7 @@ const DailyScreen = () => {
       지방: '',
       나트륨: '',
       콜레스테롤: '',
-      //... 아침 식사에 대한 다른 영양소나 식사 정보
-      imagelink: '', // 실제 아침 식사 이미지 URL로 변경하세요
+      imagelink: '',
       un_food_name: ''
     },
     점심: {
@@ -290,8 +292,7 @@ const DailyScreen = () => {
       지방: '',
       나트륨: '',
       콜레스테롤: '',
-      // //... 아침 식사에 대한 다른 영양소나 식사 정보
-      imagelink: '', // 실제 아침 식사 이미지 URL로 변경하세요
+      imagelink: '',
       un_food_name: ''
     },
     저녁: {
@@ -306,8 +307,7 @@ const DailyScreen = () => {
       지방: '',
       나트륨: '',
       콜레스테롤: '',
-      //... 아침 식사에 대한 다른 영양소나 식사 정보
-      imagelink: '', // 실제 아침 식사 이미지 URL로 변경하세요
+      imagelink: '',
       un_food_name: ''
     },
     간식: {
@@ -322,8 +322,7 @@ const DailyScreen = () => {
       지방: '',
       나트륨: '',
       콜레스테롤: '',
-      //... 아침 식사에 대한 다른 영양소나 식사 정보
-      imagelink: '', // 실제 아침 식사 이미지 URL로 변경하세요
+      imagelink: '',
       un_food_name: ''
     },
   });
@@ -331,11 +330,13 @@ const DailyScreen = () => {
   const meals = ['아침', '점심', '저녁', '간식'];
 
 
+  // 현재날짜정보
   const renderDate = () => {
     const today = new Date();
     return `${today.getFullYear()}년 ${today.getMonth() + 1}월 ${today.getDate()}일`;
   };
 
+  // 식사시간대 선택시 버튼 스타일 조정
   const getButtonStyle = (meal) => ({
     width: '20%',
     backgroundColor: selectedMeal === meal ? '#8E86FA' : 'transparent',
@@ -348,10 +349,12 @@ const DailyScreen = () => {
     justifyContent: 'center',
   });
 
+  // 모달창 토글
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
   };
 
+  // 식단 평가 색상 설정
   const getBackgroundColor = () => {
     switch (mealInfo.evaluation) {
       case 'Bad':
@@ -384,37 +387,22 @@ const DailyScreen = () => {
 
   return (
     <View style={styles.container}>
+      {/* 날짜 표시 부분 */}
       <TouchableOpacity onPress={toggleCalendarModal}>
         <Text style={styles.dateText}>{selectedDate !== '' ? selectedDate : renderDate()}</Text>
       </TouchableOpacity>
 
+      {/* 캘린더 모달창 */}
       <Modal
         animationType="slide"
         transparent={true}
         visible={isCalendarVisible}
         onRequestClose={toggleCalendarModal}
       >
-        {/* <View
-        style={styles.CalendarModalContainer}
-      >
-          <Calendar
-            onDayPress={(day) => handleDateSelect(day)}
-            style={styles.CalendarSelf}
-            theme={{
-              calendarBackground: 'transparent',
-            }}
-            // 필요에 따라 캘린더의 외관과 기능을 커스터마이징할 수 있습니다
-          />
-      </View> */}
         <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.5)', paddingTop: '20%' }}>
           <View style={{ width: '90%', height: '60%', justifyContent: 'center', backgroundColor: 'white', borderRadius: 20 }}>
-            {/* 여기에 캘린더 컴포넌트 혹은 다른 컨텐츠를 넣으세요 */}
             <Calendar
               onDayPress={(day) => handleDateSelect(day)}
-            //style={styles.CalendarSelf}
-            //theme={{
-            //calendarBackground: 'transparent',
-            //}}
             />
             <TouchableOpacity
               style={{ alignSelf: 'center', marginTop: '10%', backgroundColor: '#8E86FA', borderRadius: 20 }}
@@ -425,12 +413,13 @@ const DailyScreen = () => {
           </View>
         </View>
       </Modal>
-      {/* // perfectText에 결과 할당 및 testbox 스타일 설정(test) */}
+      {/* 상단의 날짜의 전체 식단 평가와 영양소 정보 영역 */}
       <View style={[styles.testbox, { backgroundColor: getBackgroundColor() }]}>
+        {/* 식단평가결과 */}
         <Text style={styles.perfectText}>{mealNutrients.diet_rating}</Text>
       </View>
+      {/* 영양소 정보 */}
       <View style={styles.contentContainer}>
-        {/* 여기에 다른 컨텐츠가 추가될 수 있습니다#F3EFEF */}
         <View style={styles.contentstext}>
             <View style={{ ...styles.PersonalRegions, marginBottom: '5%' }}>
             <Text style={{ fontSize: 16, color: 'black', }}>섭취 칼로리</Text>
@@ -464,21 +453,28 @@ const DailyScreen = () => {
         
       </View>
 
+      {/* 시간대별 식단정보 표시 영역 */}
       <View style={styles.mealsContainer}>
+        {/* 시간대 버튼을 매핑 */}
         {meals.map((meal) => (
           <Button key={meal} onPress={() => handleMealSelect(meal)} style={getButtonStyle(meal)} borderTopRadius={20} borderBottomRadius={20}>
             <Text style={getButtonTextStyle(meal)}>{meal}</Text>
           </Button>
         ))}
       </View>
+      {/* 시간대가 선택되었을 때 */}
       <View style={styles.selectedMealContainer}>
+        {/* 사진과 메뉴를 표시해주는 부분 */}
         <View style={styles.selectedMealInfo_1}>
+          {/* 이미지표시부분 */}
           {mealData[selectedMeal]?.imagelink ? (
+            // 사진이 있을 경우
             <Image
               source={{ uri: mealData[selectedMeal].imagelink }}
               style={styles.MealImg}
             />
           ) : (
+            // 사진이 없을 경우
             <TouchableOpacity style={styles.selectPhotoButton} onPress={openGallery}>
               <Image
                 source={require('../icons/GalleryIcon.png')}
@@ -492,15 +488,9 @@ const DailyScreen = () => {
             <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: '3%', marginTop: '3%' }}>
               {'< '}{selectedMeal ? `${selectedMeal} 메뉴` : ''}{' >'}
             </Text>
+            {/* 메뉴정보표시 -- 많을 경우 스크롤 기능 */}
             <ScrollView contentContainerStyle={styles.TodayIs} style={{ height: 100 }}>
-              {/* 기존 메뉴 리스트 렌더링 (메뉴가 있는 경우에만) */}
-              {/* {Array.isArray(mealData[selectedMeal].food_name) && mealData[selectedMeal].food_name.length > 0 ? (
-      mealData[selectedMeal].food_name.map((food, index) => (
-        <View key={index} style={{ flexDirection: 'column', marginBottom: 5 }}>
-          <Text>{food} : {mealData[selectedMeal].meal_serving && mealData[selectedMeal].meal_serving[index]} 인분</Text>
-        </View>
-      ))
-    ) : null} */}
+              {/* 데이터에 존재하는 이미지일 경우 */}
               {Array.isArray(mealData[selectedMeal].food_name) && mealData[selectedMeal].food_name.length > 0 ? (
                 mealData[selectedMeal].food_name.map((food, index) => {
                   if (food.trim() !== '' && mealData[selectedMeal].meal_serving && mealData[selectedMeal].meal_serving[index] > 0) {
@@ -513,18 +503,12 @@ const DailyScreen = () => {
                   return null;
                 })
               ) : null}
-              {/* un_food_name이 있는 경우 추가 텍스트 렌더링 */}
-              {/* {mealData[selectedMeal].un_food_name && mealData[selectedMeal].un_food_name !== '' ? (
-      <Text style={{ marginTop: 10, fontWeight: 'bold' }}>
-        없는 이미지 : {mealData[selectedMeal].un_food_name}
-      </Text>
-    ) : null} */}
+              {/* 존재하지 않는 이미지일 경우 */}
               {Array.isArray(mealData[selectedMeal].un_food_name) && mealData[selectedMeal].un_food_name.filter(name => name.trim() !== '').length > 0 && (
                 <View>
                   <Text style={{ marginTop: 10, fontWeight: 'bold' }}>
                     없는 이미지
                   </Text>
-                  {/* <Text>{mealData[selectedMeal].un_food_name.filter(name => name.trim() !== '').join(', ')}</Text> */}
                   {mealData[selectedMeal].un_food_name.filter(name => name.trim() !== '').map((name, index) => (
                     <Text key={index}>- {name}</Text>
                   ))}
@@ -535,12 +519,10 @@ const DailyScreen = () => {
 
 
         </View>
+        {/* 영양소를 표시해주는 부분 */}
         <View style={styles.selectedMealInfo_2}>
           <View style={{
             marginBottom: '5%',
-            //marginRight: '5%',
-            //backgroundColor: 'red',
-            //width: '30%'
           }}>
             <View style={styles.PersonalRegions}>
               <Text style={styles.nutrient}>탄수화물</Text>
@@ -553,8 +535,6 @@ const DailyScreen = () => {
           </View>
 
           <View style={{
-            //backgroundColor: 'red',
-            //width: '30%'
           }}>
             <View style={styles.PersonalRegions}>
               <Text style={styles.nutrient}>단백질</Text>
@@ -576,10 +556,12 @@ const DailyScreen = () => {
         </View>
       </View>
 
+      {/* 챗봇버튼 */}
       <TouchableOpacity style={styles.chatbotButton} onPress={toggleModal}>
         <Image source={require('../icons/ChatBotIcon.png')} style={styles.chatbotIcon} />
       </TouchableOpacity>
 
+      {/* 챗봇 모달창 */}
       <Modal animationType="fade" transparent={true} visible={isModalVisible} onRequestClose={toggleModal}>
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
@@ -595,17 +577,13 @@ const styles = StyleSheet.create({
   // 네비게이션 밑의 전체영역(Daily전체부분 스타일)
   container: {
     flex: 1,
-    //backgroundColor: 'pink',
     padding: '5%',
     paddingTop: '-5%',
   },
   // 날짜 표시 영역
   dateText: {
     fontSize: 20,
-    //padding: '1%',
     marginTop: '1%',
-    //backgroundColor: 'yellow',
-    //alignSelf: 'center',
     textAlign: 'center',
   },
 
@@ -632,14 +610,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     backgroundColor: 'lightgray',
     padding: 12,
-    //height: 250,
     marginVertical: '3%',
     borderRadius: 20,
   },
 
   //통계부분 글 영역
   contentstext: {
-    //width: '50%',
   },
 
   //글 안의 영양소 별 줄 맞추기
@@ -689,7 +665,7 @@ const styles = StyleSheet.create({
   },
 
   TodayIs: {
-    flexDirection: 'column', // 이 부분을 'column'으로 변경
+    flexDirection: 'column',
     justifyContent: 'space-between',
   },
 
@@ -754,7 +730,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
-    //marginTop: 20,
   },
   selectPhotoButtonText: {
     fontSize: 13,
@@ -762,6 +737,7 @@ const styles = StyleSheet.create({
     color: 'white',
   },
 
+  // 로딩화면 스타일 조정
   loadingContainer: {
     flex: 1,
     justifyContent: 'flex-start',

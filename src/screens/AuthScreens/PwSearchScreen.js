@@ -1,27 +1,30 @@
-// 비밀번호 찾기
+// 비밀번호 찾기화면
 import React, { useState } from 'react';
 import { Button, View,Input,Text } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
 import { StyleSheet, Alert, Dimensions, KeyboardAvoidingView, ScrollView } from 'react-native';
 import axios from 'axios';
-
-
+ 
+ 
+// 이메일 정규식 검사
 const emailRegEx = /^[A-Za-z0-9]([-_.]?[A-Za-z0-9])*@[A-Za-z0-9]([-_.]?[A-Za-z0-9])*\.[A-Za-z]{2,}(\.[A-Za-z]{2,})?$/i;
  
+// 이메일 형식 검사 함수
 const emailCheck = (email) => {
   return emailRegEx.test(email);
 }
  
 const { width, height } = Dimensions.get('window');
  
-const RegisterScreen = () => {
+const PwSearchScreen = () => {
   const navigation = useNavigation();
   const [email, setEmail] = useState('');
   const [alertMessage, setAlertMessage] = useState('');
-
-  
+ 
+  // 비밀번호 재설정 요청
   const requestPasswordReset = async (email) => {
     try {
+      // 비밀번호 재설정 요청 데이터 설정
       const data = JSON.stringify({ "email": email });
       const config = {
         method: 'post',
@@ -29,7 +32,8 @@ const RegisterScreen = () => {
         headers: { 'Content-Type': 'application/json' },
         data: data
       };
-  
+ 
+      // axios를 이용하여 비밀번호 재설정 요청
       const response = await axios(config);
       console.log(response.data); // 응답 데이터 확인
       return response.data; // 응답 데이터 반환
@@ -38,6 +42,8 @@ const RegisterScreen = () => {
       return null; // 에러 발생 시 null 반환
     }
   };
+ 
+  // 이메일 형식 에러 텍스트 렌더링 함수
   const renderEmailError = () => {
     if (email.length > 0 && !emailCheck(email)) {
       return (
@@ -49,32 +55,29 @@ const RegisterScreen = () => {
     return <View style={{ height: 8 }} />;
   };
  
+  // 다음 페이지로 이동 처리
   const handleNextPage = async () => {
     if (email.length === 0 || !emailCheck(email)) {
       setAlertMessage(`올바른 이메일을 입력해주세요.`);
       setAlertModalVisible(true);
-      //Alert.alert("오류", "올바른 이메일을 입력해주세요.");
       return;
     }
-  
+ 
     // 비밀번호 재설정 요청
     const resetResponse = await requestPasswordReset(email);
     if (resetResponse) {
-      //Alert.alert("성공", "비밀번호 재설정 이메일이 발송되었습니다.");
       setAlertMessage(`비밀번호 재설정 이메일이 발송되었습니다.`);
       setAlertModalVisible(true);
       navigation.navigate("Login");
     } else {
-      //Alert.alert("오류", "비밀번호 재설정 요청에 실패했습니다.");
       setAlertMessage(`비밀번호 재설정 요청에 실패했습니다.`);
       setAlertModalVisible(true);
     }
   };
  
+  // 스타일 정의
   const emailInputContainerStyle = {
-   
-    marginTop: height * 0.02, // 화면 높이의 70% 위치에 설정
-    // 기타 필요한 스타일 속성 추가
+    marginTop: height * 0.02, // 화면 높이의 2% 위치에 설정
   };
  
   const contentContainerStyle = {
@@ -84,21 +87,17 @@ const RegisterScreen = () => {
  
   const buttonContainerStyle = {
     ...styles.buttonContainer,
-    position: 'absolute',  // 절대 위치 사용
-    bottom: height * 0.4, // 화면 아래쪽에서부터 5% 높이 위치
-    width: '100%',         // 컨테이너의 너비를 전체 화면 너비로 설정
-    // paddingHorizontal: 20, // 좌우 패딩 추가 (필요에 따라 조절)
-    // justifyContent: 'center' // 버튼들을 수평 방향으로 가운데 정렬
- 
+    position: 'absolute',
+    bottom: height * 0.4, // 화면 아래쪽에서부터 40% 위치
+    width: '100%',
   };
+ 
   const movingButtonStyle = {
     ...styles.MovingButton,
-    width: width * 0.35, // 화면 너비의 %
-    height: height * 0.075, // 화면 높이의 %
-    marginHorizontal: width * 0.08,   // 좌우 마진 추가
- 
+    width: width * 0.35, // 화면 너비의 35%
+    height: height * 0.075, // 화면 높이의 7.5%
+    marginHorizontal: width * 0.08, // 좌우 마진 추가
   };
- 
  
   return (
     <KeyboardAvoidingView
@@ -110,7 +109,6 @@ const RegisterScreen = () => {
         <View style={styles.container}>
           <View style={contentContainerStyle}>
             <View style={emailInputContainerStyle}>
-              {/* <View style={{ marginTop: '6%' }} /> */}
               <Text style={{ marginLeft: 5, fontSize: 16 }} >가입하신 이메일을 입력해주세요</Text>
               <View style={styles.inputContainer}>
                 <Input
@@ -186,4 +184,5 @@ const styles = StyleSheet.create({
   },
 });
  
-export default RegisterScreen;
+export default PwSearchScreen;
+ 

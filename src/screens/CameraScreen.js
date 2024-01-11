@@ -4,12 +4,12 @@ import { Button, View,TouchableOpacity, Text, StyleSheet, ActivityIndicator, Ima
 import { Camera, useCameraDevice } from 'react-native-vision-camera';
 import { useNavigation } from '@react-navigation/native';
 import { CameraRoll } from "@react-native-camera-roll/camera-roll";
-import { odApi } from '../ai_model/BP_Food';
+import { odApi } from '../ai_model/BP_Food'; // AI모델에서 가져온 odApi함수
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import BackIcon from '../icons/BackIcon.png';
 
 function CameraScreen() {
-  const device = useCameraDevice('back');
+  const device = useCameraDevice('back'); // 후면카메라 디바이스
   const navigation = useNavigation();
   const cameraRef = useRef(null); // 카메라 참조 생성
 
@@ -17,10 +17,12 @@ function CameraScreen() {
 
   if (device == null) return <View />;
 
+  //뒤로가기
   const goBack = () => {
     setIsLoading(false);
-    // 네비게이션 스택에서 이전 화면으로 돌아갑니다.
   };
+
+  // 오늘날짜
   const getTodayDate = () => {
     const today = new Date();
     return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
@@ -31,35 +33,25 @@ function CameraScreen() {
     if (cameraRef.current) {
       try {
         const file = await cameraRef.current.takePhoto({
-          qualityPrioritization: 'speed',
-          flash: 'off',
+          qualityPrioritization: 'speed', // 사진 품질 우선순위 설정
+          flash: 'off', // 플래시 off 설정
         });
 
         // CameraRoll을 사용하여 사진 저장
         await CameraRoll.save(`file://${file.path}`, { type: 'photo' });
 
-        setIsLoading(true);
-        const apiResult = await odApi(`file://${file.path}`,`${file.name}`);
-        await AsyncStorage.setItem('@latest_photo', `file://${file.path}`);
-
-        // processApi 함수를 호출하여 결과를 가져옵니다.
-        // 사진 파일을 fetch 하여 blob 데이터로 변환
-        // const result = await fetch(`file://${file.path}`);
-        // const data = await result.blob();
-        // console.log(data)
-        // 변환된 blob 데이터를 다음 화면으로 넘김
-        // navigation.navigate('홈', { photo: file.path });
+        setIsLoading(true); // 로딩상태 활성화
+        const apiResult = await odApi(`file://${file.path}`,`${file.name}`); // AI모델을 사용하여 이미지 분석
+        await AsyncStorage.setItem('@latest_photo', `file://${file.path}`); // AsyncStorage를 사용하여 최신 사진 저장
         const todayDate = getTodayDate();
-        setIsLoading(false);
-        navigation.navigate('ImageIn', { photo: `file://${file.path}`, apiResult,selectDay: todayDate  });
-        // navigation.navigate('ImageIn', { photo: file.path });
-
+        setIsLoading(false); // 로딩상태 비활성화
+        navigation.navigate('ImageIn', { photo: `file://${file.path}`, apiResult,selectDay: todayDate  }); // ImageIn 화면으로 이동하여 분석 결과 전달
       } catch (error) {
         console.error(error);
-        setIsLoading(false);
+        setIsLoading(false); // 에러 발생 시 로딩 상태 비활성화
       }
     } else {
-      setIsLoading(false);
+      setIsLoading(false); // 카메라 참조가 없을 때 로딩 상태 비활성화
     }
   };
 
@@ -67,15 +59,12 @@ function CameraScreen() {
     // 로딩 중이라면 로딩 화면을 표시
     return (
       <View style={{ flex: 1 }}>
-      <View style={styles.loadingContainer}>
-        {/* <TouchableOpacity onPress={goBack}>
-          <Image source={BackIcon} style={{ width: 25, height: 25 }} />
-        </TouchableOpacity> */}
-      </View>
-      <View style={styles.loadingView}>
-        <ActivityIndicator size="large" color="#8E86FA" />
-        <Text style={{ marginTop: 20, fontSize: 20 }}>사진을 분석중이에요</Text>
-      </View>
+        <View style={styles.loadingContainer}>
+        </View>
+        <View style={styles.loadingView}>
+          <ActivityIndicator size="large" color="#8E86FA" />
+          <Text style={{ marginTop: 20, fontSize: 20 }}>사진을 분석중이에요</Text>
+        </View>
     </View>
     );
   }

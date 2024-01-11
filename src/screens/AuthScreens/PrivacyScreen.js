@@ -1,4 +1,4 @@
-
+// 개인정보동의서화면
 import React, { useState, useEffect } from 'react';
 import { View, Button, ScrollView } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
@@ -6,66 +6,58 @@ import axios from 'axios';
 import { StyleSheet, Text, Alert, Modal, TouchableOpacity } from 'react-native';
 import { RadioButton } from 'react-native-paper'; // RadioButton 컴포넌트 가져오기
 import Animation from '../../animation/Animation';
-
+ 
 const PrivacyScreen = ({ route }) => {
+  // route.params로 넘어온 데이터 추출
   const { email, password, name, birthdate, personheight, personweight, gender, selectedActivityLevel, goalIndex } = route.params;
+ 
+  // React Navigation의 네비게이션 객체 가져오기
   const navigation = useNavigation();
-  const [showAnimation, setShowAnimation] = useState(false);
-
+ 
+  // 개인정보 동의서 내용과 사용자의 동의 여부를 저장하는 상태 변수들
   const [privacyContent, setPrivacyContent] = useState('');
-  const [consent, setConsent] = useState(null); // 사용자 동의 관리를 위한 상태 변수
-
+  const [consent, setConsent] = useState(null);
+ 
+  // 알림 모달 및 알림 메시지 상태 변수들
+  const [alertModalVisible, setAlertModalVisible] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertSuccess, setAlertSuccess] = useState('');
+ 
+  // 애니메이션을 제어하기 위한 상태 변수
+  const [showAnimation, setShowAnimation] = useState(false);
+ 
+  // useEffect를 사용하여 컴포넌트가 마운트될 때 실행되는 데이터 로딩 처리
   useEffect(() => {
     const fetchPrivacyContent = async () => {
       try {
+        // 서버로부터 개인정보 동의서 내용 가져오기
         const response = await axios.get('http://edm.japaneast.cloudapp.azure.com/api/privacy-policy/');
         const formattedContent = response.data.content.replace(/\r\n/g, "\n");
         setPrivacyContent(formattedContent);
-        //setPrivacyContent(response.data);
-        //console.log("Formatted Content:", formattedContent);
       } catch (error) {
         console.error('Error fetching privacy content:', error);
         setPrivacyContent('개인정보 동의서를 불러오는 중 오류가 발생했습니다.');
       }
     };
-
+ 
     fetchPrivacyContent();
   }, []);
-
-  //console.log('privacy:', privacyContent);
-
-  //const stringifiedContent = JSON.stringify(privacyContent);
-
-  const [alertModalVisible, setAlertModalVisible] = useState(false);
-  const [alertMessage, setAlertMessage] = useState('');
-  const [alertSuccess, setAlertSuccess] = useState('');
-
-  //const [showOkButton, setShowOkButton] = useState(true); // OK 버튼 표시 여부 상태
-
+ 
+  // 회원가입 처리 함수
   const handleRegister = () => {
+    // 동의 여부 확인 후 처리
     if (consent !== 'agree') {
-      // 만약 사용자가 동의하지 않은 경우
       setAlertSuccess(`미동의!`);
       setAlertMessage(`동의해주세요`);
       setAlertModalVisible(true);
       return; // 동의하지 않은 경우 함수 실행 중지
     }
+ 
+    // 회원가입 데이터 설정
     setShowAnimation(true);
-    // if (goalIndex === -1) {
-    //   setAlertSuccess(`오류!`);
-    //   setAlertMessage(`개인정보동의서확인`);
-    //   setAlertModalVisible(true);
-    //   //Alert.alert("경고", "목표를 선택해주세요.");
-    //   return;
-    // }
-    // else {
-    //   setAlertSuccess(`회원가입성공!`);
-    //   setAlertMessage(`3초후 로그인페이지로 돌아갑니다`);
-    //   setAlertModalVisible(true);
-    // }
-
+ 
     const goals = ['체중 감량', '체중 유지', '체중 증량'];
-
+ 
     const adjustedGoalIndex = goalIndex + 1;
     const data = {
       "email": email,
@@ -79,10 +71,10 @@ const PrivacyScreen = ({ route }) => {
       "gender": gender,
       "agreed_to_privacy_policy": consent === 'agree' ? true : false //사용자의 동의 여부에 따라 agreed_to_privacy_policy 업데이트
     };
-
+ 
     console.log("Register data:", data);
     const jsonData = JSON.stringify(data);
-
+ 
     let config = {
       method: 'post',
       maxBodyLength: Infinity,
@@ -92,30 +84,27 @@ const PrivacyScreen = ({ route }) => {
       },
       data: jsonData
     };
-
+ 
+    // axios를 이용한 회원가입 요청
     axios.request(config)
       .then((response) => {
         console.log(JSON.stringify(response.data));
-        //navigation.navigate('Login');
         // 성공 메시지 표시
         setAlertSuccess(`회원가입 성공!`);
         setShowAnimation(true);
         setAlertMessage(`5초 후 로그인 페이지로 이동합니다.`);
         setAlertModalVisible(true);
-        // setShowAnimation(true);
-
-        // setShowOkButton(false); // OK 버튼 숨김
-
-        // 로그인 페이지로 이동하기 전 3초 대기
+ 
+        // 로그인 페이지로 이동하기 전 5초 대기
         setTimeout(() => {
           setAlertModalVisible(false); // 모달 닫기
           navigation.navigate('Login');
-        }, 5000); // 3초 대기 (3000밀리초)
+        }, 5000); // 5초 대기 (5000밀리초)
       })
       .catch((error) => {
         // 에러 메시지 자세히 출력
         console.log('Error object:', error);
-
+ 
         if (error.response) {
           console.log('Error response:', error.response);
           if (error.response.data) {
@@ -133,17 +122,17 @@ const PrivacyScreen = ({ route }) => {
         } else {
           console.log('Error message:', error.message);
         }
-
+ 
         Alert.alert('회원가입 실패', '회원가입 중 오류가 발생했습니다.');
         setAlertSuccess(`회원가입 실패`);
         setAlertMessage(`회원가입 중 오류가 발생했습니다.`);
         setAlertModalVisible(true);
       });
-
+ 
   }
-
-
-
+ 
+ 
+ 
   return (
     <View style={edm.container}>
       <View >
@@ -151,14 +140,17 @@ const PrivacyScreen = ({ route }) => {
           개인정보동의서확인
         </Text>
       </View>
+      {/* 개인정보 동의서 화면 구성 */}
       <View style={edm.contentContainer}>
+        {/* 개인정보 동의서 내용 */}
         <View style={styles.goalTextView}>
           <Text style={styles.goalTextText}>개인정보동의서</Text>
         </View>
         <ScrollView style={{ height: 200 }}>
           <Text style={styles.privacypage}>{privacyContent}</Text>
         </ScrollView>
-
+ 
+        {/* 동의 여부를 선택할 라디오 버튼 */}
         <View style={styles.radioButtonContainer}>
           <View style={styles.radioButton}>
             <RadioButton
@@ -179,25 +171,27 @@ const PrivacyScreen = ({ route }) => {
             <Text style={styles.radioText}>미동의</Text>
           </View>
         </View>
-
+ 
+        {/* 이전/완료 버튼 */}
         <View style={styles.buttonContainer}>
           <TouchableOpacity
-            //style={styles.MovingButton}
             onPress={() => navigation.navigate('DietGoal', { email, password, name, birthdate, personheight, personweight, gender, selectedActivityLevel, goalIndex })}
           >
             <Text style={styles.moveButton}>이전</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            //style={styles.MovingButton}
-            onPress={handleRegister} 
+            onPress={handleRegister}
             >
-              
+             
             <Text style={styles.moveButton}>완료</Text>
           </TouchableOpacity>
         </View>
       </View>
+ 
+      {/* 애니메이션 컴포넌트 */}
       {showAnimation && <Animation onFinish={() => setShowAnimation(false)} />}
-
+ 
+      {/* 회원가입 결과를 알리는 모달 */}
       <Modal
         animationType="fade"
         transparent={true}
@@ -219,11 +213,11 @@ const PrivacyScreen = ({ route }) => {
             </View>
           </View>
           {showAnimation && <Animation onFinish={() => setShowAnimation(false)} />}
-
+ 
         </View>
       </Modal>
       {showAnimation && <Animation onFinish={() => setShowAnimation(false)} />}
-
+ 
     </View>
   );
 };
@@ -236,12 +230,9 @@ const styles = StyleSheet.create({
     fontSize: 20, marginBottom: 10 // 글자 크기 설정
   },
   privacypage: {
-    //width: '100%',
-    //height: '40%',
     backgroundColor: 'white',
     padding: '5%',
     paddingTop: '10%',
-    //marginVertical: 5,
   },
   goalButtonContainer: {
     marginVertical: 5,
@@ -260,7 +251,7 @@ const styles = StyleSheet.create({
     color: 'white', // 눌러진 버튼의 글자색 (흰색)
   },
   inactiveGoalButtonText: {
-
+ 
     color: 'black', // 기본 버튼의 글자색 (검은색)
   },
   moveButton: {
@@ -285,7 +276,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end', // 하단에 정렬
     marginBottom: -15, // 하단 여백
   },
-
+ 
   alertModalView: {
     flex: 1,
     justifyContent: 'center',
@@ -307,8 +298,6 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
     fontSize: 1,
-    //height: 150,
-    //width: 300,
     width: '80%',
     height: '20%',
   },
@@ -342,7 +331,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     textAlign: 'center', // 텍스트 중앙 정렬
   },
-
+ 
   // 라디오버튼스타일
   radioButtonContainer: {
     flexDirection: 'row',
@@ -354,10 +343,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   radioText: {
-    //marginLeft: '5%',
     fontSize: 16,
   },
-
+ 
 });
 const edm = StyleSheet.create({
   container: {
@@ -375,5 +363,5 @@ const edm = StyleSheet.create({
     height: '70%',
   },
 });
-
+ 
 export default PrivacyScreen;

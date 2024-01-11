@@ -1,3 +1,4 @@
+// 네비게이션 -- 친구
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, RefreshControl, StyleSheet, Button, Image, Modal } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -7,57 +8,63 @@ import { useNavigation } from '@react-navigation/native';
 import { useSubscription } from '../../SubscriptionContext';
  
 const ChatScreen = () => {
-  const [friends, setFriends] = useState([]);
-  const [selectedFriend, setSelectedFriend] = useState(null);
-  const [refreshing, setRefreshing] = useState(false);
-  const navigation = useNavigation();
-  const { subscriptionList } = useSubscription();
-  const [alertModalVisible, setAlertModalVisible] = useState(false);
-  const [alertMessage, setAlertMessage] = useState('');
-  const [selectedDate, setSelectedDate] = useState(null);
-  const [dietDetails, setDietDetails] = useState(null);
-  const [dietData, setDietData] = useState(null);
-  const [expandedDate, setExpandedDate] = useState(null);
+  // 상태변수 설정
+  const [friends, setFriends] = useState([]); // 친구목록 상태
+  const [selectedFriend, setSelectedFriend] = useState(null); // 선택한 친구 상태
+  const [refreshing, setRefreshing] = useState(false); // 새로고침 상태
+  const navigation = useNavigation(); // 네비게이션 상태
+  const { subscriptionList } = useSubscription(); // 구독 컨텍스트 데이터 상태
+  const [alertModalVisible, setAlertModalVisible] = useState(false); // 모달창 상태
+  const [alertMessage, setAlertMessage] = useState(''); // Alert창 메세지 상태
+  const [selectedDate, setSelectedDate] = useState(null); // 날짜선택 상태
+  const [dietDetails, setDietDetails] = useState(null); // 식단의 상세정보 상태
+  const [dietData, setDietData] = useState(null); // 식단데이터 상태
+  const [expandedDate, setExpandedDate] = useState(null); // 날짜선택의 배경색 상태
 
-  //취소 확인 상태 관리
+  //구독 취소 확인 상태 관리
   const [showUnsubscribeConfirmModal, setShowUnsubscribeConfirmModal] = useState(false);
   const [friendToUnsubscribe, setFriendToUnsubscribe] = useState(null); 
   
+  // 날짜 선택 함수
   const onSelectDate = (date) => {
     // 선택된 날짜 업데이트
     setSelectedDate(date);
-    // 변경된 데이터 구조에 따라 해당 날짜의 식단 상세 정보 설정
 
-    // 배경색을 변경하기 위한 새로운 상태 설정
+    // 배경색을 변경하기 위한 상태 설정
     setExpandedDate(date);
+
+    // 변경된 데이터 구조에 따라 해당 날짜의 식단 상세 정보 설정
     const details = dietData.user_meals_evaluation.find(d => d.meal_date === date);
     setDietDetails(details);
   };
+
+  // 다른 날짜를 선택할 때 토글 함수
   const toggleDate = (date) => {
     if (expandedDate === date) {
       setExpandedDate(null); // 이미 확장된 항목이면 접기
       setSelectedDate(null); // 선택한 날짜 초기화하여 색깔을 원래대로 변경
     } else {
-      setExpandedDate(date); // 새로운 항목 확장
-      setSelectedDate(date); // 선택한 날짜 설정하여 배경색 변경
-      onSelectDate(date);
+      setExpandedDate(date); // 선택한 날짜 설정
+      setSelectedDate(date); // 선택한 날짜에 대한 배경색 변경
+      onSelectDate(date); // onSelectDate로 업데이트
     }
   };
 
+  // 이미지 URL이 상대 경로인지 확인해주는 함수
   const getFullImageUrl = (imageLink) => {
-    // 이미지 URL이 상대 경로인지 확인
+    // imageLink가 '/media/http%3A/'으로 시작하면  부분을 'http://'로 변경
     if (imageLink.startsWith('/media/http%3A/')) {
-      // '/media/http%3A/' 부분을 'http://'로 변경
       return 'http://' + imageLink.substring('/media/http%3A/'.length);
     }
     // 이미 전체 URL이면 그대로 반환
     return imageUrl;
   };
 
+  // mealDate와 그에 해당하는 meals를 받아서 이미지를 렌더링해주는 함수
   const renderMealImages = (mealDate, meals) => {
-    const dailyMeals = meals.filter(meal => meal.mealdate === mealDate);
-    const mealTypes = ['아침', '점심', '저녁', '간식'];
-    const availableMeals = mealTypes.map(type => dailyMeals.find(m => m.mealType === type)).filter(Boolean);
+    const dailyMeals = meals.filter(meal => meal.mealdate === mealDate); // meal에서 mealDate에 해당하는 식사로 필터링
+    const mealTypes = ['아침', '점심', '저녁', '간식']; // 식사시간대 배열
+    const availableMeals = mealTypes.map(type => dailyMeals.find(m => m.mealType === type)).filter(Boolean); // dailyMeals에서 선택한 mealTypes에 해당하는 식사를 배열로 정리, null아닌 요소만 필터링
     console.log(availableMeals)
     // 이미지를 2x2 격자에 배치
     const grid = Array(2).fill(null).map(() => Array(2).fill(null));
@@ -70,7 +77,9 @@ const ChatScreen = () => {
     });
  
     return (
+      // 날짜를 선택했을 때 나오는 창의 음식사진영역
       <View style={{ alignItems: 'center' }}>
+        {/* 매핑을 통해 사진들을 정렬 */}
         {grid.map((row, rowIndex) => (
           <View key={rowIndex} style={{ flexDirection: 'row', justifyContent: 'center' }}>
             {row.map((meal, colIndex) => (
@@ -79,8 +88,6 @@ const ChatScreen = () => {
                   <Text>{meal.mealType}</Text>
                   <Image
                     source={{ uri: getFullImageUrl(meal.imagelink )}}
-                    // source={{ uri: meal.imagelink }}
-
                     style={{ width: 100, height: 100 }}
                   />
                 </View>
@@ -92,22 +99,17 @@ const ChatScreen = () => {
     );
   };
 
-  //구독 취소
+  //구독 취소 함수
   const unsubscribeFriend = (friendName) => {
     setFriendToUnsubscribe(friendName);
     setShowUnsubscribeConfirmModal(true);
   };
 
+  // 구독 취소 확인 함수
   const confirmUnsubscribe = async () => {
     if (!friendToUnsubscribe) return;
-    
+
     const friend = friends.find(f => f.name === friendToUnsubscribe);
-    // 유정님 코드 기준 이부분은 주석처리
-    // if (!friend) {
-    //   alert('친구 정보를 찾을 수 없습니다.');
-    //   return;
-    // }
- 
     const token = await AsyncStorage.getItem('@user_token');
     let config = {
       method: 'delete',
@@ -120,13 +122,11 @@ const ChatScreen = () => {
  
     try {
       await axios(config);
-      //alert(`${friendName}와의 구독이 취소되었습니다.`);
       setAlertMessage(`${friendToUnsubscribe} 님과의 구독이 취소되었습니다.`);
       setAlertModalVisible(true);
       fetchFriends();
     } catch (error) {
       console.error('구독 취소 실패:', error);
-      //alert('구독 취소에 실패했습니다.');
       setAlertMessage('구독 취소에 실패했습니다.');
       setAlertModalVisible(true);
     } finally {
@@ -167,7 +167,7 @@ const ChatScreen = () => {
     </Modal>
   );  
 
-  // 구독한 친구의 식단 가져오기
+  // 구독한 친구의 식단을 가져오는 함수
   const fetchDietData = async (uuid) => {
     const token = await AsyncStorage.getItem('@user_token');
     let config = {
@@ -183,6 +183,8 @@ const ChatScreen = () => {
       console.error('식단 데이터 불러오기 실패:', error);
     }
   };
+
+  // 구독한 친구목록을 확인하는 함수
   const fetchFriends = async () => {
     setRefreshing(true); // 새로고침 시작
     const token = await AsyncStorage.getItem('@user_token');
@@ -223,6 +225,7 @@ const ChatScreen = () => {
     fetchFriends();
   }, [subscriptionList]);
  
+  // 친구목록에 친구존재여부
   useEffect(() => {
     if (friends.length > 0) {
       selectFriend(friends[0].name);
@@ -232,7 +235,8 @@ const ChatScreen = () => {
   const onRefresh = useCallback(() => {
     fetchFriends();
   }, [subscriptionList]);
- 
+
+  // 선택한 친구의 식단데이터를 가져오기 위한 선택한 친구 확인 함수
   const selectFriend = async (friendName) => {
     const friend = friends.find(f => f.name === friendName);
     if (friend) {
@@ -245,6 +249,7 @@ const ChatScreen = () => {
     navigation.navigate('Profile');
   };
 
+  // 식단평가별로 색상을 지정
   const getBackgroundColor = () => {
     switch (dietDetails.meal_evaluation) {
       case 'Bad':
@@ -258,18 +263,19 @@ const ChatScreen = () => {
       case 'Perfect':
         return '#2FFF9B';
       default:
-        return 'lightgray'; // Default color if no match is found
+        return 'lightgray';
     }
   };
  
   return (
     <View style={{ flex: 1 }}>
-      {/* 상단바 */}
+      {/* 헤드라인 -- 제목 */}
       <View style={styles.titleBar}>
         <Text style={styles.titleText}>친구 식단</Text>
       </View>
- 
+      {/* 친구목록표시부분 */}
       {friends.length > 0 ? (
+        // 친구가 있을 때
         <View style={{ flex: 1, flexDirection: 'row' }}>
           {/* 친구 목록 */}
           <View style={{
@@ -282,6 +288,7 @@ const ChatScreen = () => {
                 <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
               }
             >
+              {/* 매핑을 통한 친구목록 출력 */}
               {friends.map((friend, index) => (
                 <TouchableOpacity key={index} onPress={() => selectFriend(friend.name)}>
                   <Text style={{
@@ -294,16 +301,11 @@ const ChatScreen = () => {
               ))}
             </ScrollView>
           </View>
- 
- 
- 
-          {/* 채팅방 */}
-          {/* 채팅방 */}
+          {/* 선택한 친구의 식단을 확인할 수 있는 부분 */}
           <View style={{ flex: 1 }}>
             {selectedFriend && (
               <View style={{ flex: 1, 
                              paddingHorizontal: '5%',
-                             //alignItems: 'center' 
                             }}>
                 <View style={{ 
                         flexDirection: 'row', 
@@ -324,9 +326,9 @@ const ChatScreen = () => {
 
                     .map((item, index) => (
                       <View key={index}>
+                        {/* 식단을 기록한 날짜들을 확인 */}
                         <TouchableOpacity onPress={() => 
                                                     toggleDate(item.meal_date)
-                                                    //onSelectDate(item.meal_date)
                                                     }
                                           style={styles.DateButton}
                         >
@@ -377,7 +379,6 @@ const ChatScreen = () => {
                           {renderMealImages(item.meal_date, dietData.user_meals.user_meals)}
                           </View>
                         )}
-                        {/* <View style={{ borderBottomWidth: 1, borderBottomColor: 'gray' }} /> */}
                       </View>
                     ))
                   ) : (
@@ -400,6 +401,7 @@ const ChatScreen = () => {
         </View>
       )}
 
+      {/* 구독 취소할 때의 모달창 */}
       <Modal 
         animationType="fade"
         transparent={true}
@@ -409,7 +411,6 @@ const ChatScreen = () => {
         }}>
         <View style={styles.alertModalView}>
         <View style={styles.alertModalContainer}>
-          {/* <Text style={{fontSize:20, fontWeight:'bold', color:'#000'}}>Alert</Text> */}
           <Text style={styles.alertText}>{alertMessage}</Text>
           <View style={styles.alertButtonContainer}>
             <TouchableOpacity
@@ -429,6 +430,7 @@ const ChatScreen = () => {
  
  
 const styles = StyleSheet.create({
+  // 모달창 스타일
   alertModalView:{
     flex:1,
     justifyContent:'center',
@@ -450,19 +452,17 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
     fontSize: 1,
-    //height: 150,
-    //width: 300,
     width: '80%',
     height: '20%',
   },
   modalText: {
-    fontSize: 16,             // 글자 크기
+    fontSize: 16,
     textAlign: 'flex-start',  
   },
   alertButtonContainer: {
     flex: 1,
-    justifyContent: 'flex-end', // 버튼을 하단으로 이동
-    alignItems: 'flex-end', // 버튼을 오른쪽으로 이동
+    justifyContent: 'flex-end',
+    alignItems: 'flex-end',
     width: '100%',
   },
   alertButton: {
@@ -476,14 +476,14 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
-    paddingVertical: 10, // 버튼 높이 조절
-    paddingHorizontal: 20, // 버튼 너비 조절
-    alignItems: 'center', // 수직 중앙 정렬
-    justifyContent: 'center', // 수평 중앙 정렬
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   alertButtonText: {
     color: '#fff',
-    textAlign: 'center', // 텍스트 중앙 정렬
+    textAlign: 'center',
   },
   alertText:{
     fontSize:16,
@@ -491,6 +491,7 @@ const styles = StyleSheet.create({
     marginTop:10,
   },
 
+  // 제목에 해당하는 친구 식단 스타일
   titleBar: {
     padding: '4%',
     alignItems: 'center',
@@ -501,6 +502,8 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
   },
+
+  // 친구가 없을 때의 화면 스타일
   noFriendsContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -548,38 +551,33 @@ const styles = StyleSheet.create({
   },
 
   DateButton: {
-    //alignItems: 'center',
-    //justifyContent: 'center',
     marginBottom: '5%',
   },
 
+  // 날짜버튼 스타일
   DateText: {
-    //backgroundColor: '#8E86FA',
     textAlign: 'center',
     width: '100%',
-    //color: 'white',
     fontWeight: '900',
-    //margin: '1%',
     paddingVertical: '5%',
     borderRadius: 10,
   },
 
   DateContent: {
-    //backgroundColor: '#ccc',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: '5%',
-    //width: '50%'
   },
 
+  //날짜안의 식단상세정보를 출력해주는 영역
   DateAll: {
     backgroundColor: '#ccc',
     padding: '5%',
     borderRadius: 20,
     marginBottom: '5%'
   },
-
+ // 모달창 스타일
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -615,11 +613,9 @@ const styles = StyleSheet.create({
   },
   buttonNo: {
     backgroundColor: '#FFF',
-    // 추가적인 스타일링
   },
   buttonYes: {
     backgroundColor: '#8E86FA',
-    // 추가적인 스타일링
   },
 });
  

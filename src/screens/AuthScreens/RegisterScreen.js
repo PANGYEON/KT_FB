@@ -1,34 +1,36 @@
-
+//회원정보 - 아이디&비밀번호설정페이지 
 import React, { useState } from 'react';
 import { Button, View, Input, Text } from 'native-base';
 import { StyleSheet, Alert, Dimensions, KeyboardAvoidingView, ScrollView,Modal, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
-
+ 
 // 이메일 및 비밀번호 정규식
 const emailRegEx = /^[A-Za-z0-9]([-_.]?[A-Za-z0-9])*@[A-Za-z0-9]([-_.]?[A-Za-z0-9])*\.[A-Za-z]{2,}(\.[A-Za-z]{2,})?$/i;
 const passwordRegEx = /^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,20}$/;
-
+ 
 const emailCheck = (email) => {
   return emailRegEx.test(email);
 }
-
+ 
 const passwordCheck = (password) => {
   return passwordRegEx.test(password);
 }
-
+ 
 const RegisterScreen = ({ route }) => {
-
+ 
+  // 상태 변수 정의
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const navigation = useNavigation();
   const [confirmPassword, setConfirmPassword] = useState('');
   const isPasswordsMatch = password === confirmPassword;
   const [isPasswordValid, setIsPasswordValid] = useState(false);
-  const { width, height } = Dimensions.get('window');
   const [alertModalVisible, setAlertModalVisible] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
-
+ 
+  // 네비게이션 설정
+  const navigation = useNavigation();
+ 
   // 이메일 중복 확인 함수
   const checkEmailExistence = async (email) => {
     try {
@@ -45,16 +47,19 @@ const RegisterScreen = ({ route }) => {
     } catch (error) {
       setAlertMessage(`이메일 중복 확인 중 오류 발생: ${error}`);
       setAlertModalVisible(true);
-      //console.error("이메일 중복 확인 중 오류 발생:", error);
       return null; // 오류 발생 시 null 반환
     }
   };
+ 
+  // 비밀번호 변경 이벤트 처리 함수
   const handlePasswordChange = (password) => {
     setPassword(password);
     setIsPasswordValid(passwordCheck(password));
   };
-
+ 
+  // 이메일 형식 에러 메세지 표시 함수
   const renderEmailError = () => {
+    // 이메일 형식이 맞지 않는 경우 에러 메세지 반환
     if (email.length > 0 && !emailCheck(email)) {
       return (
         <Text fontSize={12} color="red.600" style={{ alignSelf: 'flex-start', marginLeft: '5%', marginTop: '-3%' }}>
@@ -64,8 +69,10 @@ const RegisterScreen = ({ route }) => {
     }
     return <View style={{ height: 8 }} />;
   };
-
+ 
+  // 비밀번호 형식 에러 메세지 표시 함수
   const renderPasswordError = () => {
+    // 비밀번호 형식이 맞지 않는 경우 에러 메세지 반환
     if (password.length > 0 && !passwordCheck(password)) {
       return (
         <Text fontSize={12} color="red.600" style={{ alignSelf: 'flex-start', marginLeft: '5%', marginTop: '-3%' }}>
@@ -75,7 +82,10 @@ const RegisterScreen = ({ route }) => {
     }
     return <View style={{ height: 8 }} />;
   };
+ 
+  // 비밀번호 확인 에러 메세지 표시 함수
   const renderConfirmPasswordError = () => {
+    // 비밀번호 확인이 일치하지 않는 경우 에러 메세지 반환
     if (confirmPassword.length > 0 && !isPasswordsMatch) {
       return (
         <Text fontSize={12} color="red.600" style={{ alignSelf: 'flex-start', marginLeft: '5%', marginTop: '-3%' }}>
@@ -85,23 +95,21 @@ const RegisterScreen = ({ route }) => {
     }
     return <View style={{ height: 8 }} />;
   };
-
-
+ 
+  // 다음 페이지로 이동하는 이벤트 처리 함수
   const handleNextPage = async () => {
     if (!email || !password || !confirmPassword) {
       setAlertMessage(`이메일과 비밀번호를 모두 입력해주세요.`);
       setAlertModalVisible(true);
-      //Alert.alert("오류", "이메일과 비밀번호를 모두 입력해주세요.");
       return;
     }
-
+ 
     if (isPasswordValid && isPasswordsMatch) {
       // 이메일 중복 확인
       const emailCheckResult = await checkEmailExistence(email);
       if (emailCheckResult && emailCheckResult.message === "이미 사용 중인 이메일입니다.") {
         setAlertMessage(`이메일이 중복입니다. 다시 입력해주세요.`);
         setAlertModalVisible(true);
-        //Alert.alert("오류", "이메일이 중복입니다. 다시 입력해주세요.");
         return;
       }
       // 중복이 아닌 경우 다음 페이지로 네비게이션
@@ -109,22 +117,22 @@ const RegisterScreen = ({ route }) => {
     } else {
       setAlertMessage(`비밀번호 조건을 확인해주세요.`);
       setAlertModalVisible(true);
-      //Alert.alert("오류", "비밀번호 조건을 확인해주세요.");
     }
   };
-
-  const emailInputContainerStyle = {
-    
+ 
+  // 스타일 및 레이아웃 관련 변수
+ 
+ 
+  const { width, height } = Dimensions.get('window');
+ 
+  const emailInputContainerStyle = {  
     marginTop: height * 0.02, // 화면 높이의 70% 위치에 설정
-    // 기타 필요한 스타일 속성 추가
   };
   const passwordInputContainerStyle = {
     marginTop: height * 0.02, // 화면 높이의 55% 위치에 설정
-    // 기타 필요한 스타일 속성 추가
   };
   const passwordconfirmInputContainerStyle = {
     marginTop: height * 0.02, // 화면 높이의 40% 위치에 설정
-    // 기타 필요한 스타일 속성 추가
   };
   const contentContainerStyle = {
     ...styles.contentContainer,
@@ -135,16 +143,14 @@ const RegisterScreen = ({ route }) => {
     position: 'absolute',  // 절대 위치 사용
     bottom: height * 0.08, // 화면 아래쪽에서부터 5% 높이 위치
     width: '100%',         // 컨테이너의 너비를 전체 화면 너비로 설정
-    // paddingHorizontal: 20, // 좌우 패딩 추가 (필요에 따라 조절)
-    // justifyContent: 'center' // 버튼들을 수평 방향으로 가운데 정렬
-
+ 
   };
   const movingButtonStyle = {
     ...styles.MovingButton,
     width: width * 0.35, // 화면 너비의 %
     height: height * 0.075, // 화면 높이의 %
     marginHorizontal: width * 0.08,   // 좌우 마진 추가
-
+ 
   };
   return (
     <KeyboardAvoidingView
@@ -152,11 +158,10 @@ const RegisterScreen = ({ route }) => {
       style={{ flex: 1 }}
     >
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-
         <View style={styles.container}>
           <View style={contentContainerStyle}>
+            {/* 이메일 입력 필드 */}
             <View style={emailInputContainerStyle}>
-              {/* <View style={{ marginTop: '6%' }} /> */}
               <Text style={{ marginLeft: 5, fontSize: 16 }} >이메일</Text>
               <View style={styles.inputContainer}>
                 <Input
@@ -175,7 +180,8 @@ const RegisterScreen = ({ route }) => {
               </View>
               {renderEmailError()}
             </View>
-            
+ 
+            {/* 비밀번호 입력 필드 */}
             <View style={passwordInputContainerStyle}>
               <Text style={{ marginLeft: 5, fontSize: 16 }}>비밀번호</Text>
               <View style={styles.inputContainer}>
@@ -193,7 +199,8 @@ const RegisterScreen = ({ route }) => {
               </View>
               {renderPasswordError()}
             </View>
-
+ 
+            {/* 비밀번호 확인 입력 필드 */}
             <View style={passwordconfirmInputContainerStyle}>
               <Text style={{ marginLeft: 5, fontSize: 16 }}>비밀번호 확인</Text>
               <View style={styles.inputContainer}>
@@ -212,19 +219,21 @@ const RegisterScreen = ({ route }) => {
               </View>
               {renderConfirmPasswordError()}
             </View>
-
+ 
+            {/* 이전/다음 화면으로 이동하는 버튼 */}
             <View style={buttonContainerStyle}>
               <Button style={movingButtonStyle} onPress={() => navigation.navigate("Login")}>
                 이전
               </Button>
-
+ 
               <Button style={movingButtonStyle} onPress={handleNextPage}>
                 다음
               </Button>
             </View>
           </View>
-
-          <Modal 
+ 
+          {/* 알림 모달 */}
+          <Modal
             animationType="fade"
             transparent={true}
             visible={alertModalVisible}
@@ -245,7 +254,7 @@ const RegisterScreen = ({ route }) => {
             </View>
             </View>
           </Modal>
-
+ 
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -283,7 +292,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     backgroundColor: '#8E86FA',
   },
-
+ 
   alertModalView:{
     flex:1,
     justifyContent:'center',
@@ -305,8 +314,6 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
     fontSize: 1,
-    //height: 150,
-    //width: 300,
     width: '80%',
     height: '20%',
   },
@@ -341,5 +348,6 @@ const styles = StyleSheet.create({
     textAlign: 'center', // 텍스트 중앙 정렬
   },
 });
-
+ 
 export default RegisterScreen;
+ 

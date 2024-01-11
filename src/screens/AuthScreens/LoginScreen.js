@@ -1,67 +1,75 @@
+// 로그인화면(앱의 첫페이지)
 import React, { useState } from 'react';
-
+ 
 import { Button, View, Input, Text } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StyleSheet, Alert, Modal, TouchableOpacity, Image } from 'react-native';
-
+ 
 const LoginScreen = () => {
+  // React Navigation의 네비게이션을 사용할 수 있도록 useNavigation 훅을 이용하여 navigation 객체 생성
   const navigation = useNavigation();
+ 
+  // 이메일과 비밀번호를 저장하기 위한 useState 훅 사용
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+ 
+  // 로그인 실패 시 표시할 알림 모달 상태 및 메시지를 저장하기 위한 useState 훅 사용
   const [alertModalVisible, setAlertModalVisible] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
-
+ 
+  // AsyncStorage를 사용하여 토큰을 저장하는 함수 정의
   const storeToken = async (token) => {
     try {
       await AsyncStorage.setItem('@user_token', token);
     } catch (e) {
       console.log('eeeeee')
+      // 토큰 저장 중 에러가 발생한 경우 알림 모달 표시
       setAlertMessage(`token error`);
       setAlertModalVisible(true);
     }
   }
-
-
+ 
+  // 로그인 버튼 클릭 시 실행되는 함수
   const handleLogin = async () => {
     try {
+      // 입력된 이메일과 비밀번호를 JSON 형태로 변환하여 서버로 전송
       let data = JSON.stringify({
         "email": email,
         "password": password
       });
-      
+     
+      // 로그인 요청을 위한 설정 객체 생성
       let config = {
         method: 'post',
         maxBodyLength: Infinity,
         url: 'http://edm.japaneast.cloudapp.azure.com/api/login/',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json'
         },
         data : data
       };
-  
+ 
+      // Axios를 사용하여 로그인 요청
       const response = await axios(config);
-  
+ 
+      // 로그인 요청에 대한 응답이 200일 경우
       if (response.status === 200) {
-        // 로그인 성공 처리
-        
+        // 응답으로 받은 토큰을 저장하고 BottomTabNavigator로 이동
         const token = response.data.access_token;
-        console.log(token)
         storeToken(response.data.access_token);
-        // navigation.replace('BottomTabNavigator', { screen: '홈',params: { token: token }, }); // 뒤로가기 누르면 바로 종료
         navigation.reset({
           index: 0,
           routes: [{ name: 'BottomTabNavigator', params: { token: token } }],
         });
-        // navigation.navigate('BottomTabNavigator', { token, uuid });
       } else {
-        // 서버가 로그인 실패에 대해 다른 상태 코드를 반환하는 경우
-        //Alert.alert("로그인 실패", "이메일 또는 비밀번호가 잘못되었습니다.");
+        // 로그인 실패 시 이메일 또는 비밀번호가 잘못되었다는 알림 모달 표시
         setAlertMessage(`이메일 또는 비밀번호가 잘못되었습니다.`);
         setAlertModalVisible(true);
       }
     } catch (error) {
+      // 로그인 요청 중 에러 발생 시 에러 메시지 출력 및 알림 모달 표시
       console.log(error);
       if (error.response) {
         console.log("Server Response", error.response);
@@ -69,13 +77,12 @@ const LoginScreen = () => {
       if (error.request) {
         console.log("Server No Response", error.request);
       }
-
+ 
       setAlertMessage(`이메일 또는 비밀번호가 잘못되었습니다.`);
       setAlertModalVisible(true);
-      //Alert.alert("오류 발생", "로그인 중 문제가 발생했습니다.");
     }
   };
-  
+ 
   return (
     <View style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: '#fff' }}>
       <View
@@ -93,15 +100,15 @@ const LoginScreen = () => {
             marginBottom: 10,
             borderRadius: 50,
             backgroundColor: 'white',
-            borderWidth: 0, // Set border width to 0 to remove the border
+            borderWidth: 0,
           }}
         >
           <Input
             placeholder="이메일"
             value={email}
             onChangeText={(value) => setEmail(value)}
-            borderColor="transparent" // Set the border color to transparent
-            underlineColorAndroid="transparent" // Set underline color to transparent for Android
+            borderColor="transparent"
+            underlineColorAndroid="transparent"
           />
         </View>
         <View
@@ -109,7 +116,7 @@ const LoginScreen = () => {
             marginBottom: 10,
             borderRadius: 50,
             backgroundColor: 'white',
-            borderWidth: 0, // Set border width to 0 to remove the border
+            borderWidth: 0,
           }}
         >
           <Input
@@ -117,14 +124,12 @@ const LoginScreen = () => {
             value={password}
             onChangeText={(value) => setPassword(value)}
             secureTextEntry
-            borderColor="transparent" // Set the border color to transparent
-            underlineColorAndroid="transparent" // Set underline color to transparent for Android
+            borderColor="transparent"
+            underlineColorAndroid="transparent"
           />
         </View>
         <Button
           onPress={handleLogin}
-          // onPress={() => navigation.navigate('BottomTabNavigator')}
-          //////////////////////////////////////////////////////////////////////////////////////////
           style={{ marginBottom: 10, borderRadius: 50, backgroundColor: '#8E86FA' }}
         >
           로그인
@@ -139,30 +144,33 @@ const LoginScreen = () => {
           <Text onPress={() => navigation.navigate('PwSearch')}>비밀번호 찾기</Text>
         </View>
       </View>
-
-      <Modal 
+ 
+      {/* 알림 모달 */}
+      <Modal
         animationType="fade"
         transparent={true}
         visible={alertModalVisible}
         onRequestClose={() => {
           setAlertModalVisible(!alertModalVisible);
         }}>
+        {/* 알림 모달 내부 구성 */}
         <View style={styles.alertModalView}>
-        <View style={styles.alertModalContainer}>
-          <Text style={styles.alertText}>{alertMessage}</Text>
-          <View style={styles.alertButtonContainer}>
-            <TouchableOpacity
-              style={styles.alertButton}
-              onPress={() => setAlertModalVisible(false)}
-            >
-              <Text style={styles.alertButtonText}>OK</Text>
-          </TouchableOpacity>
+          <View style={styles.alertModalContainer}>
+            <Text style={styles.alertText}>{alertMessage}</Text>
+            {/* 알림 모달의 OK 버튼 */}
+            <View style={styles.alertButtonContainer}>
+              <TouchableOpacity
+                style={styles.alertButton}
+                onPress={() => setAlertModalVisible(false)}
+              >
+                <Text style={styles.alertButtonText}>OK</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
         </View>
       </Modal>
     </View>
-
+ 
   );
 };
 const styles = StyleSheet.create({
@@ -187,8 +195,6 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
     fontSize: 1,
-    //height: 150,
-    //width: 300,
     width: '80%',
     height: '20%',
   },
@@ -224,4 +230,5 @@ const styles = StyleSheet.create({
   },
 });
 export default LoginScreen;
-
+ 
+ 

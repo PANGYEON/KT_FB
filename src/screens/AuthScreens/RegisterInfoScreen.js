@@ -1,45 +1,42 @@
-
+// 회원정보-기본정보작성페이지
 import React, { useState } from 'react';
 import { Button, View, Input, Text, Box } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
 import { StyleSheet, Alert, ScrollView, Dimensions, KeyboardAvoidingView, TouchableOpacity, Modal } from 'react-native';
 import DatePicker from 'react-native-date-picker'
-
-
+ 
+ 
+// 사용자 정보 등록 화면 컴포넌트
 const RegisterInfoScreen = ({ route }) => {
   const navigation = useNavigation();
   const { email, password } = route.params;
-  const [name, setName] = useState(''); //이름
-
-
-  const [birthdate, setBirthdate] = useState(new Date());
-  const [open, setOpen] = useState(false);
-
-
-  const [personheight, setPersonheight] = useState(""); //키
-  const [personweight, setPersonweight] = useState(""); //몸무게
-  const [gender, setGender] = useState(null); //성별
-  const [selectedButton, setSelectedButton] = useState(null);
-  const { width, height } = Dimensions.get('window'); // 화면의 너비와 높이
-
-  
+ 
+  // 사용자 정보 상태 관리
+  const [name, setName] = useState(''); // 이름
+  const [birthdate, setBirthdate] = useState(new Date()); // 생년월일
+  const [open, setOpen] = useState(false); // DatePicker 모달 열기 여부
+  const [personheight, setPersonheight] = useState(''); // 키
+  const [personweight, setPersonweight] = useState(''); // 몸무게
+  const [gender, setGender] = useState(null); // 성별
+  const [selectedButton, setSelectedButton] = useState(null); // 선택된 성별 버튼
+  const { width, height } = Dimensions.get('window'); // 화면 크기
+ 
+  // 경고 모달 상태 및 스타일
   const [alertModalVisible, setAlertModalVisible] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
-
+ 
   const contentContainerStyle = {
     ...styles.contentContainer,
     height: height * 0.75, // 화면 높이의 75%
   };
-
+ 
   const buttonContainerStyle = {
     ...styles.buttonContainer,
-    // justifyContent: 'center', // 수평축 중앙 정렬
     alignItems: 'center',     // 수직축 중앙 정렬
     position: 'absolute',
     bottom: height * 0.08,    // 화면 아래쪽에서부터 8% 높이 위치
-    // width: '100%',            // 너비를 화면의 100%로 설정
   };
-
+ 
   const prevButtonStyle = {
     ...styles.MovingButton,
     position: 'absolute',
@@ -48,7 +45,7 @@ const RegisterInfoScreen = ({ route }) => {
     width: width * 0.35,      // 버튼 너비
     height: height * 0.075,   // 버튼 높이
   };
-
+ 
   const nextButtonStyle = {
     ...styles.MovingButton,
     position: 'absolute',
@@ -61,53 +58,57 @@ const RegisterInfoScreen = ({ route }) => {
     marginTop: height * 0.001, // 각 입력 필드 상단 여백 동적 조정
     // 기타 스타일 속성
   };
+  // 성별 버튼을 처리하는 함수
   const handleButtonPress = (gender) => {
     setSelectedButton(gender);
-    setGender(gender); // 성별 상태를 업데이트
-
+    setGender(gender);
   };
+ 
+  // 다음 화면으로 이동하는 함수
   const navigateToNextPage = () => {
+    // 필수 입력 필드 및 데이터 유효성 검사
     if (!name || !birthdate || !personheight || !personweight || !gender) {
-      //Alert.alert("경고", "모든 필드를 채워주세요.");
-      setAlertMessage(`모든 필드를 채워주세요.`);
+      setAlertMessage('모든 필드를 채워주세요.');
       setAlertModalVisible(true);
     } else if (name.length > 10) {
-      //Alert.alert("경고", "이름은 10자 이내여야 합니다.");
-      setAlertMessage(`이름은 10자 이내여야 합니다.`);
+      setAlertMessage('이름은 10자 이내여야 합니다.');
       setAlertModalVisible(true);
     } else if (personheight <= 0 || personheight > 250) {
-      //Alert.alert("경고", "키는 0에서 250 사이여야 합니다.");
-      setAlertMessage(`키는 0에서 250 사이여야 합니다.`);
+      setAlertMessage('키는 0에서 250 사이여야 합니다.');
       setAlertModalVisible(true);
     } else if (personweight <= 0 || personweight > 250) {
-      //Alert.alert("경고", "몸무게는 0에서 250 사이여야 합니다.");
-      setAlertMessage(`몸무게는 0에서 250 사이여야 합니다.`);
+      setAlertMessage('몸무게는 0에서 250 사이여야 합니다.');
       setAlertModalVisible(true);
     } else {
-      navigation.navigate("ActivityLevel", { 
-        email, 
-        password, 
-        name, 
-        birthdate: formatDate(birthdate), // Format the date here
-        personheight, 
-        personweight, 
-        gender 
+      // 사용자 정보를 다음 화면으로 전달하며 이동
+      navigation.navigate('ActivityLevel', {
+        email,
+        password,
+        name,
+        birthdate: formatDate(birthdate),
+        personheight,
+        personweight,
+        gender,
       });
     }
   };
+ 
+  // 날짜 포맷 변경 함수
   const formatDate = (date) => {
-    let formattedDate = date.getFullYear() + "-" 
-                       + String(date.getMonth() + 1).padStart(2, '0') + "-" 
+    let formattedDate = date.getFullYear() + "-"
+                       + String(date.getMonth() + 1).padStart(2, '0') + "-"
                        + String(date.getDate()).padStart(2, '0');
     return formattedDate;
   };
-
-
+ 
+ 
   return (
     <KeyboardAvoidingView behavior="height" style={{ flex: 1 }}>
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View style={styles.container}>
           <View style={contentContainerStyle}>
+            {/* 사용자 정보 입력 필드 */}
+            {/* 이름 */}
             <View style={inputContainerStyle}>
               <View><Text style={{ marginLeft: width * 0.02, fontSize: 16 }} >이름</Text></View>
               <View style={styles.inputContainer}>
@@ -117,6 +118,7 @@ const RegisterInfoScreen = ({ route }) => {
                   onChangeText={(value) => { setName(value) }} />
               </View>
             </View>
+            {/* 생년월일 */}
             <View style={inputContainerStyle}>
               <View><Text style={{ marginLeft: width * 0.02, fontSize: 16 }} >생년월일</Text></View>
               <TouchableOpacity style={styles.inputContainer} onPress={() => setOpen(true)}>
@@ -127,6 +129,8 @@ const RegisterInfoScreen = ({ route }) => {
                   }
                 </Text>
               </TouchableOpacity>
+ 
+              {/* DatePicker 모달 */}
               <DatePicker
                 modal
                 open={open}
@@ -144,7 +148,8 @@ const RegisterInfoScreen = ({ route }) => {
                 cancelText="취소"
               />
             </View>
-
+ 
+            {/* 키 */}
             <View style={inputContainerStyle}>
               <View><Text style={{ marginLeft: width * 0.02, fontSize: 16 }} >키</Text></View>
               <View style={styles.inputContainer}>
@@ -156,6 +161,8 @@ const RegisterInfoScreen = ({ route }) => {
                 />
               </View>
             </View>
+ 
+            {/* 몸무게 */}
             <View style={inputContainerStyle}>
               <View><Text style={{ marginLeft: width * 0.02, fontSize: 16 }} >몸무게</Text></View>
               <View style={styles.inputContainer}>
@@ -167,6 +174,8 @@ const RegisterInfoScreen = ({ route }) => {
                   />
               </View>
             </View>
+ 
+            {/* 성별 */}
             <View style={inputContainerStyle}>
               <View><Text style={{ marginLeft: width * 0.02, fontSize: 16 }} >성별</Text></View>
               <Box direction="row" mb="2.5" mt="1.5">
@@ -182,8 +191,8 @@ const RegisterInfoScreen = ({ route }) => {
                 </Button.Group>
               </Box>
             </View>
-
-
+ 
+            {/* 다음과 이전 화면으로 이동하는 버튼 */}
             <View style={buttonContainerStyle}>
               <Button style={prevButtonStyle} onPress={() => navigation.navigate("Register", { email, password })}>
                 이전
@@ -193,8 +202,9 @@ const RegisterInfoScreen = ({ route }) => {
               </Button>
             </View>
           </View>
-
-          <Modal 
+ 
+          {/* 유효성 검사 및 에러메세지를 표시하는 알림 모달 */}
+          <Modal
             animationType="fade"
             transparent={true}
             visible={alertModalVisible}
@@ -215,7 +225,7 @@ const RegisterInfoScreen = ({ route }) => {
             </View>
             </View>
           </Modal>
-
+ 
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -246,10 +256,6 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     backgroundColor: '#8E86FA',
   },
-  // buttonContainer: {
-  //   flexDirection: 'row',
-  //   justifyContent: 'space-between',
-  // },
   buttonContainer: {
     flex: 1,
     flexDirection: 'row',
@@ -260,41 +266,36 @@ const styles = StyleSheet.create({
   buttonText: {
     color: 'black', // 기본 글자색
   },
-
+ 
   buttonTextSelected: {
     color: 'white', // 선택된 버튼의 글자색
   },
   sexButton: {
     flex: 1,
     marginHorizontal: 5,
-    // borderRadius:20,
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     backgroundColor: 'white', // 기본 배경색
-    // 추가된 부분: textStyle을 통한 글자색 설정
     textStyle: {
       color: 'black' // 기본 글자색
     }
   },
-
+ 
   sexButtonSelected: {
     backgroundColor: '#8E86FA', // 선택된 버튼의 배경색 (보라색)
     color: 'white', // 선택된 버튼의 글자색 (흰색)
   },
-
+ 
   MovingButton: {
     borderRadius: 50,
     backgroundColor: '#8E86FA',
-
-    // width: '35%', // 너비를 35%로 증가
-    // height: '61%', // 높이 설정
   },
   buttonText: {
     color: 'black',
   },
-
+ 
   alertModalView:{
     flex:1,
     justifyContent:'center',
@@ -316,8 +317,6 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
     fontSize: 1,
-    //height: 150,
-    //width: 300,
     width: '80%',
     height: '20%',
   },
@@ -352,6 +351,6 @@ const styles = StyleSheet.create({
     textAlign: 'center', // 텍스트 중앙 정렬
   },
 });
-
-
+ 
+ 
 export default RegisterInfoScreen;

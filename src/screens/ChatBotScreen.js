@@ -7,12 +7,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
 const ChatBotScreen = ({onClose}) => {
+  // 상태변수 설정
   const navigation = useNavigation();
-  const [inputText, setInputText] = useState(''); // To store the user input
-  const [chatHistory, setChatHistory] = useState([]); // To store the chat history
-  const scrollViewRef = useRef();
-  const [isLoading, setIsLoading] = useState(false); // 로딩 상태 추가
+  const [inputText, setInputText] = useState(''); // 입력창 상태
+  const [chatHistory, setChatHistory] = useState([]); // 채팅기록 상태
+  const scrollViewRef = useRef(); //
+  const [isLoading, setIsLoading] = useState(false); // 챗봇 로딩 상태
  
+  // 채팅기록 저장 함수
   const saveChatHistory = async (chatHistory) => {
     try {
       const jsonValue = JSON.stringify(chatHistory);
@@ -21,6 +23,8 @@ const ChatBotScreen = ({onClose}) => {
       // 저장 에러 처리
     }
   };
+
+  // 채팅기록 초기화 함수
   const clearChatHistory = async () => {
     try {
       await AsyncStorage.removeItem('@chat_history'); // AsyncStorage에서 대화 기록 삭제
@@ -29,6 +33,8 @@ const ChatBotScreen = ({onClose}) => {
       console.error('대화 기록 삭제 에러', e);
     }
   };
+
+  // 채팅기록 불러오는 함수
   const loadChatHistory = async () => {
     try {
       const jsonValue = await AsyncStorage.getItem('@chat_history');
@@ -38,7 +44,8 @@ const ChatBotScreen = ({onClose}) => {
       return [];
     }
   };
- 
+
+  // 컴포넌트가 마운트되면 채팅 기록 불러오기
   useEffect(() => {
     const fetchChatHistory = async () => {
       const loadedChatHistory = await loadChatHistory();
@@ -48,7 +55,7 @@ const ChatBotScreen = ({onClose}) => {
     fetchChatHistory();
   }, []);
  
-  //loading
+  // 로딩 중일 경우 로딩 화면 표시
   const renderLoadingOverlay = () => {
     return (
       <View style={styles.loadingOverlay}>
@@ -58,10 +65,11 @@ const ChatBotScreen = ({onClose}) => {
     );
   };
  
+  // 메세지보내기를 눌렀을 때 실행되는 함수
   const handleSendMessage = async () => {
     if (inputText.trim() === '') return;
  
-    // 사용자 메시지를 채팅 기록에 추가
+    // 사용자 메세지를 채팅 기록에 추가
     const userMessage = { role: 'user', content: inputText };
     setChatHistory(prevChatHistory => [...prevChatHistory, userMessage]);
  
@@ -69,15 +77,11 @@ const ChatBotScreen = ({onClose}) => {
       setIsLoading(true); // 로딩 시작
       // 서버에 메시지 전송
       const token = await AsyncStorage.getItem('@user_token');
- 
-      // const data = { "message": inputText };
       const jsonData = JSON.stringify({"message": inputText});
       setInputText('');
-      // console.log(data);
  
       let config = {
         method: 'post',
-        // ip주소 : ipconfig ipv4, port 5500
         url: 'http://edm-diet.japaneast.cloudapp.azure.com/chat_test/chatAPI/',
         headers: {
           'Content-Type': 'application/json',
@@ -89,33 +93,32 @@ const ChatBotScreen = ({onClose}) => {
       const response = await axios(config);
       console.log(response)
 
+      // 서버에서 받은 메세지를 채팅기록에 추가하고 AsyncStorage에 저장
       axios.request(config)
       .then(async (response) => {
         console.log(JSON.stringify(response.data));
  
         const assistantMessage = { role: 'assistant', content: response.data.message };
         setChatHistory(prevChatHistory => [...prevChatHistory, assistantMessage]);
- 
-        // 채팅 기록을 AsyncStorage에 저장
         await saveChatHistory([...chatHistory, userMessage, assistantMessage]);
         setIsLoading(false);
       })
       .catch((error) => {
         console.error('Error sending message to backend:', error);
-        setIsLoading(false);
-        // 에러 처리 로직 추가
+        setIsLoading(false); // 로딩 종료 
       });
- 
     } catch (error) {
       console.error('Error:', error);
-      setIsLoading(false);
+      setIsLoading(false); // 에러 발생 시 로딩 종료
     }
   };
 
   return (
     <View flex={1}>
-      {/*닫기 버튼*/}
+      {/* 헤드라인 */}
       <View style={ styles.chatContainer}>
+
+      {/*닫기 버튼*/}
       <TouchableOpacity
         onPress={onClose}
         style={{
@@ -127,6 +130,8 @@ const ChatBotScreen = ({onClose}) => {
         }}>
         <Text>X</Text>
       </TouchableOpacity>
+
+      {/* 초기화버튼 */}
       <TouchableOpacity
         onPress={clearChatHistory}
         style={{
@@ -139,6 +144,7 @@ const ChatBotScreen = ({onClose}) => {
         <Text>초기화</Text>
       </TouchableOpacity>
 
+      {/* chatBot과의 대화 (제목표시부분) */}
       <HStack
         space={2}
         alignItems="start"
@@ -155,7 +161,7 @@ const ChatBotScreen = ({onClose}) => {
         <Text>chatBot과의 대화 </Text>
       </HStack>
 
-      {/* 채팅영역 */}
+      {/* 채팅창라인 */}
       <View style={styles.chatAreaContainer}>
       <ScrollView
         onContentSizeChange={() => scrollViewRef.current.scrollToEnd({ animated: true })}
@@ -184,12 +190,12 @@ const ChatBotScreen = ({onClose}) => {
         </Text>
         ))}
       </ScrollView>
-      {/* 채팅창위에 로딩중 */}
-      {/* {isLoading && renderLoadingOverlay()} */}
       </View>
- 
+
+      {/* 메세지입력라인 */}
       <VStack space={3} marginBottom="5" style={{borderWidth:0}}>
         <HStack space={2} alignItems="center" style={{margin:10, borderWidth:0, borderTopWidth:1, borderTopColor:'#D9D9D9', paddingTop:15}}>
+          {/* 메세지 입력 칸 */}
           <Input
             flex={1}
             placeholder={isLoading ? "답변을 기다리는 중입니다.." : "메시지를 입력하세요..."}
@@ -202,6 +208,7 @@ const ChatBotScreen = ({onClose}) => {
               borderRadius: 11,
             }}
           />
+          {/* 보내기버튼 */}
           <Button onPress={handleSendMessage}
                   style={{
                     backgroundColor: '#fff',
@@ -227,14 +234,19 @@ const ChatBotScreen = ({onClose}) => {
 };
  
 const styles = StyleSheet.create({
+  // 채팅창 영역
   chatAreaContainer: {
     flex: 1,
     borderBottomLeftRadius:40,
     borderBottomRightRadius:40,
   },
+
+  // 헤드라인
   chatContainer: {
     flex: 1,
   },
+
+  // 로딩중일 때 메세지 입력창 스타일
   loadingOverlay: {
     position: 'absolute',
     top: 0,
@@ -246,6 +258,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     zIndex: 1,
   },
+  // 로딩 중일 때 입력창 텍스트 스타일
   loadingText: {
     marginTop: 20,
     color: '#FFF',
