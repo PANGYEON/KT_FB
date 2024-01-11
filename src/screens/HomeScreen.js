@@ -1,4 +1,4 @@
-
+// 홈화면 - 메인페이지
 import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import { View, Text, Button, TouchableOpacity, Image, StyleSheet, Modal, Dimensions, ActivityIndicator, PermissionsAndroid } from 'react-native';
@@ -13,22 +13,19 @@ import Animation from '../animation/Animation';
 
 
 const HomeScreen = () => {
+  // 상태변수 설정
   const navigation = useNavigation();
-  const route = useRoute();
   const [userName, setUserName] = useState('');
   const [isModalVisible, setModalVisible] = useState(false);
   const [isPermissionModalVisible, setPermissionModalVisible] = useState(false); // 권한 요청 모달 상태
 
   //폭죽 상태
   const [showAnimation, setShowAnimation] = useState(false);
-  const handlePress = () => {
-    setShowAnimation(true);
-    // 여기에 navigation.navigate('Profile')도 포함할 수 있습니다.
-  };
 
   const [photoUri, setPhotoUri] = useState('https://via.placeholder.com/150');
   const [isLoading, setIsLoading] = useState(false); // 로딩 상태 관리
 
+  // 현재날짜 설정
   const getTodayDate = () => {
     const today = new Date();
     return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
@@ -36,6 +33,7 @@ const HomeScreen = () => {
 
   const { width, height } = Dimensions.get('window');
 
+  // 최근사진을 관리
   const loadLatestPhoto = async () => {
     const latestPhotoUri = await AsyncStorage.getItem('@latest_photo');
     if (latestPhotoUri) {
@@ -44,7 +42,6 @@ const HomeScreen = () => {
   };
 
   useFocusEffect(
-
     useCallback(() => {
       loadLatestPhoto();
     }, [])
@@ -66,9 +63,13 @@ const HomeScreen = () => {
 
     updateTabBarVisibility();
   }, [isLoading, navigation]);
+
+  // 사진촬영버튼 누르면 호출
   const handleTakePhotoPress = () => {
     checkCameraPermission();
   };
+
+  // 카메라 권한 확인
   const checkCameraPermission = async () => {
     let hasPermission = false;
     try {
@@ -84,6 +85,8 @@ const HomeScreen = () => {
       console.warn(err);
     }
   };
+
+  // 권한 요청 처리
   const PermissionModal = ({ isVisible, onClose, onGrant, type }) => {
     const requestPermission = async () => {
       let permissionType = type === 'camera' ? PermissionsAndroid.PERMISSIONS.CAMERA : PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE;
@@ -100,7 +103,7 @@ const HomeScreen = () => {
       onClose();
     };
     
-    
+    // 권한 요청 모달창
     return (
       <Modal
         visible={isVisible}
@@ -122,20 +125,29 @@ const HomeScreen = () => {
       </Modal>
     );
   };
+
+  // 갤러리버튼을 눌렀을 때 수행
   const openGallery = () => {
     const options = {
       mediaType: 'photo',
       quality: 1,
     };
+
+    // 현재 날짜
     const todayDate = getTodayDate();
+
+    // 갤러리에서 이미지 선택
     launchImageLibrary(options, async (response) => {
-      if (response.didCancel) {
+      if (response.didCancel) { // 이미지 선택을 취소했을 때
         console.log('User cancelled image picker');
-      } else if (response.errorCode) {
+      } else if (response.errorCode) { // 이미지 선택 중 에러
         setIsLoading(false);
         console.log('ImagePicker Error: ', response.errorMessage);
-      } else {
-        setIsLoading(true);
+      } else { // 그외(성공)
+
+        setIsLoading(true); //로딩중
+
+        // 이미지데이터 생성
         const source = { uri: response.assets[0].uri };
         const image = new FormData();
         image.append('file', {
@@ -143,8 +155,12 @@ const HomeScreen = () => {
           type: response.assets[0].type,
           name: response.assets[0].fileName
         });
+
+        // 최신사진 uri 저장
         await AsyncStorage.setItem('@latest_photo', source.uri);
         console.log(source.uri)
+
+        // 결과 저장
         await processAndSendData(source.uri, response.assets[0].fileName);
         const apiResult = await odApi(source.uri, response.assets[0].fileName);
 
@@ -154,6 +170,8 @@ const HomeScreen = () => {
       }
     });
   };
+
+  // 토큰을 통해 사용자의 정보를 가져옴
   const getTokenAndFetchUserInfo = async () => {
     try {
       const storedToken = await AsyncStorage.getItem('@user_token');
@@ -165,6 +183,7 @@ const HomeScreen = () => {
     }
   };
 
+  // 서버에서 사용자정보 호출
   const fetchUserInfo = async (token) => {
     try {
       let config = {
@@ -178,8 +197,7 @@ const HomeScreen = () => {
 
       const response = await axios(config);
       if (response.status === 200) {
-        // console.log(response)
-        setUserName(response.data.user.name); // Set the user's name in state
+        setUserName(response.data.user.name);
       } else {
         console.log('Failed to fetch user info');
       }
@@ -188,6 +206,7 @@ const HomeScreen = () => {
     }
   };
 
+  // 모달창 토글
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
   };
@@ -197,9 +216,6 @@ const HomeScreen = () => {
     return (
       <View style={{ flex: 1 }}>
         <View style={styles.loadingContainer}>
-          {/* <TouchableOpacity onPress={goBack}>
-          <Image source={BackIcon} style={{ width: 25, height: 25 }} />
-        </TouchableOpacity> */}
         </View>
         <View style={styles.loadingView}>
           <ActivityIndicator size="large" color="#8E86FA" />
@@ -231,33 +247,21 @@ const HomeScreen = () => {
         {/* 이미지 불러오기 공간 */}
         <View style={styles.imageContainer}>
           {photoUri && <Image source={{ uri: photoUri }} style={styles.image} />}
-          {/* <Image source={require('../icons/01.jpg')} style={styles.image} /> */}
         </View>
-
-        {/* 사진 촬영 버튼 */}
-        {/* <Button title="사진 촬영" onPress={() => navigation.navigate('ImageIn')} /> */}
-        {/* <Button title="사진 촬영" onPress={() => navigation.navigate('CameraScreen')} />*/}
         <TouchableOpacity
           style={styles.takePhoto}
           onPress={handleTakePhotoPress}
-        //</View>onPress={() => navigation.navigate('CameraScreen')}
         >
 
           <Image source={require('../icons/CameraLineIcon.png')} style={{ width: 30, height: 30 }} />
           <Text style={{ color: 'black', fontSize: 15, fontWeight: 'bold', marginTop: '2%' }}>사진촬영</Text>
         </TouchableOpacity>
         <PermissionModal
-      isVisible={isPermissionModalVisible}
-      onClose={() => setPermissionModalVisible(false)}
-      onGrant={() => navigation.navigate('CameraScreen')}
-      type="camera"
-    />
-
-
-
-
-
-
+          isVisible={isPermissionModalVisible}
+          onClose={() => setPermissionModalVisible(false)}
+          onGrant={() => navigation.navigate('CameraScreen')}
+          type="camera"
+        />
         <TouchableOpacity
           style={styles.galleryButton}
           onPress={openGallery}
@@ -267,7 +271,7 @@ const HomeScreen = () => {
         </TouchableOpacity>
       </View>
 
-
+      {/* 챗봇버튼 */}
       <TouchableOpacity
         style={{
           position: 'absolute',
@@ -285,6 +289,7 @@ const HomeScreen = () => {
         <Image source={require('../icons/ChatBotIcon.png')} style={{ width: 30, height: 30 }} />
       </TouchableOpacity>
 
+      {/* 챗봇 모달창 */}
       <Modal
         animationType="fade"
         transparent={true}
@@ -316,15 +321,14 @@ const HomeScreen = () => {
 const { width, height } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
+  // 전체화면 조정
   container: {
     flex: 1,
     padding: '10%',
-    //justifyContent: 'flex-start',
-    //alignItems: 'flex-start',
-    //backgroundColor: 'lightyellow',
   },
+
+  // 갤러리버튼
   galleryButton: {
-    // Your styling for the gallery button
     backgroundColor: '#D7D4FF',
     width: width * 0.8,
     height: height * 0.12,
@@ -333,16 +337,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+
+  // 프로필버튼
   profileButton: {
-    //position: 'absolute',
-    //top: 20,
-    //right: 20,
-    //padding: 10,
     marginTop: '-5%',
     alignSelf: 'flex-end',
     borderRadius: 5,
-    //backgroundColor: 'yellow',
   },
+
+  // 인사말(헤드라인부분) 스타일 조정
   greetingContainer: {
     //marginTop: '15%',
     //marginBottom: 20,
@@ -355,45 +358,43 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: 'black',
   },
-  divider: {
-    height: 2, // 구분선의 세로 길이를 지정합니다.
-    backgroundColor: '#ccc', // 구분선의 색상을 지정합니다.
-    marginVertical: '3%', // 구분선의 상하 여백을 퍼센트로 조정합니다.
-  },
   greetingText2: {
     color: 'black',
     fontSize: 25,
     fontWeight: 'bold',
     marginBottom: '5%',
   },
+
+  //구분선
+  divider: {
+    height: 2, 
+    backgroundColor: '#ccc',
+    marginVertical: '3%',
+  },
+
+  // 이미지 사진 보여주는 부분 스타일
   ImgContainer: {
     alignItems: 'center',
     justifyContent: 'center',
 
   },
+
   imageContainer: {
-    width: width * 0.5, // 원하는 너비
-    height: width * 0.5, // 원하는 높이
+    width: width * 0.5,
+    height: width * 0.5,
     marginBottom: 20,
     borderRadius: 20,
-    overflow: 'hidden', // 이미지의 영역을 넘어가는 부분 숨김 처리
+    overflow: 'hidden',
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   image: {
-    // width: width * 0.8,
-    // height: height * 0.25,
-    // marginBottom: 20,
-    // borderRadius: 20,
-    // resizeMode: 'cover',
-    // alignItems: 'center', // 이미지를 수평으로 가운데 정렬
-    // justifyContent: 'center', // 이미지를 수직으로 가운데 정렬
-    //flex: 1, // 이미지가 컨테이너를 가득 채우도록 함
-    width: '100%', // 이미지를 컨테이너에 맞게 조정
+    width: '100%',
     height: '100%',
     resizeMode: 'cover',
   },
+
+  // 사진촬영버튼
   takePhoto: {
     backgroundColor: '#D7D4FF',
     width: width * 0.8,
@@ -403,6 +404,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+
+  //챗봇버튼 스타일
   chatBotButton: {
     position: 'absolute',
     bottom: 30,
@@ -415,6 +418,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     elevation: 5
   },
+
+  // 모달창 스타일 조정
   modalBackground: {
     flex: 1,
     justifyContent: 'center',
@@ -428,6 +433,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 30,
   },
+
+  //로딩창 스타일 조정
   loadingContainer: {
     flex: 1,
     justifyContent: 'flex-start',

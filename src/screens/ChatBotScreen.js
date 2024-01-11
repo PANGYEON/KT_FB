@@ -1,3 +1,4 @@
+// 챗봇기능
 import React, { useState, useRef, useEffect } from 'react';
 import { Button, View, Input, Text, VStack,HStack, ScrollView} from 'native-base';
 import { useNavigation } from '@react-navigation/native';

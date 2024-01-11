@@ -1,3 +1,4 @@
+// 게시판페이지
 import React, { useState, useEffect } from 'react';
 import { Button, View, Text } from 'native-base';
 import { useNavigation } from '@react-navigation/native';

@@ -1,4 +1,4 @@
-// 네비게이션 -- 친구
+// 친구페이지
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, RefreshControl, StyleSheet, Button, Image, Modal } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';

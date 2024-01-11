@@ -1,18 +1,20 @@
+// 사진 촬영 & 선택 후 식단등록 페이지
 import { ScrollView, Image, TouchableOpacity, Modal } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { View, Text, Button, VStack, HStack } from 'native-base';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import CheckBox from '@react-native-community/checkbox';
 import ScrollPicker from 'react-native-wheel-scrollview-picker';
-// import { color } from 'native-base/lib/typescript/theme/styled-system';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import { fs, RNFS } from 'react-native-fs'
+
+// 인분을 선택하는 부분
 const PortionSizeModal = ({ isVisible, onClose, onSelect, initialSize }) => {
   const [integerPart, setIntegerPart] = useState(Math.floor(initialSize));
   const [fractionPart, setFractionPart] = useState(Math.round((initialSize % 1) * 10));
  
   return (
+    // 인분을 클릭시 나오는 모달창
     <Modal
       animationType="slide"
       transparent={true}
@@ -48,28 +50,30 @@ const PortionSizeModal = ({ isVisible, onClose, onSelect, initialSize }) => {
     </Modal>
   );
 };
+
+// 식단 등록하는 부분 
 const ImageInScreen = () => {
+  // 상태변수 설정
   const route = useRoute();
-  const [photoUri, setPhotoUri] = useState(null);
+  const [photoUri, setPhotoUri] = useState(null); // 사진 uri 관리
   const navigation = useNavigation();
-  const [apiResult, setApiResult] = useState(null);
-  const [foodNames, setFoodNames] = useState([]);
-  const [selectedMeal, setSelectedMeal] = useState(null);
-  const [checkedFoods, setCheckedFoods] = useState({});
+  const [apiResult, setApiResult] = useState(null); // api 호출결과 관리
+  const [foodNames, setFoodNames] = useState([]); // 음식이름 상태
+  const [selectedMeal, setSelectedMeal] = useState(null); // 선택한 시간대 관리
+  const [checkedFoods, setCheckedFoods] = useState({}); // 체크한 음식 관리
  
-  const [portionSizes, setPortionSizes] = useState({});
-  const [modalVisible, setModalVisible] = useState(false);
-  const [currentFoodForPortion, setCurrentFoodForPortion] = useState(null);
-  const [inferResult, setinferResult] = useState();
+  const [portionSizes, setPortionSizes] = useState({}); // 인분 관리
+  const [modalVisible, setModalVisible] = useState(false); // 모달창 상태
+  const [currentFoodForPortion, setCurrentFoodForPortion] = useState(null); // 인분 설정 중인 음식 관리
+  const [inferResult, setinferResult] = useState(); // 음식 인식 결과 관리
  
+  // 음식의 체크여부 관리
   const isAnyFoodChecked = () => {
     return Object.values(checkedFoods).some(isChecked => isChecked);
   };
  
+  // 사진을 분석해서 음식이름을 추출
   useEffect(() => {
-    // console.log(route.params.selectDay) 오늘 날짜
-    // console.log('ii', route.params.image)
- 
     if (route.params?.photo) {
       setPhotoUri(route.params.photo);
     }
@@ -77,7 +81,6 @@ const ImageInScreen = () => {
       // apiResult를 객체로 변환
       const resultObj = JSON.parse(route.params.apiResult);
       setApiResult(resultObj);
-      // console.log(resultObj.inferResult)
       setinferResult(resultObj.inferResult)
       // foodNames 추출 및 상태 업데이트
       if (resultObj.predict && resultObj.predict.foodNames) {
@@ -92,27 +95,35 @@ const ImageInScreen = () => {
       setPortionSizes(initialPortionSizes);
     }
   }, [route.params]);
- 
+
+  // 현재음식에 해당하는 인분 상태 업데이트
   const handlePortionSizeChange = (newSize) => {
     setPortionSizes(prev => ({ ...prev, [currentFoodForPortion]: newSize }));
     setModalVisible(false);
   };
  
+  // 현재 인분 설정 중인 음식 업데이트
   const openPortionModal = (foodName) => {
     setCurrentFoodForPortion(foodName);
     setModalVisible(true);
   };
+
+
   const meals = ['아침', '점심', '저녁', '간식'];
+  
+  // 음식을 체크할 때 호출
   const handleFoodCheck = (foodName, isChecked) => {
     setCheckedFoods(prev => ({ ...prev, [foodName]: isChecked }));
   };
+
+  // 시간대 버튼 스타일 조정
   const getButtonStyle = (meal) => ({
     width: '20%',
     backgroundColor: selectedMeal === meal ? '#8E86FA' : 'transparent',
     borderColor: selectedMeal === meal ? '#8E86FA' : 'transparent',
     borderRadius: 15
   });
- 
+  // 시간대 버튼텍스트 스타일 조정
   const getButtonTextStyle = (meal) => ({
     color: selectedMeal === meal ? 'white' : 'black',
     fontSize: 20,
@@ -152,9 +163,9 @@ const ImageInScreen = () => {
     }
   };
  
- 
+  // 식단 등록 함수
   const registerMeal = async () => {
-    const mealDataList = Object.keys(checkedFoods)
+    const mealDataList = Object.keys(checkedFoods) // 체크한 음식들 
       .filter(foodName => checkedFoods[foodName])
       .map(foodName => ({
         menu: foodName,
@@ -162,7 +173,7 @@ const ImageInScreen = () => {
       }));
     const mealDate = route.params?.selectDay; // 선택된 날짜
     const mealType = selectedMeal; // 선택된 식사 시간 (아침, 점심, 저녁, 간식)
-    const uploadResult = await uploadImage(photoUri);
+    const uploadResult = await uploadImage(photoUri); // 업로드할 사진
  
     const data = JSON.stringify({
       inferResult: inferResult,
@@ -202,7 +213,7 @@ const ImageInScreen = () => {
         params: {
           selectedMeal: selectedMeal,
           photoUri: photoUri,
-          mealDataList: mealDataList, // Passing the list of menu and portions
+          mealDataList: mealDataList,
           mealDate: mealDate,
         }
       }
@@ -212,15 +223,19 @@ const ImageInScreen = () => {
  
    return (
     <View flex={1}>
+      {/* 음식사진 부분 */}
       <TouchableOpacity style={{ padding: 20, justifyContent: 'center', alignItems: 'center' }} onPress={handleImagePress}>
         {photoUri && (
           <Image source={{ uri: photoUri }} style={{ width: 300, height: 300 }} />
         )}
       </TouchableOpacity>
+
+      {/* 시간대 선택 부분 */}
       <View style={{ justifyContent: 'center', alignItems: 'center' }}>
         <Text style={{ fontSize: 25, paddingTop: 20 }}>식사 시간대</Text>
       </View>
- 
+
+      {/* 아침, 점심, 저녁, 간식 매핑으로 처리 */}
       <VStack space={4} alignItems="center" mt={4}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-around', padding: 10, backgroundColor: '#D7D4FF', marginLeft: 10, marginRight: 10, borderRadius: 20 }}>
           {meals.map(meal => (
@@ -230,7 +245,7 @@ const ImageInScreen = () => {
           ))}
         </View>
  
-        {/* <Text>식품 목록</Text> */}
+        {/* 식품 목록 */}
         {foodNames.length > 0 ? (
         <ScrollView
           style={{ maxHeight: 200 }}
@@ -254,23 +269,24 @@ const ImageInScreen = () => {
             </HStack>
           ))}
         </ScrollView>
-) : (
-  <View style={{ alignItems: 'center' }}>
-    <Text style={{ textAlign: 'center', marginTop: 20 }}>
-      죄송합니다 탐지된 음식이 없습니다. 이미지를 눌러 다시 선택해주세요
-    </Text>
-    <Button
-      onPress={() => navigation.navigate('BottomTabNavigator', { screen: '홈' })}
-      style={{
-        marginTop: 20,
-        backgroundColor: '#8E86FA',
-        borderRadius: 15,
-      }}
-    >
-      <Text style={{ color: 'white' }}>처음으로</Text>
-    </Button>
-  </View>
-)}
+        ) : (
+          // 음식이 없을 경우
+          <View style={{ alignItems: 'center' }}>
+            <Text style={{ textAlign: 'center', marginTop: 20 }}>
+              죄송합니다 탐지된 음식이 없습니다. 이미지를 눌러 다시 선택해주세요
+            </Text>
+            <Button
+              onPress={() => navigation.navigate('BottomTabNavigator', { screen: '홈' })}
+              style={{
+                marginTop: 20,
+                backgroundColor: '#8E86FA',
+                borderRadius: 15,
+              }}
+            >
+              <Text style={{ color: 'white' }}>처음으로</Text>
+            </Button>
+          </View>
+        )}
  
         <Button
           isDisabled={!selectedMeal || !isAnyFoodChecked()}

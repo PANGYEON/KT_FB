@@ -1,4 +1,4 @@
-
+// 카메라기능
 import React, { useRef, useState } from 'react';
 import { Button, View,TouchableOpacity, Text, StyleSheet, ActivityIndicator, Image  } from 'react-native';
 import { Camera, useCameraDevice } from 'react-native-vision-camera';
