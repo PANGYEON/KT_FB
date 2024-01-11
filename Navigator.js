@@ -56,7 +56,7 @@ const AuthChecker = () => {
     checkLoginStatus();
   }, []);
 
-  return null; // 또는 로딩 화면을 표시할 수 있습니다.
+  return null; 
 };
 const MyStack = () => {
   const [splash, setSplash] = useState(true);

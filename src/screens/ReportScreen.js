@@ -1,14 +1,18 @@
+// 리포트페이지 - 네비게이션 관련
 import React from 'react';
 import { View, TouchableOpacity, Text, StyleSheet, useWindowDimensions } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import MonthScreen from './MonthScreen';
 import DailyScreen from './DailyScreen';
  
+// 상단 탭 네비게이션
 const TopTab = createMaterialTopTabNavigator();
  
 const ReportScreen = () => {
+  // 디바이스의 화면 크기를 통해 탭바 조정
   const dimensions = useWindowDimensions();
  
+  // 탭을 선택하면 해당 탭으로 이동
   const CustomTabBar = ({ state, descriptors, navigation }) => {
     return (
       <View style={[styles.tabContainer, { width: dimensions.width * 0.8 }]}>
@@ -52,7 +56,7 @@ const ReportScreen = () => {
               style={[
                 styles.tab,
                 isFocused ? { backgroundColor: '#8E86FA' } : null,
-                borderRadiusStyle // 둥근 모서리 스타일을 적용합니다.
+                borderRadiusStyle
               ]}
             >
               <Text style={{
@@ -70,6 +74,7 @@ const ReportScreen = () => {
   };
  
   return (
+    // 탭을 눌렀을 때 해당 탭관련 페이지로 이동
     <TopTab.Navigator
       initialRouteName="Calendar"
       tabBar={(props) => <CustomTabBar {...props} />}
@@ -87,21 +92,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     alignSelf: 'center',
     height: '9%',
-    borderRadius: 50, // 모든 탭에 대한 기본 둥근 모서리
+    borderRadius: 50,
     overflow: 'hidden',
     backgroundColor: 'white',
     marginTop: '3%',
-    //borderWidth: 1,
     elevation: 10,
-   
-    //marginLeft: 'auto',
-    //marginRight: 'auto',
   },
   tab: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    //alignSelf: 'center',
     marginHorizontal: '1%',
     height: '90%',
   },

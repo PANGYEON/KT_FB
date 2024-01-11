@@ -4,7 +4,6 @@ import HomeScreen from './src/screens/HomeScreen';
 import BoardScreen from './src/screens/BoardScreen';
 import ReportScreen from './src/screens/ReportScreen';
 import ChatScreen from './src/screens/ChatScreen';
- 
 import HomeIcon from './src/icons/HomeIcon.png';
 import ReportIcon from './src/icons/ReportIcon.png';
 import BoardIcon from './src/icons/BoardIcon.png';
@@ -32,6 +31,7 @@ const BottomTabNavigator = () => {
     return () => backHandler.remove();
   }, []);
   return (
+    // 각 탭을 눌렀을 때 해당페이지로 이동
     <Tab.Navigator screenOptions={{
       tabBarStyle: styles.NaviContainer,
     }}>
