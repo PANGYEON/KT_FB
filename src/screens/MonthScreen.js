@@ -1,9 +1,9 @@
 // 리포트페이지 - 캘린터화면
-import React, { useState, useEffect  } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage'; // 디바이스에 정보 저장 및 불러오기
 
 // 휴대폰화면 너비와 높이에 따른 화면크기 조정
 const windowWidth = Dimensions.get('window').width;
@@ -124,7 +124,7 @@ const MonthScreen = () => {
   const renderCalendar = () => {
     const weekDays = ['일', '월', '화', '수', '목', '금', '토'];
     const monthArray = getMonthData(currentMonth, currentYear); // 현재월의 날짜 배열
-  
+
     return (
       <View>
         <View style={styles.weekDays}>
@@ -143,7 +143,7 @@ const MonthScreen = () => {
               const isToday = today.getFullYear() === currentYear &&
                 today.getMonth() + 1 === currentMonth &&
                 today.getDate() === day;
-  
+
               const mealEvaluation = mealData[dateString];
               const mealInfo = mealData[dateString];
 
@@ -194,7 +194,7 @@ const MonthScreen = () => {
     );
   };
 
-  
+
 
   return (
     <View style={styles.container}>
@@ -262,9 +262,6 @@ const styles = StyleSheet.create({
     height: calHeight,
     justifyContent: 'flex-start',
     alignItems: 'center',
-  },
-  dayText: {
-    fontSize: 4 * FontScale,
   },
   arrowButton: {
     fontSize: 7 * FontScale,

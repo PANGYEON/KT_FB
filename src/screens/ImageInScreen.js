@@ -3,16 +3,16 @@ import { ScrollView, Image, TouchableOpacity, Modal } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { View, Text, Button, VStack, HStack } from 'native-base';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import CheckBox from '@react-native-community/checkbox';
-import ScrollPicker from 'react-native-wheel-scrollview-picker';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
+import CheckBox from '@react-native-community/checkbox'; //체크박스 라이브러리
+import ScrollPicker from 'react-native-wheel-scrollview-picker';// scrollpicker
+import AsyncStorage from '@react-native-async-storage/async-storage'; // 디바이스에 정보 저장 및 불러오기
+import axios from 'axios'; // api통신
 
 // 인분을 선택하는 부분
 const PortionSizeModal = ({ isVisible, onClose, onSelect, initialSize }) => {
   const [integerPart, setIntegerPart] = useState(Math.floor(initialSize));
   const [fractionPart, setFractionPart] = useState(Math.round((initialSize % 1) * 10));
- 
+
   return (
     // 인분을 클릭시 나오는 모달창
     <Modal
@@ -21,7 +21,7 @@ const PortionSizeModal = ({ isVisible, onClose, onSelect, initialSize }) => {
       visible={isVisible}
       onRequestClose={onClose}
     >
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <View style={{ backgroundColor: 'white', padding: 20, borderRadius: 10 }}>
           <Text>인분을 선택해주세요</Text>
           <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: '5%', marginBottom: '5%' }}>
@@ -32,18 +32,18 @@ const PortionSizeModal = ({ isVisible, onClose, onSelect, initialSize }) => {
               renderItem={(data, index, isSelected) => <Text>{data}</Text>}
               onValueChange={(data, selectedIndex) => setIntegerPart(selectedIndex)}
             />
-            <Text style={{fontSize: 30}}>.</Text>
+            <Text style={{ fontSize: 30 }}>.</Text>
             <ScrollPicker
-            style={{backgroundColor:'#D7D4FF'}}
-            wrapperBackground={'transparent'}
+              style={{ backgroundColor: '#D7D4FF' }}
+              wrapperBackground={'transparent'}
               dataSource={[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]}
               selectedIndex={fractionPart}
               renderItem={(data, index, isSelected) => <Text>{data}</Text>}
               onValueChange={(data, selectedIndex) => setFractionPart(selectedIndex)}
             />
           </View>
-          <TouchableOpacity title="Confirm" onPress={() => onSelect(integerPart + fractionPart / 10)} style={{alignItems: 'center', justifyContent: 'center'}} >
-            <Text style={{backgroundColor: '#8E86FA', padding: '5%', width: '50%', textAlign: 'center', borderRadius: 10, color: 'white'}}>확인</Text>
+          <TouchableOpacity title="Confirm" onPress={() => onSelect(integerPart + fractionPart / 10)} style={{ alignItems: 'center', justifyContent: 'center' }} >
+            <Text style={{ backgroundColor: '#8E86FA', padding: '5%', width: '50%', textAlign: 'center', borderRadius: 10, color: 'white' }}>확인</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -61,17 +61,17 @@ const ImageInScreen = () => {
   const [foodNames, setFoodNames] = useState([]); // 음식이름 상태
   const [selectedMeal, setSelectedMeal] = useState(null); // 선택한 시간대 관리
   const [checkedFoods, setCheckedFoods] = useState({}); // 체크한 음식 관리
- 
+
   const [portionSizes, setPortionSizes] = useState({}); // 인분 관리
   const [modalVisible, setModalVisible] = useState(false); // 모달창 상태
   const [currentFoodForPortion, setCurrentFoodForPortion] = useState(null); // 인분 설정 중인 음식 관리
   const [inferResult, setinferResult] = useState(); // 음식 인식 결과 관리
- 
+
   // 음식의 체크여부 관리
   const isAnyFoodChecked = () => {
     return Object.values(checkedFoods).some(isChecked => isChecked);
   };
- 
+
   // 사진을 분석해서 음식이름을 추출
   useEffect(() => {
     if (route.params?.photo) {
@@ -101,7 +101,7 @@ const ImageInScreen = () => {
     setPortionSizes(prev => ({ ...prev, [currentFoodForPortion]: newSize }));
     setModalVisible(false);
   };
- 
+
   // 현재 인분 설정 중인 음식 업데이트
   const openPortionModal = (foodName) => {
     setCurrentFoodForPortion(foodName);
@@ -110,7 +110,7 @@ const ImageInScreen = () => {
 
 
   const meals = ['아침', '점심', '저녁', '간식'];
-  
+
   // 음식을 체크할 때 호출
   const handleFoodCheck = (foodName, isChecked) => {
     setCheckedFoods(prev => ({ ...prev, [foodName]: isChecked }));
@@ -129,11 +129,7 @@ const ImageInScreen = () => {
     fontSize: 20,
     justifyContent: 'center'
   });
- 
-  const handleImagePress = () => {
-    // navigation.navigate('CameraScreen');
-  };
- 
+
   // 이미지 업로드 함수
   const uploadImage = async (uri) => {
     let formData = new FormData();
@@ -142,9 +138,9 @@ const ImageInScreen = () => {
       name: 'photo.jpg', // 파일명과 확장자를 적절하게 설정하세요
       type: 'image/jpeg' // 적절한 MIME 타입을 설정하세요
     };
- 
+
     formData.append('imagelink', file);
- 
+
     let config = {
       method: 'post',
       maxBodyLength: Infinity,
@@ -154,15 +150,14 @@ const ImageInScreen = () => {
       },
       data: formData
     };
- 
+
     try {
-      const response = await axios(config);
-      return response.data; // 업로드 후 받은 응답
+      await axios(config);
     } catch (error) {
       console.error('Error uploading image:', error);
     }
   };
- 
+
   // 식단 등록 함수
   const registerMeal = async () => {
     const mealDataList = Object.keys(checkedFoods) // 체크한 음식들 
@@ -174,7 +169,7 @@ const ImageInScreen = () => {
     const mealDate = route.params?.selectDay; // 선택된 날짜
     const mealType = selectedMeal; // 선택된 식사 시간 (아침, 점심, 저녁, 간식)
     const uploadResult = await uploadImage(photoUri); // 업로드할 사진
- 
+
     const data = JSON.stringify({
       inferResult: inferResult,
       mealType: mealType,
@@ -185,7 +180,7 @@ const ImageInScreen = () => {
         serving: mealDataList.map(item => item.portion)
       }
     });
- 
+
     console.log(data)
     const token = await AsyncStorage.getItem('@user_token');
     const config = {
@@ -200,9 +195,7 @@ const ImageInScreen = () => {
     };
     try {
       // API 요청 전송
-      const response = await axios(config);
-      console.log(response.data);
-      // 성공적인 응답 처리
+      await axios(config);
     } catch (error) {
       console.error('Error sending meal data:', error);
     }
@@ -219,12 +212,12 @@ const ImageInScreen = () => {
       }
     });
   };
- 
- 
-   return (
+
+
+  return (
     <View flex={1}>
       {/* 음식사진 부분 */}
-      <TouchableOpacity style={{ padding: 20, justifyContent: 'center', alignItems: 'center' }} onPress={handleImagePress}>
+      <TouchableOpacity style={{ padding: 20, justifyContent: 'center', alignItems: 'center' }} >
         {photoUri && (
           <Image source={{ uri: photoUri }} style={{ width: 300, height: 300 }} />
         )}
@@ -244,31 +237,31 @@ const ImageInScreen = () => {
             </Button>
           ))}
         </View>
- 
+
         {/* 식품 목록 */}
         {foodNames.length > 0 ? (
-        <ScrollView
-          style={{ maxHeight: 200 }}
-          contentContainerStyle={{ flexGrow: 1 }}
-          showsVerticalScrollIndicator={true}
-        >
-          {foodNames.map((foodName, index) => (
-            <HStack key={index} alignItems="center" style={{ marginVertical: 5 }}>
-              <CheckBox
-                value={checkedFoods[foodName]}
-                onValueChange={(isChecked) => handleFoodCheck(foodName, isChecked)}
-                tintColors={{ true: '#8E86FA', false: '#8E86FA' }}
-              />
-              <Text style={{ marginLeft: 1, marginTop: '-1%',marginRight: '5%' }}>{foodName}</Text>
-              <TouchableOpacity onPress={() => openPortionModal(foodName)}>
-                <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                  <Text style={{borderColor: '#ccc', borderWidth: 1, padding: '1%', borderRadius: 5}}>{portionSizes[foodName]}</Text>
-                  <Text>인분</Text>
-                </View>
-              </TouchableOpacity>
-            </HStack>
-          ))}
-        </ScrollView>
+          <ScrollView
+            style={{ maxHeight: 200 }}
+            contentContainerStyle={{ flexGrow: 1 }}
+            showsVerticalScrollIndicator={true}
+          >
+            {foodNames.map((foodName, index) => (
+              <HStack key={index} alignItems="center" style={{ marginVertical: 5 }}>
+                <CheckBox
+                  value={checkedFoods[foodName]}
+                  onValueChange={(isChecked) => handleFoodCheck(foodName, isChecked)}
+                  tintColors={{ true: '#8E86FA', false: '#8E86FA' }}
+                />
+                <Text style={{ marginLeft: 1, marginTop: '-1%', marginRight: '5%' }}>{foodName}</Text>
+                <TouchableOpacity onPress={() => openPortionModal(foodName)}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <Text style={{ borderColor: '#ccc', borderWidth: 1, padding: '1%', borderRadius: 5 }}>{portionSizes[foodName]}</Text>
+                    <Text>인분</Text>
+                  </View>
+                </TouchableOpacity>
+              </HStack>
+            ))}
+          </ScrollView>
         ) : (
           // 음식이 없을 경우
           <View style={{ alignItems: 'center' }}>
@@ -287,7 +280,7 @@ const ImageInScreen = () => {
             </Button>
           </View>
         )}
- 
+
         <Button
           isDisabled={!selectedMeal || !isAnyFoodChecked()}
           onPress={registerMeal}
@@ -308,5 +301,5 @@ const ImageInScreen = () => {
     </View>
   );
 };
- 
+
 export default ImageInScreen;

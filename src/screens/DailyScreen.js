@@ -2,13 +2,13 @@
 import React, { useState, useEffect, Component } from 'react';
 import { View, Text, Modal, TouchableOpacity, Image, StyleSheet, ScrollView, Dimensions, ActivityIndicator } from 'react-native';
 import { Button } from 'native-base';
-import ChatBotScreen from './ChatBotScreen';
+import ChatBotScreen from './ChatBotScreen'; // 챗봇 모달 화면
 import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
-import { Calendar } from 'react-native-calendars';
-import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { launchImageLibrary } from 'react-native-image-picker';
-import { odApi, processAndSendData } from '../ai_model/BP_Food';
+import { Calendar } from 'react-native-calendars'; // 달력 라이브러리
+import axios from 'axios'; // api 통신
+import AsyncStorage from '@react-native-async-storage/async-storage'; // 디바이스에 정보 저장 및 불러오기
+import { launchImageLibrary } from 'react-native-image-picker'; // 갤러리 image 불러오기 
+import { odApi, processAndSendData } from '../ai_model/BP_Food'; // ai코드 연결
 
 const DailyScreen = () => {
   // 상태변수 설정
@@ -86,14 +86,13 @@ const DailyScreen = () => {
         console.log('ImagePicker Error: ', response.errorMessage);
       } else { // 정상적인 작업 
         const source = { uri: response.assets[0].uri }; // 선택한 이미지 정보 저장
-        // 이미지를 서버로 전송
-        const image = new FormData(); 
+        const image = new FormData();
         image.append('file', {
           uri: source.uri,
           type: response.assets[0].type,
           name: response.assets[0].fileName
         });
-
+        // image라는 FormData에 image의 타입, 이름, 경로 저장해서 넘김
         setIsLoading(true);
 
         // 이미지 uri 저장
@@ -119,7 +118,7 @@ const DailyScreen = () => {
     const mealTypes = ['아침', '점심', '저녁', '간식'];
     const newData = {}; // 식사정보
     let totalData = null; // 전체영양소 정보
- 
+
     // 서버에서 식사데이터를 가져옴
     for (const mealType of mealTypes) {
       try {
@@ -421,7 +420,7 @@ const DailyScreen = () => {
       {/* 영양소 정보 */}
       <View style={styles.contentContainer}>
         <View style={styles.contentstext}>
-            <View style={{ ...styles.PersonalRegions, marginBottom: '5%' }}>
+          <View style={{ ...styles.PersonalRegions, marginBottom: '5%' }}>
             <Text style={{ fontSize: 16, color: 'black', }}>섭취 칼로리</Text>
             <Text style={{ fontSize: 16, color: 'black', }}>{mealNutrients.kcal.toFixed(1)}kcal </Text>
           </View>
@@ -450,7 +449,7 @@ const DailyScreen = () => {
             <Text style={styles.kcal}>{mealNutrients.col.toFixed(1)}mg </Text>
           </View>
         </View>
-        
+
       </View>
 
       {/* 시간대별 식단정보 표시 영역 */}

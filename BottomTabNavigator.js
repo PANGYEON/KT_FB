@@ -1,15 +1,20 @@
 import React,{useEffect} from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import HomeScreen from './src/screens/HomeScreen';
-import BoardScreen from './src/screens/BoardScreen';
-import ReportScreen from './src/screens/ReportScreen';
-import ChatScreen from './src/screens/ChatScreen';
-import HomeIcon from './src/icons/HomeIcon.png';
-import ReportIcon from './src/icons/ReportIcon.png';
-import BoardIcon from './src/icons/BoardIcon.png';
-import FriendIcon from './src/icons/FriendIcon.png';
 import { Image, Text,Dimensions,View, StyleSheet,BackHandler } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+
+import HomeScreen from './src/screens/HomeScreen';
+import HomeIcon from './src/icons/HomeIcon.png';
+
+import ReportScreen from './src/screens/ReportScreen';
+import ReportIcon from './src/icons/ReportIcon.png';
+
+import BoardScreen from './src/screens/BoardScreen';
+import BoardIcon from './src/icons/BoardIcon.png';
+
+import ChatScreen from './src/screens/ChatScreen';
+import FriendIcon from './src/icons/FriendIcon.png';
+
 
 const { width, height } = Dimensions.get('window');
 const FontScale = Math.min(width, height) / 100;
@@ -18,6 +23,7 @@ const Tab = createBottomTabNavigator();
 const BottomTabNavigator = () => {
   const navigation = useNavigation();
   useEffect(() => {
+    //뒤로가기 하면 홈으로 보내버림
     const backAction = () => {
       navigation.navigate('BottomTabNavigator', { screen: '홈' });
       return true; // 이벤트 전파 중지

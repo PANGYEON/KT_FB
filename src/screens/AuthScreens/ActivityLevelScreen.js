@@ -2,8 +2,8 @@
 import React, { useState } from 'react';
 import { View, Button } from 'native-base'; // NativeBase 컴포넌트 사용
 import { useNavigation } from '@react-navigation/native'; // 네비게이션 훅
-import { StyleSheet, Text, Alert, Modal, TouchableOpacity } from 'react-native'; // 스타일 및 UI 컴포넌트
- 
+import { StyleSheet, Text, Modal, TouchableOpacity } from 'react-native'; // 스타일 및 UI 컴포넌트
+
 // 활동 레벨 화면을 위한 함수형 컴포넌트
 const ActivityLevelScreen = ({ route }) => {
   // 상태변수 설정
@@ -12,12 +12,12 @@ const ActivityLevelScreen = ({ route }) => {
   const [alertModalVisible, setAlertModalVisible] = useState(false); // 알림 모달창 상태 설정
   const [alertMessage, setAlertMessage] = useState(''); // 알림 메시지 상태 설정
   const [selectedActivityLevel, setSelectedActivityLevel] = useState(''); // 선택한 활동 레벨 상태
- 
+
   // 선택한 활동 레벨 설정 함수
   const handleLevelSelect = (index) => {
     setSelectedActivityLevel(levels[index]);
   };
- 
+
   // 활동레벨을 배열로 설정 -- levels
   const levels = [
     '1레벨 - 주 2회 미만, 움직임 거의 없는 사무직',
@@ -26,7 +26,7 @@ const ActivityLevelScreen = ({ route }) => {
     '4레벨 - 주 6회 이상, 인부 혹은 광부',
     '5레벨 - 운동 선수'
   ];
- 
+
   // 다음 페이지로 이동하는 함수
   const navigateToNextPage = () => {
     // 레벨을 선택하지 않은 경우
@@ -39,7 +39,7 @@ const ActivityLevelScreen = ({ route }) => {
       });
     }
   };
- 
+
   return (
     <View style={edm.container}>
       <View style={edm.contentContainer}>
@@ -67,7 +67,7 @@ const ActivityLevelScreen = ({ route }) => {
           <Button style={styles.MovingButton} onPress={navigateToNextPage}>다음</Button>
         </View>
       </View>
- 
+
       {/* 알림 메시지 모달창 */}
       <Modal
         animationType="fade"
@@ -94,20 +94,20 @@ const ActivityLevelScreen = ({ route }) => {
     </View>
   );
 };
- 
+
 const styles = StyleSheet.create({
   // 활동레벨 버튼 스타일
   levelTextView: {
     alignItems: 'center',
     justifyContent: 'center',
   },
- 
+
   // 활동레벨 버튼 텍스트 스타일
   levelTextText: {
     fontSize: 20,
     marginBottom: 10,
   },
- 
+
   // 이전과 다음 버튼에 해당하는 스타일
   MovingButton: {
     borderRadius: 50,
@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
     width: '35%',
     height: '40%',
   },
- 
+
   // 이전과 다음 버튼 영역에 해당하는 스타일 설정
   buttonContainer: {
     flex: 1,
@@ -124,14 +124,14 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     marginBottom: -15,
   },
- 
+
   // 활동레벨버튼의 활성화 스타일
   activeButton: {
     marginBottom: 10,
     borderRadius: 20,
     backgroundColor: '#8E86FA', // 선택된 버튼의 배경색
   },
- 
+
   // 활동레벨버튼의 비활성화 스타일
   inactiveButton: {
     marginBottom: 10,
@@ -141,9 +141,9 @@ const styles = StyleSheet.create({
   inactiveButtonText: {
     color: 'black', // 선택되지 않은 버튼의 텍스트 색상
   },
- 
+
   // 알림 모달창 관련 스타일
- 
+
   alertModalView: {
     flex: 1,
     justifyContent: 'center',
@@ -199,7 +199,7 @@ const styles = StyleSheet.create({
     textAlign: 'center', // 텍스트 중앙 정렬
   },
 });
- 
+
 // 로그인 및 회원가입페이지의 기본설정 스타일
 const edm = StyleSheet.create({
   container: {

@@ -1,12 +1,12 @@
 // 친구페이지
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, RefreshControl, StyleSheet, Button, Image, Modal } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
-import WelcomeIcon from '../icons/WelcomeIcon.png';
+import AsyncStorage from '@react-native-async-storage/async-storage'; // 디바이스에 정보 저장 및 불러오기
+import axios from 'axios'; //api 통신
+import WelcomeIcon from '../icons/WelcomeIcon.png'; // 아이콘 불러오기
 import { useNavigation } from '@react-navigation/native';
-import { useSubscription } from '../../SubscriptionContext';
- 
+import { useSubscription } from '../../SubscriptionContext'; //구독 친구 없으면 화면
+
 const ChatScreen = () => {
   // 상태변수 설정
   const [friends, setFriends] = useState([]); // 친구목록 상태
@@ -23,8 +23,8 @@ const ChatScreen = () => {
 
   //구독 취소 확인 상태 관리
   const [showUnsubscribeConfirmModal, setShowUnsubscribeConfirmModal] = useState(false);
-  const [friendToUnsubscribe, setFriendToUnsubscribe] = useState(null); 
-  
+  const [friendToUnsubscribe, setFriendToUnsubscribe] = useState(null);
+
   // 날짜 선택 함수
   const onSelectDate = (date) => {
     // 선택된 날짜 업데이트
@@ -68,14 +68,14 @@ const ChatScreen = () => {
     console.log(availableMeals)
     // 이미지를 2x2 격자에 배치
     const grid = Array(2).fill(null).map(() => Array(2).fill(null));
- 
+
     // 이용 가능한 식사를 격자에 할당
     availableMeals.forEach((meal, index) => {
       const row = Math.floor(index / 2);
       const col = index % 2;
       grid[row][col] = meal;
     });
- 
+
     return (
       // 날짜를 선택했을 때 나오는 창의 음식사진영역
       <View style={{ alignItems: 'center' }}>
@@ -87,7 +87,7 @@ const ChatScreen = () => {
                 <View key={colIndex} style={{ alignItems: 'center', margin: 5 }}>
                   <Text>{meal.mealType}</Text>
                   <Image
-                    source={{ uri: getFullImageUrl(meal.imagelink )}}
+                    source={{ uri: getFullImageUrl(meal.imagelink) }}
                     style={{ width: 100, height: 100 }}
                   />
                 </View>
@@ -118,8 +118,8 @@ const ChatScreen = () => {
         'Authorization': `Bearer ${token}`
       }
     };
- 
- 
+
+
     try {
       await axios(config);
       setAlertMessage(`${friendToUnsubscribe} 님과의 구독이 취소되었습니다.`);
@@ -145,8 +145,8 @@ const ChatScreen = () => {
     >
       <View style={styles.modalOverlay}>
         <View style={styles.modalView}>
-        <View style={{ alignSelf: 'flex-start' }}> 
-            <Text style={{textAlign:'left', fontSize:16, color:'black'}}> 정말 취소하시겠습니까? </Text>
+          <View style={{ alignSelf: 'flex-start' }}>
+            <Text style={{ textAlign: 'left', fontSize: 16, color: 'black' }}> 정말 취소하시겠습니까? </Text>
           </View>
           <View style={styles.buttonContainer}>
             <TouchableOpacity
@@ -165,7 +165,7 @@ const ChatScreen = () => {
         </View>
       </View>
     </Modal>
-  );  
+  );
 
   // 구독한 친구의 식단을 가져오는 함수
   const fetchDietData = async (uuid) => {
@@ -175,7 +175,7 @@ const ChatScreen = () => {
       url: `http://edm-diet.japaneast.cloudapp.azure.com/user_meal/subscribe/?uuid=${uuid}`,
       headers: { 'Authorization': `Bearer ${token}` }
     };
- 
+
     try {
       const response = await axios(config);
       setDietData(response.data); // 식단 데이터 상태 업데이트
@@ -196,7 +196,7 @@ const ChatScreen = () => {
         'Authorization': `Bearer ${token}`
       }
     };
- 
+
     try {
       const uuidResponse = await axios(config);
       const uuids = uuidResponse.data;
@@ -213,25 +213,25 @@ const ChatScreen = () => {
           return 'Unknown';
         }
       }));
- 
+
       setFriends(friendInfo);
     } catch (error) {
       console.error('UUID 목록 불러오기 실패:', error);
     }
     setRefreshing(false); // 새로고침 종료
   };
- 
+
   useEffect(() => {
     fetchFriends();
   }, [subscriptionList]);
- 
+
   // 친구목록에 친구존재여부
   useEffect(() => {
     if (friends.length > 0) {
       selectFriend(friends[0].name);
     }
   }, [friends]);
- 
+
   const onRefresh = useCallback(() => {
     fetchFriends();
   }, [subscriptionList]);
@@ -244,7 +244,7 @@ const ChatScreen = () => {
       await fetchDietData(friend.uuid); // 선택된 친구의 UUID로 식단 데이터 가져오기
     }
   };
- 
+
   const navigateToProfile = () => {
     navigation.navigate('Profile');
   };
@@ -266,7 +266,7 @@ const ChatScreen = () => {
         return 'lightgray';
     }
   };
- 
+
   return (
     <View style={{ flex: 1 }}>
       {/* 헤드라인 -- 제목 */}
@@ -304,83 +304,85 @@ const ChatScreen = () => {
           {/* 선택한 친구의 식단을 확인할 수 있는 부분 */}
           <View style={{ flex: 1 }}>
             {selectedFriend && (
-              <View style={{ flex: 1, 
-                             paddingHorizontal: '5%',
-                            }}>
-                <View style={{ 
-                        flexDirection: 'row', 
-                        paddingBottom: 10,
-                        alignItems: 'center',
-                        justifyContent: 'space-between' 
+              <View style={{
+                flex: 1,
+                paddingHorizontal: '5%',
+              }}>
+                <View style={{
+                  flexDirection: 'row',
+                  paddingBottom: 10,
+                  alignItems: 'center',
+                  justifyContent: 'space-between'
                 }}>
                   <Text style={styles.unsubscribeText}>{selectedFriend}님의 식단 기록</Text>
                   <TouchableOpacity onPress={() => unsubscribeFriend(selectedFriend)} style={styles.unsubscribeButton}>
                     <Text style={{ color: '#FFFFFF' }}>구독 취소</Text>
                   </TouchableOpacity>
                 </View>
- 
+
                 <ScrollView style={{ flex: 1 }}>
                   {dietData ? (
                     dietData.user_meals_evaluation
-                    .filter(item => item.sum_carb !== 0 || item.sum_protein !== 0) // 탄수화물과 단백질이 모두 0이 아닌 항목만 필터링
+                      .filter(item => item.sum_carb !== 0 || item.sum_protein !== 0) // 탄수화물과 단백질이 모두 0이 아닌 항목만 필터링
 
-                    .map((item, index) => (
-                      <View key={index}>
-                        {/* 식단을 기록한 날짜들을 확인 */}
-                        <TouchableOpacity onPress={() => 
-                                                    toggleDate(item.meal_date)
-                                                    }
-                                          style={styles.DateButton}
-                        >
-                          <Text 
-                            style={{...styles.DateText, 
-                                    backgroundColor: selectedDate === item.meal_date ? '#8E86FA' : '#fff',
-                                    color: selectedDate === item.meal_date ? 'white' : '#8E86FA',
-                                  }}>
+                      .map((item, index) => (
+                        <View key={index}>
+                          {/* 식단을 기록한 날짜들을 확인 */}
+                          <TouchableOpacity onPress={() =>
+                            toggleDate(item.meal_date)
+                          }
+                            style={styles.DateButton}
+                          >
+                            <Text
+                              style={{
+                                ...styles.DateText,
+                                backgroundColor: selectedDate === item.meal_date ? '#8E86FA' : '#fff',
+                                color: selectedDate === item.meal_date ? 'white' : '#8E86FA',
+                              }}>
                               {item.meal_date}
-                          </Text>
-                        </TouchableOpacity>
-                        {expandedDate === item.meal_date && (
-                          <View style={styles.DateAll}>
-                          <View>
-                            {/* 해당 날짜의 식단 세부 정보 표시 */}
-                              <View style={{...styles.DateContent, justifyContent: 'center', alignItems: 'center'}}>
-                                <Text style={{color: 'black', fontSize: 20, marginRight: '5%'}}>식단결과</Text>
-                                <Text style={{paddingVertical: '3%', paddingHorizontal: '5%', backgroundColor: getBackgroundColor(), textAlign: 'center', borderRadius: 10}}>{dietDetails.meal_evaluation}</Text>
+                            </Text>
+                          </TouchableOpacity>
+                          {expandedDate === item.meal_date && (
+                            <View style={styles.DateAll}>
+                              <View>
+                                {/* 해당 날짜의 식단 세부 정보 표시 */}
+                                <View style={{ ...styles.DateContent, justifyContent: 'center', alignItems: 'center' }}>
+                                  <Text style={{ color: 'black', fontSize: 20, marginRight: '5%' }}>식단결과</Text>
+                                  <Text style={{ paddingVertical: '3%', paddingHorizontal: '5%', backgroundColor: getBackgroundColor(), textAlign: 'center', borderRadius: 10 }}>{dietDetails.meal_evaluation}</Text>
+                                </View>
+                                <View style={styles.DateContent}>
+                                  <Text style={{ color: 'black' }}>탄수화물</Text>
+                                  <Text style={{ paddingRight: '1%' }}>{dietDetails.sum_carb.toFixed(1)}g </Text>
+                                </View>
+                                <View style={styles.DateContent}>
+                                  <Text style={{ color: 'black' }}>당류</Text>
+                                  <Text style={{ paddingRight: '1%' }}>{dietDetails.sum_sugar.toFixed(1)}g </Text>
+                                </View>
+                                <View style={styles.DateContent}>
+                                  <Text style={{ color: 'black' }}>단백질</Text>
+                                  <Text style={{ paddingRight: '1%' }}>{dietDetails.sum_protein.toFixed(1)}g </Text>
+                                </View>
+                                <View style={styles.DateContent}>
+                                  <Text style={{ color: 'black' }}>지방</Text>
+                                  <Text style={{ paddingRight: '1%' }}>{dietDetails.sum_fat.toFixed(1)}g </Text>
+                                </View>
+                                <View style={styles.DateContent}>
+                                  <Text style={{ color: 'black' }}>나트륨</Text>
+                                  <Text style={{ paddingRight: '1%' }}>{dietDetails.sum_fat.toFixed(1)}mg </Text>
+                                </View>
+                                <View style={styles.DateContent}>
+                                  <Text style={{ color: 'black' }}>콜레스테롤</Text>
+                                  <Text style={{ paddingRight: '1%' }}>{dietDetails.sum_col.toFixed(1)}mg </Text>
+                                </View>
+                                {/* 아침 저녁 간식 점심*/}
                               </View>
-                              <View style={styles.DateContent}>
-                                <Text style={{color: 'black'}}>탄수화물</Text>
-                                <Text style={{paddingRight: '1%'}}>{dietDetails.sum_carb.toFixed(1)}g </Text>
-                              </View>
-                              <View style={styles.DateContent}>
-                                <Text style={{color: 'black'}}>당류</Text>
-                                <Text style={{paddingRight: '1%'}}>{dietDetails.sum_sugar.toFixed(1)}g </Text>
-                              </View>
-                              <View style={styles.DateContent}>
-                                <Text style={{color: 'black'}}>단백질</Text>
-                                <Text style={{paddingRight: '1%'}}>{dietDetails.sum_protein.toFixed(1)}g </Text>
-                              </View>
-                              <View style={styles.DateContent}>
-                                <Text style={{color: 'black'}}>지방</Text>
-                                <Text style={{paddingRight: '1%'}}>{dietDetails.sum_fat.toFixed(1)}g </Text>
-                              </View>
-                              <View style={styles.DateContent}>
-                                <Text style={{color: 'black'}}>나트륨</Text>
-                                <Text style={{paddingRight: '1%'}}>{dietDetails.sum_fat.toFixed(1)}mg </Text>
-                              </View>
-                              <View style={styles.DateContent}>
-                                <Text style={{color: 'black'}}>콜레스테롤</Text>
-                                <Text style={{paddingRight: '1%'}}>{dietDetails.sum_col.toFixed(1)}mg </Text>
-                              </View> 
-                            {/* 아침 저녁 간식 점심*/}  
-                          </View>
 
-                          {/* 해당 날짜의 식단 이미지 표시 */}
-                          {renderMealImages(item.meal_date, dietData.user_meals.user_meals)}
-                          </View>
-                        )}
-                      </View>
-                    ))
+                              {/* 해당 날짜의 식단 이미지 표시 */}
+                              {renderMealImages(item.meal_date, dietData.user_meals.user_meals)}
+                            </View>
+                          )}
+                        </View>
+                      ))
                   ) : (
                     <Text>아직 친구의 데이터가 없습니다.</Text>
                   )}
@@ -388,10 +390,10 @@ const ChatScreen = () => {
               </View>
             )}
           </View>
- 
+
         </View>
       ) : (
-        // 친구가 없을 때의 화면
+        // 친구가 없을 때의 화면 / 구독하기 누르면 프로필페이지로 이동
         <View style={styles.noFriendsContainer}>
           <Image source={WelcomeIcon} style={styles.emoticon} />
           <Text style={styles.noFriendsText}>친구의 식단을 확인해보세요</Text>
@@ -402,7 +404,7 @@ const ChatScreen = () => {
       )}
 
       {/* 구독 취소할 때의 모달창 */}
-      <Modal 
+      <Modal
         animationType="fade"
         transparent={true}
         visible={alertModalVisible}
@@ -410,32 +412,32 @@ const ChatScreen = () => {
           setAlertModalVisible(!alertModalVisible);
         }}>
         <View style={styles.alertModalView}>
-        <View style={styles.alertModalContainer}>
-          <Text style={styles.alertText}>{alertMessage}</Text>
-          <View style={styles.alertButtonContainer}>
-            <TouchableOpacity
-              style={styles.alertButton}
-              onPress={() => setAlertModalVisible(false)}
-            >
-              <Text style={styles.alertButtonText}>OK </Text>
-          </TouchableOpacity>
+          <View style={styles.alertModalContainer}>
+            <Text style={styles.alertText}>{alertMessage}</Text>
+            <View style={styles.alertButtonContainer}>
+              <TouchableOpacity
+                style={styles.alertButton}
+                onPress={() => setAlertModalVisible(false)}
+              >
+                <Text style={styles.alertButtonText}>OK </Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
         </View>
       </Modal>
       {renderUnsubscribeConfirmModal()}
     </View>
   );
 };
- 
- 
+
+
 const styles = StyleSheet.create({
   // 모달창 스타일
-  alertModalView:{
-    flex:1,
-    justifyContent:'center',
-    alignItems:'center',
-    backgroundColor:'rgba(0,0,0,0.5)',
+  alertModalView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
   },
   alertModalContainer: {
     backgroundColor: '#fff',
@@ -455,10 +457,7 @@ const styles = StyleSheet.create({
     width: '80%',
     height: '20%',
   },
-  modalText: {
-    fontSize: 16,
-    textAlign: 'flex-start',  
-  },
+
   alertButtonContainer: {
     flex: 1,
     justifyContent: 'flex-end',
@@ -485,10 +484,10 @@ const styles = StyleSheet.create({
     color: '#fff',
     textAlign: 'center',
   },
-  alertText:{
-    fontSize:16,
-    color:'black',
-    marginTop:10,
+  alertText: {
+    fontSize: 16,
+    color: 'black',
+    marginTop: 10,
   },
 
   // 제목에 해당하는 친구 식단 스타일
@@ -524,20 +523,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#D7D4FF',
     borderRadius: 40
   },
- 
-  friendDietRecord: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    padding: 10,
-  },
- 
+
   unsubscribeText: {
     fontSize: 15,
     fontWeight: 'bold',
   },
- 
+
   unsubscribeButton: {
     backgroundColor: '#8E86FA',
     borderRadius: 40,
@@ -577,7 +568,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     marginBottom: '5%'
   },
- // 모달창 스타일
+  // 모달창 스타일
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -598,13 +589,13 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
-    width:'80%',
+    width: '80%',
   },
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
     marginTop: 20,
-    width:'100%',
+    width: '100%',
   },
   button: {
     padding: 10,
@@ -618,5 +609,5 @@ const styles = StyleSheet.create({
     backgroundColor: '#8E86FA',
   },
 });
- 
+
 export default ChatScreen;

@@ -1,12 +1,12 @@
-import React, { useRef, useEffect } from 'react'
-import { Center, Image, Text, View } from 'native-base';
+import React from 'react'
+import { Center, Image, View } from 'native-base';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { Dimensions } from 'react-native';
 
 function SplashScreen() {
-  // 화면의 너비와 높이를 가져옵니다.
-  const screenWidth = Dimensions.get('window').width;
-  const screenHeight = Dimensions.get('window').height;
+   // 화면의 너비와 높이를 가져옵니다.
+   const screenWidth = Dimensions.get('window').width;
+   const screenHeight = Dimensions.get('window').height;
    return (
       <>
          <SafeAreaProvider>

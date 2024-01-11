@@ -3,14 +3,14 @@ import React, { useState } from 'react';
 import { Button, View, Input, Text, Box } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
 import { StyleSheet, Alert, ScrollView, Dimensions, KeyboardAvoidingView, TouchableOpacity, Modal } from 'react-native';
-import DatePicker from 'react-native-date-picker'
- 
- 
+import DatePicker from 'react-native-date-picker' // 생년월일의 달력 라이브러리
+
+
 // 사용자 정보 등록 화면 컴포넌트
 const RegisterInfoScreen = ({ route }) => {
   const navigation = useNavigation();
   const { email, password } = route.params;
- 
+
   // 사용자 정보 상태 관리
   const [name, setName] = useState(''); // 이름
   const [birthdate, setBirthdate] = useState(new Date()); // 생년월일
@@ -20,37 +20,37 @@ const RegisterInfoScreen = ({ route }) => {
   const [gender, setGender] = useState(null); // 성별
   const [selectedButton, setSelectedButton] = useState(null); // 선택된 성별 버튼
   const { width, height } = Dimensions.get('window'); // 화면 크기
- 
+
   // 경고 모달 상태 및 스타일
   const [alertModalVisible, setAlertModalVisible] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
- 
+
   const contentContainerStyle = {
     ...styles.contentContainer,
     height: height * 0.75, // 화면 높이의 75%
   };
- 
+
   const buttonContainerStyle = {
     ...styles.buttonContainer,
     alignItems: 'center',     // 수직축 중앙 정렬
     position: 'absolute',
     bottom: height * 0.08,    // 화면 아래쪽에서부터 8% 높이 위치
   };
- 
+
   const prevButtonStyle = {
     ...styles.MovingButton,
     position: 'absolute',
-    bottom: height * 0.002,    // 화면 아래쪽에서부터 8% 높이 위치
-    left: width * 0.1,       // 왼쪽에서부터 너비의 3% 위치
+    bottom: height * 0.002,    // 화면 아래쪽에서부터 0.2% 높이 위치
+    left: width * 0.1,       // 위치 조절
     width: width * 0.35,      // 버튼 너비
     height: height * 0.075,   // 버튼 높이
   };
- 
+
   const nextButtonStyle = {
     ...styles.MovingButton,
     position: 'absolute',
-    bottom: height * 0.002,    // 화면 아래쪽에서부터 8% 높이 위치
-    left: width * 0.55,      // 오른쪽에서부터 너비의 3% 위치
+    bottom: height * 0.002,    // 화면 아래쪽에서부터 0.2% 높이 위치
+    left: width * 0.55,      // 위치 조절
     width: width * 0.35,      // 버튼 너비
     height: height * 0.075,   // 버튼 높이
   };
@@ -63,7 +63,7 @@ const RegisterInfoScreen = ({ route }) => {
     setSelectedButton(gender);
     setGender(gender);
   };
- 
+
   // 다음 화면으로 이동하는 함수
   const navigateToNextPage = () => {
     // 필수 입력 필드 및 데이터 유효성 검사
@@ -92,16 +92,16 @@ const RegisterInfoScreen = ({ route }) => {
       });
     }
   };
- 
+
   // 날짜 포맷 변경 함수
   const formatDate = (date) => {
     let formattedDate = date.getFullYear() + "-"
-                       + String(date.getMonth() + 1).padStart(2, '0') + "-"
-                       + String(date.getDate()).padStart(2, '0');
+      + String(date.getMonth() + 1).padStart(2, '0') + "-"
+      + String(date.getDate()).padStart(2, '0');
     return formattedDate;
   };
- 
- 
+
+
   return (
     <KeyboardAvoidingView behavior="height" style={{ flex: 1 }}>
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
@@ -122,14 +122,14 @@ const RegisterInfoScreen = ({ route }) => {
             <View style={inputContainerStyle}>
               <View><Text style={{ marginLeft: width * 0.02, fontSize: 16 }} >생년월일 </Text></View>
               <TouchableOpacity style={styles.inputContainer} onPress={() => setOpen(true)}>
-                <Text style={{ marginTop:'3%', marginBottom:'3%',borderRadius: 50,backgroundColor: 'white',color: 'grey',marginLeft:'4%' }}>
+                <Text style={{ marginTop: '3%', marginBottom: '3%', borderRadius: 50, backgroundColor: 'white', color: 'grey', marginLeft: '4%' }}>
                   {birthdate instanceof Date && birthdate != new Date()
                     ? birthdate.toLocaleDateString()
                     : "생년월일을 선택해주세요"
                   }
                 </Text>
               </TouchableOpacity>
- 
+
               {/* DatePicker 모달 */}
               <DatePicker
                 modal
@@ -148,7 +148,7 @@ const RegisterInfoScreen = ({ route }) => {
                 cancelText="취소"
               />
             </View>
- 
+
             {/* 키 */}
             <View style={inputContainerStyle}>
               <View><Text style={{ marginLeft: width * 0.02, fontSize: 16 }} >키 </Text></View>
@@ -161,7 +161,7 @@ const RegisterInfoScreen = ({ route }) => {
                 />
               </View>
             </View>
- 
+
             {/* 몸무게 */}
             <View style={inputContainerStyle}>
               <View><Text style={{ marginLeft: width * 0.02, fontSize: 16 }} >몸무게 </Text></View>
@@ -171,10 +171,10 @@ const RegisterInfoScreen = ({ route }) => {
                   value={personweight}
                   onChangeText={(value) => { setPersonweight(value) }}
                   keyboardType="numeric"
-                  />
+                />
               </View>
             </View>
- 
+
             {/* 성별 */}
             <View style={inputContainerStyle}>
               <View><Text style={{ marginLeft: width * 0.02, fontSize: 16 }} >성별 </Text></View>
@@ -191,7 +191,7 @@ const RegisterInfoScreen = ({ route }) => {
                 </Button.Group>
               </Box>
             </View>
- 
+
             {/* 다음과 이전 화면으로 이동하는 버튼 */}
             <View style={buttonContainerStyle}>
               <Button style={prevButtonStyle} onPress={() => navigation.navigate("Register", { email, password })}>
@@ -202,7 +202,7 @@ const RegisterInfoScreen = ({ route }) => {
               </Button>
             </View>
           </View>
- 
+
           {/* 유효성 검사 및 에러메세지를 표시하는 알림 모달 */}
           <Modal
             animationType="fade"
@@ -212,20 +212,20 @@ const RegisterInfoScreen = ({ route }) => {
               setAlertModalVisible(!alertModalVisible);
             }}>
             <View style={styles.alertModalView}>
-            <View style={styles.alertModalContainer}>
-              <Text style={styles.alertText}>{alertMessage} </Text>
-              <View style={styles.alertButtonContainer}>
-                <TouchableOpacity
-                  style={styles.alertButton}
-                  onPress={() => setAlertModalVisible(false)}
-                >
-                  <Text style={styles.alertButtonText}>OK </Text>
-              </TouchableOpacity>
+              <View style={styles.alertModalContainer}>
+                <Text style={styles.alertText}>{alertMessage} </Text>
+                <View style={styles.alertButtonContainer}>
+                  <TouchableOpacity
+                    style={styles.alertButton}
+                    onPress={() => setAlertModalVisible(false)}
+                  >
+                    <Text style={styles.alertButtonText}>OK </Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
-            </View>
           </Modal>
- 
+
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -266,7 +266,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: 'black', // 기본 글자색
   },
- 
+
   buttonTextSelected: {
     color: 'white', // 선택된 버튼의 글자색
   },
@@ -282,12 +282,12 @@ const styles = StyleSheet.create({
       color: 'black' // 기본 글자색
     }
   },
- 
+
   sexButtonSelected: {
     backgroundColor: '#8E86FA', // 선택된 버튼의 배경색 (보라색)
     color: 'white', // 선택된 버튼의 글자색 (흰색)
   },
- 
+
   MovingButton: {
     borderRadius: 50,
     backgroundColor: '#8E86FA',
@@ -295,12 +295,12 @@ const styles = StyleSheet.create({
   buttonText: {
     color: 'black',
   },
- 
-  alertModalView:{
-    flex:1,
-    justifyContent:'center',
-    alignItems:'center',
-    backgroundColor:'rgba(0,0,0,0.5)',
+
+  alertModalView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
   },
   alertModalContainer: {
     backgroundColor: '#fff',
@@ -351,6 +351,6 @@ const styles = StyleSheet.create({
     textAlign: 'center', // 텍스트 중앙 정렬
   },
 });
- 
- 
+
+
 export default RegisterInfoScreen;

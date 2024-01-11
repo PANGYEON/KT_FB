@@ -1,17 +1,4 @@
-import axios from 'axios';
-
-import RNFS from 'react-native-fs'; // React Native File System
-
-async function getSecret(setting) {
-    try {
-        // Corrected the path to './secrets.json'
-        const secretsFile = await RNFS.readFile('./secrets.json', 'utf8');
-        const secrets = JSON.parse(secretsFile);
-        return secrets[setting];
-    } catch (error) {
-        console.error(`Error getting the secret ${setting}:`, error);
-    }
-}
+import axios from 'axios'; // api 통신 관련
 
 const odApi = async (imagePath, imgName) => {
       try {

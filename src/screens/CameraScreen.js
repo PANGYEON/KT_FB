@@ -1,11 +1,11 @@
 // 카메라기능
 import React, { useRef, useState } from 'react';
-import { Button, View,TouchableOpacity, Text, StyleSheet, ActivityIndicator, Image  } from 'react-native';
+import { Button, View, TouchableOpacity, Text, StyleSheet, ActivityIndicator, Image } from 'react-native';
 import { Camera, useCameraDevice } from 'react-native-vision-camera';
 import { useNavigation } from '@react-navigation/native';
-import { CameraRoll } from "@react-native-camera-roll/camera-roll";
+// import { CameraRoll } from "@react-native-camera-roll/camera-roll";
 import { odApi } from '../ai_model/BP_Food'; // AI모델에서 가져온 odApi함수
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage'; // 디바이스에 정보 저장 및 불러오기
 
 function CameraScreen() {
   const device = useCameraDevice('back'); // 후면카메라 디바이스
@@ -16,13 +16,13 @@ function CameraScreen() {
 
   if (device == null) return <View />;
 
-
+  //오늘의 날짜를 가져옴
   const getTodayDate = () => {
     const today = new Date();
     return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
   };
-  
-  
+
+  // 사진 찍는 동작을 하는 함수
   const takePhoto = async () => {
     if (cameraRef.current) {
       try {
@@ -32,14 +32,14 @@ function CameraScreen() {
         });
 
         // CameraRoll을 사용하여 사진 저장
-        await CameraRoll.save(`file://${file.path}`, { type: 'photo' });
+        // await CameraRoll.save(`file://${file.path}`, { type: 'photo' });
 
         setIsLoading(true); // 로딩상태 활성화
-        const apiResult = await odApi(`file://${file.path}`,`${file.name}`); // AI모델을 사용하여 이미지 분석
+        const apiResult = await odApi(`file://${file.path}`, `${file.name}`); // AI모델을 사용하여 이미지 분석
         await AsyncStorage.setItem('@latest_photo', `file://${file.path}`); // AsyncStorage를 사용하여 최신 사진 저장
         const todayDate = getTodayDate();
         setIsLoading(false); // 로딩상태 비활성화
-        navigation.navigate('ImageIn', { photo: `file://${file.path}`, apiResult,selectDay: todayDate  }); // ImageIn 화면으로 이동하여 분석 결과 전달
+        navigation.navigate('ImageIn', { photo: `file://${file.path}`, apiResult, selectDay: todayDate }); // ImageIn 화면으로 이동하여 분석 결과 전달
       } catch (error) {
         console.error(error);
         setIsLoading(false); // 에러 발생 시 로딩 상태 비활성화
@@ -53,13 +53,13 @@ function CameraScreen() {
     // 로딩 중이라면 로딩 화면을 표시
     return (
       <View style={{ flex: 1 }}>
-      <View style={styles.loadingContainer}>
+        <View style={styles.loadingContainer}>
+        </View>
+        <View style={styles.loadingView}>
+          <ActivityIndicator size="large" color="#8E86FA" />
+          <Text style={{ marginTop: 20, fontSize: 20 }}>사진을 분석중이에요 </Text>
+        </View>
       </View>
-      <View style={styles.loadingView}>
-        <ActivityIndicator size="large" color="#8E86FA" />
-        <Text style={{ marginTop: 20, fontSize: 20 }}>사진을 분석중이에요</Text>
-      </View>
-    </View>
     );
   }
 

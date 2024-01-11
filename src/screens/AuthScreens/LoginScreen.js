@@ -1,36 +1,35 @@
 // 로그인화면(앱의 첫페이지)
 import React, { useState } from 'react';
- 
+
 import { Button, View, Input, Text } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
-import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios'; // api통신
+import AsyncStorage from '@react-native-async-storage/async-storage'; // 디바이스에 정보 저장 및 불러오기
 import { StyleSheet, Alert, Modal, TouchableOpacity, Image } from 'react-native';
- 
+
 const LoginScreen = () => {
   // React Navigation의 네비게이션을 사용할 수 있도록 useNavigation 훅을 이용하여 navigation 객체 생성
   const navigation = useNavigation();
- 
+
   // 이메일과 비밀번호를 저장하기 위한 useState 훅 사용
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
- 
+
   // 로그인 실패 시 표시할 알림 모달 상태 및 메시지를 저장하기 위한 useState 훅 사용
   const [alertModalVisible, setAlertModalVisible] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
- 
+
   // AsyncStorage를 사용하여 토큰을 저장하는 함수 정의
   const storeToken = async (token) => {
     try {
       await AsyncStorage.setItem('@user_token', token);
     } catch (e) {
-      console.log('eeeeee')
       // 토큰 저장 중 에러가 발생한 경우 알림 모달 표시
       setAlertMessage(`token error`);
       setAlertModalVisible(true);
     }
   }
- 
+
   // 로그인 버튼 클릭 시 실행되는 함수
   const handleLogin = async () => {
     try {
@@ -39,7 +38,7 @@ const LoginScreen = () => {
         "email": email,
         "password": password
       });
-     
+
       // 로그인 요청을 위한 설정 객체 생성
       let config = {
         method: 'post',
@@ -48,17 +47,18 @@ const LoginScreen = () => {
         headers: {
           'Content-Type': 'application/json'
         },
-        data : data
+        data: data
       };
- 
+
       // Axios를 사용하여 로그인 요청
       const response = await axios(config);
- 
+
       // 로그인 요청에 대한 응답이 200일 경우
       if (response.status === 200) {
         // 응답으로 받은 토큰을 저장하고 BottomTabNavigator로 이동
         const token = response.data.access_token;
         storeToken(response.data.access_token);
+        // 로그인 성공 후 뒤로가기 눌러도 바텀네비로 고정
         navigation.reset({
           index: 0,
           routes: [{ name: 'BottomTabNavigator', params: { token: token } }],
@@ -77,12 +77,12 @@ const LoginScreen = () => {
       if (error.request) {
         console.log("Server No Response", error.request);
       }
- 
+
       setAlertMessage(`이메일 또는 비밀번호가 잘못되었습니다.`);
       setAlertModalVisible(true);
     }
   };
- 
+
   return (
     <View style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: '#fff' }}>
       <View
@@ -144,7 +144,7 @@ const LoginScreen = () => {
           <Text onPress={() => navigation.navigate('PwSearch')}>비밀번호 찾기</Text>
         </View>
       </View>
- 
+
       {/* 알림 모달 */}
       <Modal
         animationType="fade"
@@ -170,15 +170,15 @@ const LoginScreen = () => {
         </View>
       </Modal>
     </View>
- 
+
   );
 };
 const styles = StyleSheet.create({
-  alertModalView:{
-    flex:1,
-    justifyContent:'center',
-    alignItems:'center',
-    backgroundColor:'rgba(0,0,0,0.5)',
+  alertModalView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
   },
   alertModalContainer: {
     backgroundColor: '#fff',
@@ -230,5 +230,4 @@ const styles = StyleSheet.create({
   },
 });
 export default LoginScreen;
- 
- 
+

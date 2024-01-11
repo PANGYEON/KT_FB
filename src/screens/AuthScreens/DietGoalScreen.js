@@ -3,22 +3,22 @@ import React, { useState } from 'react';
 import { View, Button } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
 import { StyleSheet, Text, Alert, Modal, TouchableOpacity } from 'react-native';
- 
+
 const DietGoalScreen = ({ route }) => {
   // route.params로부터 전달된 정보 추출
   const { email, password, name, birthdate, personheight, personweight, gender, selectedActivityLevel } = route.params;
   const navigation = useNavigation();
- 
+
   // 목표 선택 상태를 useState를 통해 관리 (-1은 선택되지 않았음을 나타냄)
   const [goalIndex, setGoalIndex] = useState(-1);
- 
+
   // 알림 모달을 위한 상태들
   const [alertModalVisible, setAlertModalVisible] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
- 
+
   // 가능한 목표들 배열
   const goals = ['체중 감량', '체중 유지', '체중 증량'];
- 
+
   // '다음' 버튼 클릭 시 처리하는 함수
   const handleRegister = () => {
     if (goalIndex === -1) { // 목표를 선택하지 않은 경우 알림 표시
@@ -30,7 +30,7 @@ const DietGoalScreen = ({ route }) => {
       });
     }
   };
- 
+
   return (
     <View style={edm.container}>
       <View>
@@ -66,7 +66,7 @@ const DietGoalScreen = ({ route }) => {
           </Button>
         </View>
       </View>
- 
+
       {/* 알림 모달 */}
       <Modal
         animationType="fade"
@@ -93,7 +93,7 @@ const DietGoalScreen = ({ route }) => {
     </View>
   );
 };
- 
+
 // DietGoalScreen 컴포넌트 내부의 스타일 정의
 const styles = StyleSheet.create({
   goalTextView: {
@@ -160,10 +160,6 @@ const styles = StyleSheet.create({
     width: '80%', // 너비 설정
     height: '20%', // 높이 설정
   },
-  modalText: {
-    fontSize: 16, // 텍스트 크기
-    textAlign: 'flex-start', // 텍스트 왼쪽 정렬
-  },
   alertButtonContainer: {
     flex: 1,
     justifyContent: 'flex-end', // 하단 정렬
@@ -191,7 +187,7 @@ const styles = StyleSheet.create({
     textAlign: 'center', // 텍스트 중앙 정렬
   },
 });
- 
+
 // 화면 레이아웃 스타일 정의
 const edm = StyleSheet.create({
   container: {
@@ -209,5 +205,5 @@ const edm = StyleSheet.create({
     height: '70%', // 높이 설정
   },
 });
- 
+
 export default DietGoalScreen;

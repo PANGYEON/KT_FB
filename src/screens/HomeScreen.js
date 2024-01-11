@@ -1,14 +1,14 @@
 // 홈화면 - 메인페이지
 import React, { useEffect, useState, useCallback } from 'react';
-import axios from 'axios';
+import axios from 'axios'; // api 통신
 import { View, Text, Button, TouchableOpacity, Image, StyleSheet, Modal, Dimensions, ActivityIndicator, PermissionsAndroid } from 'react-native';
 import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
-import ChatBotScreen from './ChatBotScreen';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { launchImageLibrary } from 'react-native-image-picker';
-import { odApi, processAndSendData } from '../ai_model/BP_Food';
+import ChatBotScreen from './ChatBotScreen'; // 챗봇 모달 화면
+import AsyncStorage from '@react-native-async-storage/async-storage'; // 디바이스에 정보 저장 및 불러오기
+import { launchImageLibrary } from 'react-native-image-picker'; // 갤러리 image 고르기
+import { odApi, processAndSendData } from '../ai_model/BP_Food'; // ai 코드 연동해서 통신
 
-//폭죽 코드
+//애니메이션 불러오기
 import Animation from '../animation/Animation';
 
 
@@ -19,9 +19,10 @@ const HomeScreen = () => {
   const [isModalVisible, setModalVisible] = useState(false);
   const [isPermissionModalVisible, setPermissionModalVisible] = useState(false); // 권한 요청 모달 상태
 
-  //폭죽 상태
+  //애니메이션 불러오기
   const [showAnimation, setShowAnimation] = useState(false);
 
+  //이미지가 없는 제일 첫 화면 150x150 빈 이미지 출력
   const [photoUri, setPhotoUri] = useState('https://via.placeholder.com/150');
   const [isLoading, setIsLoading] = useState(false); // 로딩 상태 관리
 
@@ -31,6 +32,7 @@ const HomeScreen = () => {
     return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
   };
 
+  // 디바이스의 가로/세로 정보 받기
   const { width, height } = Dimensions.get('window');
 
   // 최근사진을 관리
@@ -102,7 +104,7 @@ const HomeScreen = () => {
       }
       onClose();
     };
-    
+
     // 권한 요청 모달창
     return (
       <Modal
@@ -345,14 +347,6 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
 
-  // 인사말(헤드라인부분) 스타일 조정
-  greetingContainer: {
-    //marginTop: '15%',
-    //marginBottom: 20,
-    //alignSelf: 'flex-start',
-    //alignItems: 'flex-start',
-    //backgroundColor: 'lightgreen',
-  },
   greetingText1: {
     fontSize: 23,
     fontWeight: 'bold',
@@ -367,7 +361,7 @@ const styles = StyleSheet.create({
 
   //구분선
   divider: {
-    height: 2, 
+    height: 2,
     backgroundColor: '#ccc',
     marginVertical: '3%',
   },
@@ -419,20 +413,7 @@ const styles = StyleSheet.create({
     elevation: 5
   },
 
-  // 모달창 스타일 조정
-  modalBackground: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)'
-  },
-  modalContent: {
-    flex: 1,
-    minWidth: '80%',
-    maxHeight: '80%',
-    backgroundColor: '#fff',
-    borderRadius: 30,
-  },
+
 
   //로딩창 스타일 조정
   loadingContainer: {

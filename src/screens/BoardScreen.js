@@ -2,13 +2,13 @@
 import React, { useState, useEffect } from 'react';
 import { Button, View, Text } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
-import { TouchableOpacity, Modal, Image, ScrollView, Dimensions,Linking  } from 'react-native';
-import ChatBotScreen from './ChatBotScreen';
-import axios from 'axios';
+import { TouchableOpacity, Modal, Image, ScrollView, Dimensions, Linking } from 'react-native';
+import ChatBotScreen from './ChatBotScreen'; //챗봇 가져오기
+import axios from 'axios'; //api통신
 
 // 디바이스의 너비와 높이를 가져와서 설정
 const { width, height } = Dimensions.get('window');
- 
+
 const BoardScreen = () => {
   // 상태변수 설정
   const navigation = useNavigation(); // 네비게이션
@@ -16,16 +16,16 @@ const BoardScreen = () => {
   const [selectedCategory, setSelectedCategory] = useState('FAQ'); // 카테고리상태 -- FAQ를 기본 선택
   const [titles, setTitles] = useState([]); // 카테고리의 제목상태
   const categories = ['FAQ', '공지사항']; // 카테고리배열
-  
+
   // 이미지의 너비와 높이 설정
   const imageHeight = height * 0.22;
   const imageWidth = height * 0.22;
- 
+
   // 상태변수 설정
   const [faqData, setFaqData] = useState([]); // FAQ 데이터상태
   const [noticesData, setNoticesData] = useState([]); // 공지사항 데이터상태
   const [cardNewsData, setCardNewsData] = useState([]); // 카드 뉴스 데이터상태
- 
+
   // FAQ 데이터를 로드하는 함수
   const loadFaqData = async () => {
     try {
@@ -76,18 +76,18 @@ const BoardScreen = () => {
     borderColor: selectedCategory === category ? '#8E86FA' : 'transparent',
     borderRadius: 10
   });
- 
+
   //선택된 카테고리에 따른 버튼텍스트 스타일
   const getButtonTextStyle = (category) => ({
     color: selectedCategory === category ? 'white' : 'black',
     fontSize: 20,
   });
- 
+
   // 모달을 토글하는 함수
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
   };
- 
+
   //선택된 카테고리에 따른 콘텐츠 렌더링 함수
   const renderContent = () => {
     if (selectedCategory === 'FAQ') {
@@ -129,15 +129,15 @@ const BoardScreen = () => {
     newTitles[index] = newTitles[index] === category ? null : category;
     setTitles(newTitles);
   };
- 
+
   // 초기 데이터 설정
   useEffect(() => {
     loadFaqData();
     loadNoticesData();
     loadCardNewsData();
- 
+
   }, []);
- 
+
   return (
     // 카드뉴스부분
     <View style={{ flex: 1 }}>
@@ -151,8 +151,8 @@ const BoardScreen = () => {
       >
         {/* 매핑을 통한 카드뉴스데이터 출력 */}
         {cardNewsData.map((cardNews, index) => (
-          <TouchableOpacity 
-            key={index} 
+          <TouchableOpacity
+            key={index}
             style={{ marginRight: 15 }}
             onPress={() => Linking.openURL(cardNews.link)} // Add this line
           >
@@ -172,12 +172,12 @@ const BoardScreen = () => {
       <View style={{ borderTopWidth: 1, borderTopColor: 'gray', marginVertical: height * 0.013 }} />
 
       {/* 버튼영역 */}
-      <View style={{ 
-                flexDirection: 'row', 
-                justifyContent: 'space-around', 
-                padding: 10, 
-                }}>
-                  {/* 매핑을 통한 카테고리 출력 */}
+      <View style={{
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        padding: 10,
+      }}>
+        {/* 매핑을 통한 카테고리 출력 */}
         {categories.map(category => (
           <Button
             key={category}
@@ -237,8 +237,8 @@ const BoardScreen = () => {
         </View>
       </Modal>
     </View>
- 
+
   );
 }
- 
+
 export default BoardScreen;

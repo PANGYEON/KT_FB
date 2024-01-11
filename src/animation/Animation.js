@@ -1,3 +1,4 @@
+// 회원가입 마지막에 나오는 폭죽 애니메이션
 import LottieView from 'lottie-react-native';
 
 

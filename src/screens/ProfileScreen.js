@@ -5,8 +5,10 @@ import { StyleSheet, TouchableOpacity, Image, Dimensions, TextInput } from 'reac
 import { useNavigation } from '@react-navigation/native';
 import BackIcon from '../icons/BackIcon.png';
 import AIcon from '../icons/A.png';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage'; // 디바이스에 정보 저장 및 불러오기
+import axios from 'axios'; // api통신
+
+// 디바이스의 높이 / 너비 받아오기
 const { width, height } = Dimensions.get('window');
 import { useSubscription } from '../../SubscriptionContext';
 
@@ -79,23 +81,23 @@ const ProfileScreen = () => {
       let data = JSON.stringify({
         email: subscribeEmail
       });
-  
+
       let config = {
         method: 'post',
         maxBodyLength: Infinity,
         url: 'http://edm.japaneast.cloudapp.azure.com/api/subscribe/',
-        headers: { 
-          'Content-Type': 'application/json', 
+        headers: {
+          'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
         data: data
       };
-  
+
       const response = await axios(config);
-  
+
       console.log('Response Status:', response.status);
       console.log('Response Data:', response.data);
-  
+
       if (response.status === 200) {
         console.log('구독 정보가 성공적으로 전송되었습니다.');
         setAlertMessage('구독 정보가 성공적으로 전송되었습니다.');
@@ -163,7 +165,7 @@ const ProfileScreen = () => {
 
   // 로그아웃에 관한 함수
   const logout = async () => {
-    // 토큰을 AsyncStorage에서 제거합니다.
+    // 토큰을 디바이스에 저장된 AsyncStorage에서 제거합니다.
     try {
       await AsyncStorage.removeItem('@user_token');
       navigation.navigate('Login'); // 로그인 화면으로 이동
@@ -489,7 +491,7 @@ const ProfileScreen = () => {
           <Modal.Footer>
             <Button.Group space={2}>
               <Button variant="ghost" onPress={() => setLogoutModalVisible(false)}>
-                <Text style={{color:'#8E96FA'}}>아니요</Text>
+                <Text style={{ color: '#8E96FA' }}>아니요</Text>
               </Button>
               <Button backgroundColor='#8E86FA' borderRadius='15' onPress={logout}>
                 네
@@ -517,7 +519,7 @@ const ProfileScreen = () => {
           <Modal.Footer>
             <Button.Group space={2}>
               <Button variant="ghost" onPress={() => setDeleteModalVisible(false)}>
-                <Text style={{color:'#8E96FA'}}>취소</Text>
+                <Text style={{ color: '#8E96FA' }}>취소</Text>
               </Button>
               <Button backgroundColor='#8E86FA' borderRadius='15' onPress={deleteuser}>
                 확인
@@ -527,49 +529,49 @@ const ProfileScreen = () => {
         </Modal.Content>
       </Modal>
       {/* // 구독 모달 렌더링 */}
-  <Modal
-    isOpen={subscribeModalVisible}
-    onClose={() => setSubscribeModalVisible(false)}
-  >
-    <Modal.Content>
-      <Modal.Body>
-        <TextInput
-          placeholder="친구의 이메일을 입력하세요"
-          value={subscribeEmail}
-          onChangeText={setSubscribeEmail}
-        />
-      </Modal.Body>
-      <Modal.Footer>
-        <Button onPress={handleSubscribe} style={styles.subscribeButton}>구독하기</Button>
-      </Modal.Footer>
-    </Modal.Content>
-  </Modal>
+      <Modal
+        isOpen={subscribeModalVisible}
+        onClose={() => setSubscribeModalVisible(false)}
+      >
+        <Modal.Content>
+          <Modal.Body>
+            <TextInput
+              placeholder="친구의 이메일을 입력하세요"
+              value={subscribeEmail}
+              onChangeText={setSubscribeEmail}
+            />
+          </Modal.Body>
+          <Modal.Footer>
+            <Button onPress={handleSubscribe} style={styles.subscribeButton}>구독하기</Button>
+          </Modal.Footer>
+        </Modal.Content>
+      </Modal>
 
-  {/* alert모달창 */}
-  <Modal isOpen={alertModalVisible}>
-    <View style={styles.alertModalContainer}>
-      <Text style={styles.alertText}>{alertMessage}</Text>
-      <View style={styles.alertButtonContainer}>
-        <TouchableOpacity
-          style={styles.alertButton}
-          onPress={() => setAlertModalVisible(false)}
-        >
-          <Text style={styles.alertButtonText}>OK </Text>
-        </TouchableOpacity>
-      </View>
+      {/* alert모달창 */}
+      <Modal isOpen={alertModalVisible}>
+        <View style={styles.alertModalContainer}>
+          <Text style={styles.alertText}>{alertMessage}</Text>
+          <View style={styles.alertButtonContainer}>
+            <TouchableOpacity
+              style={styles.alertButton}
+              onPress={() => setAlertModalVisible(false)}
+            >
+              <Text style={styles.alertButtonText}>OK </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
-  </Modal>
-  </View>
   );
 };
 
 const styles = StyleSheet.create({
   // alert모달창 스타일 조정
-  alertModalContainer:{
-    backgroundColor:'#fff',
-    borderRadius: 10, 
-    padding:'5%',
-    alignItems:'flex-start',
+  alertModalContainer: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: '5%',
+    alignItems: 'flex-start',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -578,21 +580,21 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
-    fontSize:1,
-    height:'18%',
-    width:'80%',
+    fontSize: 1,
+    height: '18%',
+    width: '80%',
   },
   modalText: {
     fontSize: 16,
     textAlign: 'flex-start',
   },
-  alertButtonContainer:{
+  alertButtonContainer: {
     flex: 1,
     justifyContent: 'flex-end',
     alignItems: 'flex-end',
-    width:'100%',
+    width: '100%',
   },
-  alertButton:{
+  alertButton: {
     backgroundColor: '#8E86FA',
     borderRadius: 40,
     shadowColor: '#000',
@@ -700,7 +702,7 @@ const styles = StyleSheet.create({
   subscribeButton: {
     backgroundColor: '#8E86FA',
     borderRadius: 40,
-  }, 
+  },
 
   // 계정정보 - 유저각각의 정보들의 스타일
   userText: {
