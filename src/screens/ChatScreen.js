@@ -255,7 +255,7 @@ const ChatScreen = () => {
       case 'Bad':
         return '#FA6565';
       case 'Not Bad':
-        return 'FA9B65';
+        return '#FA9B65';
       case 'Good':
         return '#EEE064';
       case 'Very Good':
