@@ -6,7 +6,6 @@ import { useNavigation } from '@react-navigation/native';
 import { CameraRoll } from "@react-native-camera-roll/camera-roll";
 import { odApi } from '../ai_model/BP_Food';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import BackIcon from '../icons/BackIcon.png';
 
 function CameraScreen() {
   const device = useCameraDevice('back');
@@ -17,10 +16,7 @@ function CameraScreen() {
 
   if (device == null) return <View />;
 
-  const goBack = () => {
-    setIsLoading(false);
-    // 네비게이션 스택에서 이전 화면으로 돌아갑니다.
-  };
+
   const getTodayDate = () => {
     const today = new Date();
     return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
@@ -42,17 +38,9 @@ function CameraScreen() {
         const apiResult = await odApi(`file://${file.path}`,`${file.name}`);
         await AsyncStorage.setItem('@latest_photo', `file://${file.path}`);
 
-        // processApi 함수를 호출하여 결과를 가져옵니다.
-        // 사진 파일을 fetch 하여 blob 데이터로 변환
-        // const result = await fetch(`file://${file.path}`);
-        // const data = await result.blob();
-        // console.log(data)
-        // 변환된 blob 데이터를 다음 화면으로 넘김
-        // navigation.navigate('홈', { photo: file.path });
         const todayDate = getTodayDate();
         setIsLoading(false);
         navigation.navigate('ImageIn', { photo: `file://${file.path}`, apiResult,selectDay: todayDate  });
-        // navigation.navigate('ImageIn', { photo: file.path });
 
       } catch (error) {
         console.error(error);
@@ -68,9 +56,6 @@ function CameraScreen() {
     return (
       <View style={{ flex: 1 }}>
       <View style={styles.loadingContainer}>
-        {/* <TouchableOpacity onPress={goBack}>
-          <Image source={BackIcon} style={{ width: 25, height: 25 }} />
-        </TouchableOpacity> */}
       </View>
       <View style={styles.loadingView}>
         <ActivityIndicator size="large" color="#8E86FA" />

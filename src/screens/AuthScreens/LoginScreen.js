@@ -149,13 +149,13 @@ const LoginScreen = () => {
         }}>
         <View style={styles.alertModalView}>
         <View style={styles.alertModalContainer}>
-          <Text style={styles.alertText}>{alertMessage}</Text>
+          <Text style={styles.alertText}>{alertMessage} </Text>
           <View style={styles.alertButtonContainer}>
             <TouchableOpacity
               style={styles.alertButton}
               onPress={() => setAlertModalVisible(false)}
             >
-              <Text style={styles.alertButtonText}>OK</Text>
+              <Text style={styles.alertButtonText}>OK </Text>
           </TouchableOpacity>
           </View>
         </View>

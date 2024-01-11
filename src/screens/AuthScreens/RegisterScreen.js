@@ -157,7 +157,7 @@ const RegisterScreen = ({ route }) => {
           <View style={contentContainerStyle}>
             <View style={emailInputContainerStyle}>
               {/* <View style={{ marginTop: '6%' }} /> */}
-              <Text style={{ marginLeft: 5, fontSize: 16 }} >이메일</Text>
+              <Text style={{ marginLeft: 5, fontSize: 16 }} >이메일 </Text>
               <View style={styles.inputContainer}>
                 <Input
                   placeholder="이메일을 입력해주세요"
@@ -177,7 +177,7 @@ const RegisterScreen = ({ route }) => {
             </View>
             
             <View style={passwordInputContainerStyle}>
-              <Text style={{ marginLeft: 5, fontSize: 16 }}>비밀번호</Text>
+              <Text style={{ marginLeft: 5, fontSize: 16 }}>비밀번호 </Text>
               <View style={styles.inputContainer}>
                 <Input
                   placeholder="비밀번호를 입력해주세요"
@@ -195,7 +195,7 @@ const RegisterScreen = ({ route }) => {
             </View>
 
             <View style={passwordconfirmInputContainerStyle}>
-              <Text style={{ marginLeft: 5, fontSize: 16 }}>비밀번호 확인</Text>
+              <Text style={{ marginLeft: 5, fontSize: 16 }}>비밀번호 확인 </Text>
               <View style={styles.inputContainer}>
                 <Input
                   placeholder="비밀번호를 다시 입력해주세요"
@@ -233,13 +233,13 @@ const RegisterScreen = ({ route }) => {
             }}>
             <View style={styles.alertModalView}>
             <View style={styles.alertModalContainer}>
-              <Text style={styles.alertText}>{alertMessage}</Text>
+              <Text style={styles.alertText}>{alertMessage} </Text>
               <View style={styles.alertButtonContainer}>
                 <TouchableOpacity
                   style={styles.alertButton}
                   onPress={() => setAlertModalVisible(false)}
                 >
-                  <Text style={styles.alertButtonText}>OK</Text>
+                  <Text style={styles.alertButtonText}>OK </Text>
               </TouchableOpacity>
               </View>
             </View>

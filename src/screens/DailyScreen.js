@@ -353,7 +353,7 @@ const DailyScreen = () => {
   };
 
   const getBackgroundColor = () => {
-    switch (mealInfo.evaluation) {
+    switch (mealNutrients.diet_rating) {
       case 'Bad':
         return '#FA6565';
       case 'Not Bad':
@@ -473,7 +473,9 @@ const DailyScreen = () => {
       </View>
       <View style={styles.selectedMealContainer}>
         <View style={styles.selectedMealInfo_1}>
-          {mealData[selectedMeal]?.imagelink ? (
+
+
+          {/* {mealData[selectedMeal]?.imagelink ? (
             <Image
               source={{ uri: mealData[selectedMeal].imagelink }}
               style={styles.MealImg}
@@ -486,8 +488,25 @@ const DailyScreen = () => {
               />
               <Text style={styles.selectPhotoButtonText}>사진 선택</Text>
             </TouchableOpacity>
-          )}
+          )} */}
 
+
+<TouchableOpacity style={styles.selectPhotoButton} onPress={openGallery}>
+  {mealData[selectedMeal]?.imagelink ? (
+    <Image
+      source={{ uri: mealData[selectedMeal].imagelink }}
+      style={styles.MealImg}
+    />
+  ) : (
+    <>
+      <Image
+        source={require('../icons/GalleryIcon.png')}
+        style={styles.photoIcon}
+      />
+      <Text style={styles.selectPhotoButtonText}>사진 선택</Text>
+    </>
+  )}
+</TouchableOpacity>
           <View style={styles.MealMenu}>
             <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: '3%', marginTop: '3%' }}>
               {'< '}{selectedMeal ? `${selectedMeal} 메뉴` : ''}{' >'}

@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect  } from 'react';
 import axios from 'axios';
 import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
@@ -57,33 +57,34 @@ const MonthScreen = () => {
   const [currentYear, setCurrentYear] = useState(today.getFullYear());
   const [mealData, setMealData] = useState({});
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const token = await AsyncStorage.getItem('@user_token');
-        let response = await axios.get('http://edm-diet.japaneast.cloudapp.azure.com/user_meal/get_meal/', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        let meals = response.data.user_meals_evaluation;
-        let formattedMeals = {};
-        meals.forEach(meal => {
-          // sum_carb와 sum_protein도 저장
-          formattedMeals[meal.meal_date] = {
-            evaluation: meal.meal_evaluation,
-            sumCarb: meal.sum_carb,
-            sumProtein: meal.sum_protein
-          };
-        });
-        setMealData(formattedMeals);
-      } catch (error) {
-        console.error('Error fetching meal data:', error);
-      }
-    };
-  
-    fetchData();
-  }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      const fetchData = async () => {
+        try {
+          const token = await AsyncStorage.getItem('@user_token');
+          const response = await axios.get('http://edm-diet.japaneast.cloudapp.azure.com/user_meal/get_meal/', {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+          const meals = response.data.user_meals_evaluation;
+          const formattedMeals = {};
+          meals.forEach(meal => {
+            formattedMeals[meal.meal_date] = {
+              evaluation: meal.meal_evaluation,
+              sumCarb: meal.sum_carb,
+              sumProtein: meal.sum_protein
+            };
+          });
+          setMealData(formattedMeals);
+        } catch (error) {
+          console.error('Error fetching meal data:', error);
+        }
+      };
+
+      fetchData();
+    }, [])
+  );
   const monthData = getMonthData(currentMonth, currentYear);
   const monthName = getMonthName(currentMonth);
 

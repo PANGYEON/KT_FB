@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
-import { View, Text, Button, TouchableOpacity, Image, StyleSheet, Modal, Dimensions, ActivityIndicator } from 'react-native';
+import { View, Text, Button, TouchableOpacity, Image, StyleSheet, Modal, Dimensions, ActivityIndicator, PermissionsAndroid } from 'react-native';
 import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
 import ChatBotScreen from './ChatBotScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -11,11 +11,13 @@ import { odApi, processAndSendData } from '../ai_model/BP_Food';
 //폭죽 코드
 import Animation from '../animation/Animation';
 
+
 const HomeScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const [userName, setUserName] = useState('');
   const [isModalVisible, setModalVisible] = useState(false);
+  const [isPermissionModalVisible, setPermissionModalVisible] = useState(false); // 권한 요청 모달 상태
 
   //폭죽 상태
   const [showAnimation, setShowAnimation] = useState(false);
@@ -42,7 +44,7 @@ const HomeScreen = () => {
   };
 
   useFocusEffect(
-    
+
     useCallback(() => {
       loadLatestPhoto();
     }, [])
@@ -54,15 +56,72 @@ const HomeScreen = () => {
 
   useEffect(() => {
     const updateTabBarVisibility = () => {
-      navigation.setOptions({ tabBarStyle: isLoading ? { display: 'none' } : {
-        height: height * 0.1,
-        paddingBottom: '1%',
-      }, });
+      navigation.setOptions({
+        tabBarStyle: isLoading ? { display: 'none' } : {
+          height: height * 0.1,
+          paddingBottom: '1%',
+        },
+      });
     };
 
     updateTabBarVisibility();
   }, [isLoading, navigation]);
-
+  const handleTakePhotoPress = () => {
+    checkCameraPermission();
+  };
+  const checkCameraPermission = async () => {
+    let hasPermission = false;
+    try {
+      hasPermission = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.CAMERA);
+      if (!hasPermission) {
+        // 권한이 없으면 권한 요청 모달을 보여줍니다.
+        setPermissionModalVisible(true);
+      } else {
+        // 권한이 있으면 카메라 화면으로 넘어갑니다.
+        navigation.navigate('CameraScreen');
+      }
+    } catch (err) {
+      console.warn(err);
+    }
+  };
+  const PermissionModal = ({ isVisible, onClose, onGrant, type }) => {
+    const requestPermission = async () => {
+      let permissionType = type === 'camera' ? PermissionsAndroid.PERMISSIONS.CAMERA : PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE;
+      try {
+        const granted = await PermissionsAndroid.request(permissionType);
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+          onGrant();
+        } else {
+          console.log('권한 거부됨');
+        }
+      } catch (err) {
+        console.warn(err);
+      }
+      onClose();
+    };
+    
+    
+    return (
+      <Modal
+        visible={isVisible}
+        transparent
+        onRequestClose={onClose}>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.5)' }}>
+          <View style={{ backgroundColor: 'white', padding: 20, borderRadius: 10 }}>
+            <Text>{`"${type === 'camera' ? '카메라' : '갤러리'}" 접근 권한이 필요합니다.`}</Text>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginTop: 20 }}>
+              <TouchableOpacity onPress={requestPermission}>
+                <Text>허용</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={onClose}>
+                <Text>취소</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+    );
+  };
   const openGallery = () => {
     const options = {
       mediaType: 'photo',
@@ -137,24 +196,24 @@ const HomeScreen = () => {
     // 로딩 중이라면 로딩 화면을 표시
     return (
       <View style={{ flex: 1 }}>
-      <View style={styles.loadingContainer}>
-        {/* <TouchableOpacity onPress={goBack}>
+        <View style={styles.loadingContainer}>
+          {/* <TouchableOpacity onPress={goBack}>
           <Image source={BackIcon} style={{ width: 25, height: 25 }} />
         </TouchableOpacity> */}
+        </View>
+        <View style={styles.loadingView}>
+          <ActivityIndicator size="large" color="#8E86FA" />
+          <Text style={{ marginTop: 20, fontSize: 20 }}>사진을 분석중이에요</Text>
+        </View>
       </View>
-      <View style={styles.loadingView}>
-        <ActivityIndicator size="large" color="#8E86FA" />
-        <Text style={{ marginTop: 20, fontSize: 20 }}>사진을 분석중이에요</Text>
-      </View>
-    </View>
     );
   }
- 
 
- 
+
+
   return (
-      // 프로필 페이지 버튼
-      <View style={styles.container}>
+    // 프로필 페이지 버튼
+    <View style={styles.container}>
       <TouchableOpacity
         style={styles.profileButton}
         onPress={() => navigation.navigate('Profile')}>
@@ -179,19 +238,32 @@ const HomeScreen = () => {
         {/* <Button title="사진 촬영" onPress={() => navigation.navigate('ImageIn')} /> */}
         {/* <Button title="사진 촬영" onPress={() => navigation.navigate('CameraScreen')} />*/}
         <TouchableOpacity
-          style={styles.takePhoto} onPress={() => navigation.navigate('CameraScreen')}
+          style={styles.takePhoto}
+          onPress={handleTakePhotoPress}
         //</View>onPress={() => navigation.navigate('CameraScreen')}
-        >                
+        >
 
           <Image source={require('../icons/CameraLineIcon.png')} style={{ width: 30, height: 30 }} />
           <Text style={{ color: 'black', fontSize: 15, fontWeight: 'bold', marginTop: '2%' }}>사진촬영</Text>
         </TouchableOpacity>
+        <PermissionModal
+      isVisible={isPermissionModalVisible}
+      onClose={() => setPermissionModalVisible(false)}
+      onGrant={() => navigation.navigate('CameraScreen')}
+      type="camera"
+    />
+
+
+
+
+
+
         <TouchableOpacity
           style={styles.galleryButton}
           onPress={openGallery}
         >
           <Image source={require('../icons/GalleryIcon.png')} style={{ width: 30, height: 30 }} />
-          <Text style={{ color: 'black', fontSize: 15, fontWeight: 'bold',marginTop: '2%' }}>갤러리</Text>
+          <Text style={{ color: 'black', fontSize: 15, fontWeight: 'bold', marginTop: '2%' }}>갤러리</Text>
         </TouchableOpacity>
       </View>
 
