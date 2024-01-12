@@ -3,7 +3,7 @@ import React, { useRef, useState } from 'react';
 import { Button, View, TouchableOpacity, Text, StyleSheet, ActivityIndicator, Image } from 'react-native';
 import { Camera, useCameraDevice } from 'react-native-vision-camera';
 import { useNavigation } from '@react-navigation/native';
-// import { CameraRoll } from "@react-native-camera-roll/camera-roll";
+import { CameraRoll } from "@react-native-camera-roll/camera-roll";
 import { odApi } from '../ai_model/BP_Food'; // AI모델에서 가져온 odApi함수
 import AsyncStorage from '@react-native-async-storage/async-storage'; // 디바이스에 정보 저장 및 불러오기
 
@@ -32,7 +32,8 @@ function CameraScreen() {
         });
 
         // CameraRoll을 사용하여 사진 저장
-        // await CameraRoll.save(`file://${file.path}`, { type: 'photo' });
+        // apk로 추출하려면 아래 한 줄 주석처리 후 추출
+        await CameraRoll.save(`file://${file.path}`, { type: 'photo' });
 
         setIsLoading(true); // 로딩상태 활성화
         const apiResult = await odApi(`file://${file.path}`, `${file.name}`); // AI모델을 사용하여 이미지 분석
