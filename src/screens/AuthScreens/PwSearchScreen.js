@@ -1,30 +1,26 @@
-// 비밀번호 찾기화면
+// 비밀번호 찾기
 import React, { useState } from 'react';
-import { Button, View, Input, Text } from 'native-base';
+import { Button, View,Input,Text } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
 import { StyleSheet, Alert, Dimensions, KeyboardAvoidingView, ScrollView } from 'react-native';
-import axios from 'axios'; //api통신
+import axios from 'axios';
 
 
-// 이메일 정규식 검사
 const emailRegEx = /^[A-Za-z0-9]([-_.]?[A-Za-z0-9])*@[A-Za-z0-9]([-_.]?[A-Za-z0-9])*\.[A-Za-z]{2,}(\.[A-Za-z]{2,})?$/i;
-
-// 이메일 형식 검사 함수
+ 
 const emailCheck = (email) => {
   return emailRegEx.test(email);
 }
-
+ 
 const { width, height } = Dimensions.get('window');
-
+ 
 const PwSearchScreen = () => {
   const navigation = useNavigation();
   const [email, setEmail] = useState('');
-  const [alertMessage, setAlertMessage] = useState('');
 
-  // 비밀번호 재설정 요청
+  
   const requestPasswordReset = async (email) => {
     try {
-      // 비밀번호 재설정 요청 데이터 설정
       const data = JSON.stringify({ "email": email });
       const config = {
         method: 'post',
@@ -32,8 +28,7 @@ const PwSearchScreen = () => {
         headers: { 'Content-Type': 'application/json' },
         data: data
       };
-
-      // axios를 이용하여 비밀번호 재설정 요청
+  
       const response = await axios(config);
       console.log(response.data); // 응답 데이터 확인
       return response.data; // 응답 데이터 반환
@@ -42,8 +37,6 @@ const PwSearchScreen = () => {
       return null; // 에러 발생 시 null 반환
     }
   };
-
-  // 이메일 형식 에러 텍스트 렌더링 함수
   const renderEmailError = () => {
     if (email.length > 0 && !emailCheck(email)) {
       return (
@@ -54,58 +47,56 @@ const PwSearchScreen = () => {
     }
     return <View style={{ height: 8 }} />;
   };
-
-  // 다음 페이지로 이동 처리
+ 
   const handleNextPage = async () => {
     if (email.length === 0 || !emailCheck(email)) {
-      setAlertMessage(`올바른 이메일을 입력해주세요.`);
-      setAlertModalVisible(true);
+      Alert.alert("오류", "올바른 이메일을 입력해주세요.");
       return;
     }
-
+  
     // 비밀번호 재설정 요청
     const resetResponse = await requestPasswordReset(email);
     if (resetResponse) {
-      setAlertMessage(`비밀번호 재설정 이메일이 발송되었습니다.`);
-      setAlertModalVisible(true);
+      Alert.alert("성공", "비밀번호 재설정 이메일이 발송되었습니다.");
       navigation.navigate("Login");
     } else {
-      setAlertMessage(`비밀번호 재설정 요청에 실패했습니다.`);
-      setAlertModalVisible(true);
+      Alert.alert("오류", "비밀번호 재설정 요청에 실패했습니다.");
     }
   };
-
-  // 스타일 정의
+ 
   const emailInputContainerStyle = {
-    marginTop: height * 0.02, // 화면 높이의 2% 위치에 설정
+   
+    marginTop: height * 0.02, // 화면 높이의 70% 위치에 설정
+    // 기타 필요한 스타일 속성 추가
   };
-
+ 
   const contentContainerStyle = {
     ...styles.contentContainer,
     height: height * 0.75, // 화면 높이의 75%
   };
-
+ 
   const buttonContainerStyle = {
     ...styles.buttonContainer,
-    position: 'absolute',
-    bottom: height * 0.4, // 화면 아래쪽에서부터 40% 위치
-    width: '100%',
+    position: 'absolute',  // 절대 위치 사용
+    bottom: height * 0.4, // 화면 아래쪽에서부터 5% 높이 위치
+    width: '100%',         // 컨테이너의 너비를 전체 화면 너비로 설정
   };
-
   const movingButtonStyle = {
     ...styles.MovingButton,
-    width: width * 0.35, // 화면 너비의 35%
-    height: height * 0.075, // 화면 높이의 7.5%
-    marginHorizontal: width * 0.08, // 좌우 마진 추가
+    width: width * 0.35, // 화면 너비의 %
+    height: height * 0.075, // 화면 높이의 %
+    marginHorizontal: width * 0.08,   // 좌우 마진 추가
+ 
   };
-
+ 
+ 
   return (
     <KeyboardAvoidingView
       behavior="height"  // 안드로이드에 적합한 behavior 설정
       style={{ flex: 1 }}
     >
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-
+ 
         <View style={styles.container}>
           <View style={contentContainerStyle}>
             <View style={emailInputContainerStyle}>
@@ -127,12 +118,12 @@ const PwSearchScreen = () => {
               </View>
               {renderEmailError()}
             </View>
-
+           
             <View style={buttonContainerStyle}>
               <Button style={movingButtonStyle} onPress={() => navigation.navigate("Login")}>
                 이전
               </Button>
-
+ 
               <Button
                 style={movingButtonStyle}
                 onPress={handleNextPage}
@@ -141,15 +132,15 @@ const PwSearchScreen = () => {
               </Button>
             </View>
           </View>
-
+ 
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
   );
 }
-
-
-
+ 
+ 
+ 
 const styles = StyleSheet.create({
   // 정적 스타일 정의
   container: {
@@ -183,5 +174,5 @@ const styles = StyleSheet.create({
     backgroundColor: '#8E86FA',
   },
 });
-
+ 
 export default PwSearchScreen;
