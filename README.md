@@ -1,79 +1,36 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# KT Aivle Big Project
 
-# Getting Started
+생성일: 2023년 12월 11일 → 2024년 1월 15일
+태그: JavaScript, React-Native, node.js
+한 줄 설명: 식단 관리 무경험자를 위한 식단 관리 어플
+개발 인원(역할): 7명 (모든 프론트엔드 개발)
+Github: https://github.com/PANGYEON/KT_FB
 
->**Note**: Make sure you have completed the [React Native - Environment Setup](https://reactnative.dev/docs/environment-setup) instructions till "Creating a new application" step, before proceeding.
+### 📖 내용
 
-## Step 1: Start the Metro Server
+- 선정 배경
+    - 식단 관리에 대한 문턱이 높고 일정한 기준이 존재하지 않기에 식단 관리 평가식을 도입해 식단 관리가 처음인 사람들을 위한 서비스 제공
+- 서비스 대상
+    - 식단 관리를 희망하지만 방법을 모르는 사람들
+- 기대 효과
+    - 자체식을 이용한 ‘식단 평가’ 기능을 추가해서 체중 감량, 유지, 증량에 따른 개인별 식단을 평가해 식단 관리에 경험이 없는 이들에게 기준을 제시
 
-First, you will need to start **Metro**, the JavaScript _bundler_ that ships _with_ React Native.
+![[28조] 4기 28조 썸네일.jpg](KT%20Aivle%20Big%20Project%2017e6aedfa558401092eadd4635bbe8ae/28%25EC%25A1%25B0_4%25EA%25B8%25B0_28%25EC%25A1%25B0_%25EC%258D%25B8%25EB%2584%25A4%25EC%259D%25BC.jpg)
 
-To start Metro, run the following command from the _root_ of your React Native project:
+### 🙋‍♂️ 역할
 
-```bash
-# using npm
-npm start
+- 프론트엔드의 모든 부분을 담당하였습니다.
+    - Axios를 이용한 Django와 연동
+    - 프론트엔드 2명(다른 한 명은 비전공자)
 
-# OR using Yarn
-yarn start
-```
+### 🎯 결과 및 성과
 
-## Step 2: Start your Application
+- Aivle School에서 생각하는 핵심 가치인 Self-motivation상 수상
 
-Let Metro Bundler run in its _own_ terminal. Open a _new_ terminal from the _root_ of your React Native project. Run the following command to start your _Android_ or _iOS_ app:
+### ✔ 배운점
 
-### For Android
+- 팀 협업 강화 - 비전공자의 어려움을 파악하고, 적극적인 코드 리뷰와 맞춤형 지원을 통해 프로젝트를 성공적으로 이끌었습니다.
 
-```bash
-# using npm
-npm run android
+### 🚩 노션 링크
 
-# OR using Yarn
-yarn android
-```
-
-### For iOS
-
-```bash
-# using npm
-npm run ios
-
-# OR using Yarn
-yarn ios
-```
-
-If everything is set up _correctly_, you should see your new app running in your _Android Emulator_ or _iOS Simulator_ shortly provided you have set up your emulator/simulator correctly.
-
-This is one way to run your app — you can also run it directly from within Android Studio and Xcode respectively.
-
-## Step 3: Modifying your App
-
-Now that you have successfully run the app, let's modify it.
-
-1. Open `App.tsx` in your text editor of choice and edit some lines.
-2. For **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Developer Menu** (<kbd>Ctrl</kbd> + <kbd>M</kbd> (on Window and Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (on macOS)) to see your changes!
-
-   For **iOS**: Hit <kbd>Cmd ⌘</kbd> + <kbd>R</kbd> in your iOS Simulator to reload the app and see your changes!
-
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [Introduction to React Native](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you can't get this to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+- [여기를 눌러주세요!](https://www.notion.so/735d3293bf654671949b046bd05229b6?pvs=21)
