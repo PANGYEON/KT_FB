@@ -1,10 +1,12 @@
 # KT Aivle Big Project
 
 생성일: 2023년 12월 11일 → 2024년 1월 15일
+
 태그: JavaScript, React-Native, node.js
+
 한 줄 설명: 식단 관리 무경험자를 위한 식단 관리 어플
+
 개발 인원(역할): 7명 (모든 프론트엔드 개발)
-Github: https://github.com/PANGYEON/KT_FB
 
 ### 📖 내용
 
